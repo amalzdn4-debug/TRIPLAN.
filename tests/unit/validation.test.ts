@@ -1,6 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { signupSchema, fastTripSchema, contactSchema, flattenErrors, formToObject, emailSchema } from "@/lib/validation";
+import { signupSchema, fastTripSchema, contactSchema, flattenErrors, formToObject, emailSchema, type FieldErrors } from "@/lib/validation";
 import { safeNext } from "@/lib/auth/safe-next";
+import type { z } from "zod";
+
+/** Field errors of a failed parse (empty object when the input was valid). */
+const errs = (r: { success: boolean; error?: z.ZodError }): FieldErrors => (!r.success && r.error ? flattenErrors(r.error) : {});
 
 describe("validation", () => {
   it("normalises emails", () => {
@@ -10,15 +14,15 @@ describe("validation", () => {
   it("rejects short or mismatched passwords with translation keys", () => {
     const r = signupSchema.safeParse({ name: "A", email: "a@b.co", password: "short", confirm: "other", terms: "on" });
     expect(r.success).toBe(false);
-    const errs = flattenErrors((r as { error: never }).error);
-    expect(errs.password).toBe("passwordShort");
+    const e = errs(r);
+    expect(e.password).toBe("passwordShort");
     const r2 = signupSchema.safeParse({ name: "A", email: "a@b.co", password: "longenough1", confirm: "different1", terms: "on" });
-    expect(flattenErrors((r2 as { error: never }).error).confirm).toBe("passwordMismatch");
+    expect(errs(r2).confirm).toBe("passwordMismatch");
   });
 
   it("requires accepting the terms", () => {
     const r = signupSchema.safeParse({ name: "A", email: "a@b.co", password: "longenough1", confirm: "longenough1" });
-    expect(flattenErrors((r as { error: never }).error).terms).toBe("terms");
+    expect(errs(r).terms).toBe("terms");
   });
 
   const trip = { destination: "rome", startDate: "2027-05-10", endDate: "2027-05-12", adults: "2" };
@@ -29,8 +33,8 @@ describe("validation", () => {
   });
 
   it("rejects end before start and trips over 21 days", () => {
-    expect(flattenErrors((fastTripSchema.safeParse({ ...trip, endDate: "2027-05-01" }) as { error: never }).error).endDate).toBe("dateOrder");
-    expect(flattenErrors((fastTripSchema.safeParse({ ...trip, endDate: "2027-07-01" }) as { error: never }).error).endDate).toBe("tripTooLong");
+    expect(errs(fastTripSchema.safeParse({ ...trip, endDate: "2027-05-01" })).endDate).toBe("dateOrder");
+    expect(errs(fastTripSchema.safeParse({ ...trip, endDate: "2027-07-01" })).endDate).toBe("tripTooLong");
   });
 
   it("rejects unknown interest values", () => {
