@@ -1,0 +1,134 @@
+/* ──────────────────────────────────────────────────────────
+   TRIPLAN design tokens
+   Single source of truth for colour, type, spacing, radii,
+   shadows, motion and component states.
+   ────────────────────────────────────────────────────────── */
+:root {
+  /* Brand palette — blue identity (approved Nov 2026). Logo artwork is used unmodified. */
+  --tp-navy: #173b67; /* primary deep blue */
+  --tp-navy-900: #0e2643; /* footer, hero overlays */
+  --tp-blue: #245a91; /* main brand blue */
+  --tp-blue-500: #477fb5; /* secondary blue */
+  --tp-blue-300: #a9c6e3;
+  --tp-blue-100: #dceaf6; /* light blue */
+  --tp-blue-75: #e9f1f9;
+  --tp-blue-50: #f3f7fb; /* very light blue background */
+  --tp-ivory: #f7f5ef; /* warm ivory, used sparingly */
+  --tp-gold: #c6a66b; /* champagne gold accent */
+  --tp-gold-600: #a8884f; /* icons/graphics on light backgrounds (≥3:1) */
+  --tp-gold-700: #7d6233; /* gold text on light backgrounds (≥4.5:1) */
+  --tp-gold-100: #f4ecdc;
+  --tp-white: #ffffff;
+  --tp-charcoal: #202833;
+
+  /* Semantic colours */
+  --color-bg: var(--tp-blue-50);
+  --color-surface: var(--tp-white);
+  --color-surface-muted: var(--tp-ivory);
+  --color-surface-tint: var(--tp-blue-75);
+  --color-text: var(--tp-charcoal);
+  --color-text-muted: #485466;
+  --color-text-subtle: #5f6b7c;
+  --color-heading: var(--tp-navy);
+  --color-primary: var(--tp-navy);
+  --color-primary-hover: var(--tp-blue);
+  --color-on-primary: var(--tp-white);
+  --color-on-dark: var(--tp-white);
+  --color-accent: var(--tp-gold);
+  --color-border: #d6e0ea;
+  --color-border-strong: #7f8fa3; /* form-control outlines: ≥3:1 on white and light blue (WCAG 1.4.11) */
+  --color-focus: var(--tp-blue);
+  --color-success: #2e6b4f;
+  --color-success-bg: #e3efe7;
+  --color-warning: #8a5a12;
+  --color-warning-bg: #f6ecd6;
+  --color-danger: #a23b2a;
+  --color-danger-bg: #f7e3dd;
+  --color-info-bg: var(--tp-blue-100);
+
+  /* Typography */
+  --font-sans: var(--font-manrope), "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-arabic: var(--font-noto-arabic), "Noto Sans Arabic", "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
+  --font-cjk: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", var(--font-sans);
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-base: 1rem;
+  --fs-md: 1.125rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: clamp(1.375rem, 1.1rem + 1vw, 1.75rem);
+  --fs-2xl: clamp(1.75rem, 1.3rem + 1.6vw, 2.375rem);
+  --fs-3xl: clamp(2.125rem, 1.4rem + 2.8vw, 3.25rem);
+  --fs-hero: clamp(2.5rem, 1.4rem + 4.6vw, 4.75rem);
+  --lh-tight: 1.08;
+  --lh-snug: 1.25;
+  --lh-body: 1.6;
+  --ls-tight: -0.02em;
+  --ls-hero: -0.03em;
+  --ls-caps: 0.12em;
+
+  /* Spacing (4px base) */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.25rem;
+  --sp-6: 1.5rem;
+  --sp-8: 2rem;
+  --sp-10: 2.5rem;
+  --sp-12: 3rem;
+  --sp-16: 4rem;
+  --sp-20: 5rem;
+  --sp-24: 6rem;
+  --section-y: clamp(3.5rem, 2rem + 6vw, 7rem);
+
+  /* Layout */
+  --container: 1240px;
+  --container-narrow: 820px;
+  --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
+  --header-h: 72px;
+  --bottom-nav-h: 64px;
+
+  /* Radii */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 18px;
+  --r-xl: 28px;
+  --r-pill: 999px;
+
+  /* Shadows */
+  --sh-xs: 0 1px 2px rgba(16, 32, 56, 0.06);
+  --sh-sm: 0 2px 8px rgba(16, 32, 56, 0.07);
+  --sh-md: 0 10px 30px -12px rgba(16, 32, 56, 0.22);
+  --sh-lg: 0 24px 60px -24px rgba(16, 32, 56, 0.35);
+  --sh-focus: 0 0 0 3px rgba(36, 90, 145, 0.35);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 150ms;
+  --dur-base: 240ms;
+  --dur-slow: 480ms;
+  --dur-hero: 1200ms;
+
+  /* Z-index */
+  --z-header: 50;
+  --z-dropdown: 60;
+  --z-overlay: 80;
+  --z-toast: 90;
+}
+
+html[lang="ar"] {
+  --font-sans: var(--font-arabic);
+  --ls-tight: 0;
+  --ls-hero: 0;
+  --ls-caps: 0;
+  --lh-tight: 1.25;
+}
+html[lang="zh"] {
+  --font-sans: var(--font-cjk);
+  --ls-hero: 0;
+  --ls-tight: 0;
+}
