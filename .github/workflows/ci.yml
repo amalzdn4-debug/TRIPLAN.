@@ -1,0 +1,36 @@
+# Runs automatically on every push and pull request.
+# Green tick on GitHub = dependencies install, types check, tests pass and the production build succeeds.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # CI uses an embedded throwaway database (PGlite) — no secrets are needed.
+      DATABASE_URL: pglite:./.data/ci
+      AUTH_SECRET: ci-only-not-a-real-secret-0123456789abcdef
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Check translations (8 languages)
+        run: npm run i18n:check
+      - name: Type-check
+        run: npm run typecheck
+      - name: Unit tests
+        run: npm test
+      - name: Create database and seed it
+        run: npm run db:setup
+      - name: Production build
+        run: npm run build
