@@ -1,0 +1,1224 @@
+{
+  "meta": {
+    "title": "TRIPLAN — Planifiez moins. Explorez plus.",
+    "description": "Organisez tout votre voyage au même endroit : itinéraires jour par jour, cartes interactives, repas, transports, consigne à bagages et liens de réservation fiables, partout dans le monde."
+  },
+  "common": {
+    "backToTop": "Retour en haut",
+    "resendVerification": "Renvoyer l'e-mail de vérification",
+    "save": "Enregistrer",
+    "saved": "Enregistré",
+    "affiliateDisclosure": "Certains liens partenaires peuvent être des liens affiliés : si vous réservez par leur intermédiaire, TRIPLAN peut percevoir une commission, sans frais supplémentaires pour vous. Cela ne change jamais les options affichées ni leur ordre."
+  },
+  "nav": {
+    "home": "Accueil",
+    "plan": "Planifier un voyage",
+    "planShort": "Planifier",
+    "explore": "Explorer",
+    "destinations": "Destinations",
+    "community": "Communauté",
+    "about": "À propos",
+    "login": "Connexion",
+    "signup": "Inscription",
+    "myTrips": "Mes voyages",
+    "account": "Profil",
+    "billing": "Abonnement",
+    "saved": "Favoris",
+    "admin": "Administration",
+    "logout": "Déconnexion",
+    "menu": "Menu",
+    "close": "Fermer",
+    "accountMenu": "Menu du compte",
+    "mainNav": "Navigation principale",
+    "mobileNav": "Navigation rapide",
+    "language": "Langue",
+    "skip": "Aller au contenu"
+  },
+  "footer": {
+    "about": "Triplan réunit vols, hébergements, restaurants, transports et programmes quotidiens en un seul endroit, clair et organisé — pour n'importe quelle destination dans le monde.",
+    "product": "Produit",
+    "company": "Triplan",
+    "legal": "Mentions légales",
+    "pricing": "Tarifs",
+    "aboutLink": "À propos de Triplan",
+    "reviews": "Avis et opinions",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions générales",
+    "cookies": "Politique de cookies",
+    "subscriptions": "Politique d'abonnement",
+    "cookieSettings": "Paramètres des cookies",
+    "rights": "Tous droits réservés."
+  },
+  "cookie": {
+    "title": "Votre vie privée",
+    "body": "Nous utilisons uniquement les cookies nécessaires pour vous garder connecté et mémoriser votre langue. Les statistiques facultatives restent désactivées sauf si vous les autorisez.",
+    "learnMore": "Politique de cookies",
+    "necessary": "Strictement nécessaires",
+    "necessaryHint": "connexion, langue et ce choix. Toujours actifs.",
+    "analytics": "Statistiques",
+    "analyticsHint": "statistiques d'usage anonymes pour améliorer Triplan.",
+    "acceptAll": "Tout accepter",
+    "necessaryOnly": "Nécessaires uniquement",
+    "customize": "Personnaliser",
+    "save": "Enregistrer mes choix"
+  },
+  "hero": {
+    "carouselLabel": "Destinations du monde entier",
+    "slideOf": "Diapositive {n} sur {total}",
+    "photoBy": "Photo :",
+    "chooseSlide": "Choisir une destination",
+    "goTo": "Afficher {place}",
+    "previous": "Destination précédente",
+    "next": "Destination suivante",
+    "pause": "Mettre en pause",
+    "play": "Reprendre le défilement"
+  },
+  "home": {
+    "hero": {
+      "tagline": "Planifiez moins. Explorez plus.",
+      "title": "Votre prochain voyage commence ici.",
+      "lead": "Des vols et de l'hébergement aux restaurants, activités et itinéraires quotidiens, organisez tout votre voyage en un seul endroit.",
+      "start": "Commencer à planifier",
+      "explore": "Explorer les destinations"
+    },
+    "quick": {
+      "label": "Ce que couvre Triplan",
+      "flights": "Vols",
+      "hotels": "Hôtels",
+      "restaurants": "Restaurants",
+      "activities": "Activités",
+      "luggage": "Consigne à bagages",
+      "transport": "Transports"
+    },
+    "how": {
+      "eyebrow": "Comment fonctionne Triplan",
+      "title": "Trois étapes de l'idée à l'itinéraire",
+      "lead": "Indiquez l'essentiel. Triplan s'occupe de l'organisation — vous gardez la main sur chaque détail.",
+      "tell": {
+        "title": "Parlez-nous de votre voyage",
+        "body": "Où, quand, avec qui, votre budget et ce que vous aimez — en moins de deux minutes."
+      },
+      "organize": {
+        "title": "Laissez Triplan organiser",
+        "body": "Recevez un programme réaliste jour par jour, avec repas, pauses et temps de trajet entre des étapes proches."
+      },
+      "explore": {
+        "title": "Explorez avec votre plan et votre carte",
+        "body": "Suivez les étapes numérotées sur la carte, ajustez tout, puis passez à la navigation une fois sur place."
+      }
+    },
+    "everything": {
+      "eyebrow": "Tout pour votre voyage",
+      "title": "Un seul endroit pour chaque étape du voyage",
+      "lead": "Triplan relie les éléments que les voyageurs jonglent habituellement entre une dizaine d'onglets.",
+      "flights": {
+        "title": "Vols",
+        "body": "Notez vos horaires et cherchez sur des comparateurs fiables avec vos dates déjà remplies."
+      },
+      "accommodation": {
+        "title": "Hébergement",
+        "body": "Commencez chaque journée depuis votre logement, ou comparez hôtels, appartements et auberges."
+      },
+      "restaurants": {
+        "title": "Restaurants",
+        "body": "Des repas intégrés à chaque journée, adaptés au halal, végétarien, végan et plus encore."
+      },
+      "transport": {
+        "title": "Transports",
+        "body": "À pied, en transports en commun, en voiture ou à vélo entre les étapes, avec des estimations claires."
+      },
+      "activities": {
+        "title": "Activités",
+        "body": "Musées, visites et expériences issus de sites officiels et de partenaires de confiance."
+      },
+      "luggage": {
+        "title": "Consigne à bagages",
+        "body": "Déposez vos bagages près des gares, aéroports et sites avant l'arrivée ou après le départ."
+      },
+      "maps": {
+        "title": "Cartes interactives",
+        "body": "Des repères numérotés synchronisés avec votre itinéraire — touchez une étape, voyez-la sur la carte."
+      },
+      "itineraries": {
+        "title": "Itinéraires quotidiens",
+        "body": "Du matin au soir, avec pauses et temps libre — jamais un programme impossible."
+      }
+    },
+    "discover": {
+      "eyebrow": "Découvrir des destinations",
+      "title": "Où irez-vous ensuite ?",
+      "lead": "{count} destinations dans {countries} pays — des escapades urbaines aux îles lointaines.",
+      "all": "Toutes les destinations"
+    },
+    "modes": {
+      "eyebrow": "Planifiez à votre façon",
+      "title": "Rapide quand vous êtes pressé. Détaillé quand c'est important.",
+      "lead": "Les deux modes créent un itinéraire que vous pouvez modifier ensuite.",
+      "fast": {
+        "title": "Voyage express",
+        "body": "Quelques questions essentielles et un premier itinéraire utile en quelques instants.",
+        "point1": "Destination, dates, voyageurs et budget",
+        "point2": "Vos centres d'intérêt, préférences alimentaires et de transport",
+        "point3": "Tout reste modifiable ensuite",
+        "cta": "Planifier un voyage express"
+      },
+      "detailed": {
+        "title": "Voyage détaillé",
+        "body": "Un contrôle total sur le budget, l'hébergement, les repas, le rythme et la marche.",
+        "point1": "Horaires de vol, compagnons et répartition du budget",
+        "point2": "Chaque journée part de votre hébergement réservé",
+        "point3": "Vérifiez chaque préférence avant de générer",
+        "cta": "Planifier un voyage détaillé"
+      }
+    },
+    "why": {
+      "eyebrow": "Pourquoi Triplan ?",
+      "title": "Moins de temps à planifier. Plus de temps pour en profiter.",
+      "time": {
+        "title": "Des heures gagnées",
+        "body": "Fini les cartes, notes et onglets de réservation à assembler."
+      },
+      "organized": {
+        "title": "Organisé par la géographie",
+        "body": "Les lieux proches partagent la même journée : moins de temps dans les transports."
+      },
+      "honest": {
+        "title": "Des informations honnêtes",
+        "body": "Les estimations sont indiquées comme telles. Nous n'inventons jamais de prix, d'avis ni de disponibilités."
+      },
+      "global": {
+        "title": "Pensé pour le monde entier",
+        "body": "Huit langues, l'arabe de droite à gauche et des destinations sur tous les continents."
+      },
+      "statDestinations": "destinations",
+      "statCountries": "pays",
+      "statRegions": "régions du monde",
+      "statLanguages": "langues"
+    },
+    "community": {
+      "eyebrow": "Recommandations de la communauté",
+      "title": "Les pépites d'autres voyageurs",
+      "lead": "De vraies expériences partagées par les membres de Triplan — clairement présentées comme des avis personnels.",
+      "all": "Voir la communauté",
+      "emptyTitle": "Soyez le premier à partager",
+      "emptyBody": "La communauté démarre tout juste. Partagez une pépite, un conseil ou un lieu préféré.",
+      "share": "Partager une recommandation"
+    },
+    "cta": {
+      "eyebrow": "Prêt quand vous l'êtes",
+      "title": "Votre prochaine aventure mérite un meilleur plan.",
+      "body": "Votre premier voyage est gratuit. Aucune carte requise.",
+      "button": "Commencer à planifier"
+    }
+  },
+  "explore": {
+    "eyebrow": "Explorer",
+    "title": "Explorer les destinations",
+    "lead": "Recherchez et filtrez les destinations par région, style de voyage, budget, climat et meilleur mois pour partir.",
+    "filters": "Filtres",
+    "search": "Rechercher des destinations",
+    "searchPlaceholder": "Rechercher une ville ou un pays",
+    "any": "Tous",
+    "continent": "Région",
+    "country": "Pays",
+    "style": "Style de voyage",
+    "experience": "Type d'expérience",
+    "budget": "Budget",
+    "climate": "Climat",
+    "month": "Bon mois pour partir",
+    "reset": "Réinitialiser les filtres",
+    "sort": "Trier par",
+    "sortPopular": "Les plus populaires",
+    "sortName": "Nom (A–Z)",
+    "sortShort": "Séjour le plus court",
+    "results": "{count, plural, =0 {Aucune destination} one {# destination} other {# destinations}}",
+    "noResults": "Aucune destination ne correspond à ces filtres",
+    "noResultsHint": "Essayez de retirer un filtre ou de rechercher un autre lieu.",
+    "continents": {
+      "europe": "Europe",
+      "mena": "Moyen-Orient et Afrique du Nord",
+      "asia": "Asie",
+      "north_america": "Amérique du Nord",
+      "south_america": "Amérique du Sud",
+      "africa": "Afrique",
+      "oceania": "Océanie"
+    },
+    "styles": {
+      "city_break": "Escapade urbaine",
+      "culture": "Culture",
+      "beach": "Plage",
+      "nature": "Nature",
+      "food": "Gastronomie",
+      "romantic": "Romantique",
+      "family": "Famille",
+      "adventure": "Aventure",
+      "luxury": "Luxe",
+      "budget": "Petit budget"
+    },
+    "experiences": {
+      "museums": "Musées",
+      "architecture": "Architecture",
+      "history": "Histoire",
+      "nightlife": "Vie nocturne",
+      "shopping": "Shopping",
+      "beaches": "Plages",
+      "hiking": "Randonnée",
+      "food": "Gastronomie",
+      "markets": "Marchés",
+      "photography": "Photographie",
+      "relaxation": "Détente",
+      "local": "Vie locale",
+      "culture": "Culture",
+      "nature": "Nature",
+      "family": "Famille",
+      "adventure": "Aventure",
+      "hidden_gems": "Pépite",
+      "romantic": "Romantique"
+    },
+    "climates": {
+      "temperate": "Tempéré",
+      "mediterranean": "Méditerranéen",
+      "tropical": "Tropical",
+      "desert": "Désertique",
+      "continental": "Continental",
+      "subtropical": "Subtropical",
+      "oceanic": "Océanique"
+    }
+  },
+  "destinations": {
+    "eyebrow": "Destinations",
+    "title": "Toutes les destinations",
+    "lead": "Toutes les destinations prises en charge par Triplan, par région. De nouveaux lieux sont ajoutés régulièrement.",
+    "jump": "Aller à la région"
+  },
+  "destination": {
+    "home": "Accueil",
+    "explore": "Explorer",
+    "metaTitle": "{city}, {country} — guide de voyage et itinéraire",
+    "daysExact": "{n, plural, one {# jour} other {# jours}}",
+    "daysRange": "{min} à {max} jours",
+    "budget": {
+      "budget": "Économique",
+      "mid": "Intermédiaire",
+      "premium": "Haut de gamme"
+    },
+    "planCta": "Planifier un voyage à {city}",
+    "photoBy": "Photo :",
+    "sections": "Sur cette page",
+    "nav": {
+      "overview": "Aperçu",
+      "attractions": "À voir",
+      "neighborhoods": "Quartiers",
+      "food": "Gastronomie",
+      "stay": "Hébergement et vols",
+      "transport": "Se déplacer",
+      "luggage": "Consigne à bagages",
+      "activities": "Activités",
+      "community": "Communauté"
+    },
+    "sampleNotice": "Ce guide est un contenu éditorial d'exemple qui n'a pas encore été vérifié par nos éditeurs. Vérifiez toujours les horaires et les détails auprès de sources officielles avant de partir.",
+    "verified": "Vérifié",
+    "sample": "Non vérifié",
+    "englishOnly": "Le contenu détaillé de ce guide est actuellement disponible en anglais.",
+    "bestTime": "Meilleure période",
+    "duration": "Durée conseillée",
+    "budgetLevel": "Niveau de budget",
+    "climate": "Climat",
+    "budgetNote": "Le niveau de budget est une indication générale. Triplan n'affiche des prix que lorsque des données fiables existent et signale toujours les estimations.",
+    "openMap": "Voir sur la carte",
+    "noAttractions": "Les lieux sélectionnés pour cette destination arrivent bientôt. Vous pouvez tout de même planifier un voyage et ajouter vos propres étapes.",
+    "noNeighborhoods": "Guide des quartiers bientôt disponible.",
+    "noRestaurants": "Nous ne listons pas de restaurants tant qu'ils n'ont pas été vérifiés. Utilisez les recherches ci-dessous pour trouver des adresses à proximité.",
+    "searchFood": "Rechercher à proximité :",
+    "foodSearch": {
+      "local": "Cuisine locale",
+      "halal": "Halal",
+      "vegetarian": "Végétarien",
+      "vegan": "Végan",
+      "seafood": "Fruits de mer",
+      "fine_dining": "Gastronomique",
+      "budget": "Petits prix"
+    },
+    "diet": {
+      "halal": "Halal (vérifié)",
+      "vegetarian": "Options végétariennes",
+      "vegan": "Options véganes",
+      "gluten_free": "Options sans gluten",
+      "kosher": "Casher (vérifié)"
+    },
+    "website": "Site web",
+    "dietNote": "Les mentions alimentaires n'apparaissent que si elles ont été vérifiées. Confirmez toujours le statut halal, les allergènes et les ingrédients directement auprès du restaurant.",
+    "stayIntro": "Comparez les hébergements sur des sites de réservation fiables. Triplan n'affiche pas les prix ni les disponibilités de tiers.",
+    "flights": "Vols",
+    "externalNote": "Les liens externes ouvrent le site du partenaire. Les prix et disponibilités y sont affichés, pas par Triplan.",
+    "transportIntro": "Consultez les transports en commun, transferts et locations de voiture :",
+    "moreInfo": "Plus d'informations",
+    "luggageIntro": "Laissez vos bagages près des gares, aéroports et sites avant l'arrivée ou après le départ.",
+    "book": "Réserver",
+    "availabilityNote": "Disponibilités et prix sont indiqués par chaque prestataire. Triplan n'affiche jamais de disponibilités qu'il ne peut vérifier.",
+    "activitiesIntro": "Trouvez visites, billets et expériences auprès de partenaires de confiance et de sites officiels.",
+    "communityNote": "Avis personnels des membres de Triplan — pas des faits vérifiés.",
+    "noPosts": "Aucune publication sur {city} pour le moment.",
+    "sharePost": "Partager une recommandation",
+    "asideTitle": "Planifiez {city} avec Triplan",
+    "asideBody": "Obtenez en quelques minutes un programme jour par jour avec repas, carte et temps de trajet.",
+    "fastCta": "Voyage express",
+    "detailedCta": "Voyage détaillé",
+    "related": "Vous aimerez aussi"
+  },
+  "planIntro": {
+    "eyebrow": "Planifier un voyage",
+    "title": "Planifiez votre voyage à votre façon",
+    "lead": "Choisissez un plan rapide ou un contrôle total. Dans les deux cas, chaque étape reste modifiable.",
+    "whereTo": "Où partez-vous ?",
+    "anyDestination": "Choisir plus tard",
+    "from": "Du",
+    "to": "Au",
+    "start": "Commencer à planifier",
+    "accountNote": "Vous devrez vous connecter ou créer un compte gratuit pour enregistrer votre voyage. Vos choix sont conservés.",
+    "limitReached": "Vous avez utilisé votre voyage gratuit.",
+    "seePricing": "Voir les options",
+    "fastTitle": "Voyage express",
+    "fastBody": "Répondez à quelques questions essentielles et obtenez un premier itinéraire pratique.",
+    "fastPoint1": "Environ deux minutes",
+    "fastPoint2": "Repas, pauses et trajets inclus",
+    "fastPoint3": "Entièrement modifiable ensuite",
+    "fastCta": "Commencer un voyage express",
+    "detailedTitle": "Voyage détaillé",
+    "detailedBody": "Définissez budgets, hébergement, besoins alimentaires, rythme quotidien et préférences de marche.",
+    "detailedPoint1": "Sept étapes guidées",
+    "detailedPoint2": "Votre hébergement comme point de départ",
+    "detailedPoint3": "Tout vérifier avant de générer",
+    "detailedCta": "Commencer un voyage détaillé",
+    "servicesEyebrow": "Services",
+    "servicesTitle": "Comment Triplan gère chaque partie de votre voyage",
+    "servicesLead": "Voici précisément ce que fait Triplan et quand il vous oriente vers des prestataires de confiance.",
+    "services": {
+      "flights": {
+        "title": "Vols",
+        "body": "Ajoutez vos horaires d'arrivée et de départ pour que vos premier et dernier jours soient planifiés en conséquence. Cherchez des vols avec vos dates déjà remplies.",
+        "how": "Liens vers Google Flights, Skyscanner, Kiwi.com"
+      },
+      "hotels": {
+        "title": "Hébergement",
+        "body": "Déjà réservé ? Votre logement devient le point de départ de chaque journée. Toujours en recherche ? Comparez sur des sites fiables.",
+        "how": "Liens vers Booking.com, Airbnb, Expedia et plus"
+      },
+      "restaurants": {
+        "title": "Restaurants",
+        "body": "Chaque journée comprend petit-déjeuner, déjeuner, pause café et dîner près de vos étapes, selon vos préférences alimentaires.",
+        "how": "Adresses vérifiées + recherche sur carte en direct"
+      },
+      "activities": {
+        "title": "Activités",
+        "body": "Musées, monuments et expériences regroupés par quartier, avec des liens pour billets et visites.",
+        "how": "Liens vers GetYourGuide, Viator, Tiqets"
+      },
+      "luggage": {
+        "title": "Consigne à bagages",
+        "body": "Vous arrivez tôt ou partez tard ? Trouvez une consigne près des gares, aéroports et sites.",
+        "how": "Liens vers Bounce, Radical Storage, LuggageHero"
+      },
+      "transport": {
+        "title": "Transports",
+        "body": "Temps et mode de trajet entre chaque étape, indiqués comme estimation sauf s'ils proviennent d'un service d'itinéraires.",
+        "how": "Estimations + navigation Google Maps"
+      }
+    }
+  },
+  "planner": {
+    "fastEyebrow": "Voyage express",
+    "fastTitle": "Planifier un voyage express",
+    "fastLead": "Uniquement l'essentiel. Vous pourrez tout affiner une fois l'itinéraire prêt.",
+    "detailedEyebrow": "Voyage détaillé",
+    "detailedTitle": "Planifier un voyage détaillé",
+    "detailedLead": "Sept étapes courtes pour un contrôle total de votre voyage.",
+    "defaultTitle": "Voyage à {city}",
+    "destination": "Destination",
+    "chooseDestination": "Choisissez une destination",
+    "departureCity": "Ville de départ",
+    "departureHint": "D'où vous partez (facultatif)",
+    "arrivalDate": "Date d'arrivée",
+    "departureDate": "Date de départ",
+    "arrivalTime": "Heure d'arrivée",
+    "returnTime": "Heure de départ",
+    "adults": "Adultes",
+    "children": "Enfants",
+    "increase": "Augmenter : {label}",
+    "decrease": "Diminuer : {label}",
+    "budgetTotal": "Budget total",
+    "budgetPerPerson": "Budget par personne",
+    "currency": "Devise",
+    "budgetCategory": "Catégorie de budget",
+    "budgetCategories": {
+      "budget": "Économique",
+      "mid": "Intermédiaire",
+      "premium": "Haut de gamme",
+      "luxury": "Luxe"
+    },
+    "pace": "Style de voyage",
+    "paces": {
+      "relaxed": "Détendu",
+      "balanced": "Équilibré",
+      "packed": "Intense"
+    },
+    "paceHints": {
+      "relaxed": "2 visites principales par jour",
+      "balanced": "3 visites principales par jour",
+      "packed": "4 visites ou plus par jour"
+    },
+    "interests": "Centres d'intérêt",
+    "interestsQuestion": "Qu'aimez-vous ? Choisissez autant d'options que vous voulez.",
+    "interestOptions": {
+      "culture": "Culture",
+      "architecture": "Architecture",
+      "history": "Histoire",
+      "museums": "Musées",
+      "nature": "Nature",
+      "beaches": "Plages",
+      "shopping": "Shopping",
+      "food": "Gastronomie",
+      "nightlife": "Vie nocturne",
+      "photography": "Photographie",
+      "family": "Activités en famille",
+      "adventure": "Aventure",
+      "local": "Expériences locales",
+      "hidden_gems": "Pépites cachées",
+      "relaxation": "Détente"
+    },
+    "transport": "Transport préféré",
+    "transportOptions": {
+      "walking": "Surtout à pied",
+      "public": "Transports en commun",
+      "driving": "Voiture / taxi",
+      "cycling": "Vélo",
+      "mixed": "Un peu de tout"
+    },
+    "food": "Préférences alimentaires",
+    "foodQuestion": "Des préférences alimentaires ? Choisissez tout ce qui s'applique.",
+    "foodOptions": {
+      "halal": "Halal",
+      "seafood": "Fruits de mer",
+      "vegetarian": "Végétarien",
+      "vegan": "Végan",
+      "fast_food": "Restauration rapide",
+      "local": "Cuisine locale",
+      "fine_dining": "Gastronomique",
+      "budget": "Petits prix",
+      "international": "Cuisine internationale"
+    },
+    "dietaryNotes": "Allergies ou restrictions alimentaires",
+    "dietaryHint": "N'ajoutez que ce que vous souhaitez voir pris en compte. Modifiable à tout moment.",
+    "halalNote": "Triplan n'affiche les mentions halal ou alimentaires que si elles ont été vérifiées. Confirmez toujours auprès du restaurant.",
+    "optional": "Facultatif",
+    "limitedData": "Les lieux sélectionnés pour {city} sont encore en cours d'ajout. Votre programme comprendra repas et temps libre — vous pourrez ajouter vos propres étapes.",
+    "aiNote": "Votre itinéraire est rédigé avec l'IA à partir des lieux de notre base. Vérifiez toujours les détails avant de partir.",
+    "rulesNote": "Votre itinéraire est construit à partir des lieux de notre guide, regroupés par quartier pour limiter les trajets.",
+    "editLater": "Tout reste modifiable ensuite.",
+    "generate": "Créer mon itinéraire",
+    "generating": "Création de votre itinéraire…",
+    "coveredBySubscription": "Ce voyage est inclus dans votre formule annuelle.",
+    "coveredByFree": "Ce voyage utilise votre voyage gratuit.",
+    "coveredByCredit": "Ce voyage utilisera 1 de vos {n} crédits de voyage.",
+    "needsPurchase": "Vous avez utilisé votre voyage gratuit. Achetez un voyage supplémentaire ou la formule annuelle pour continuer — aucun prélèvement sans votre confirmation.",
+    "seePlans": "Voir les formules",
+    "steps": "Étapes de planification",
+    "stepOf": "Étape {n} sur {total}",
+    "stepNames": {
+      "basics": "L'essentiel",
+      "budget": "Budget",
+      "stay": "Hébergement",
+      "interests": "Intérêts",
+      "food": "Repas",
+      "rhythm": "Rythme",
+      "review": "Récapitulatif"
+    },
+    "stepTitles": {
+      "basics": "Où, quand et avec qui",
+      "budget": "Votre budget",
+      "stay": "Où vous logerez",
+      "interests": "Ce que vous aimez",
+      "food": "Préférences alimentaires",
+      "rhythm": "Votre rythme quotidien",
+      "review": "Vérifiez vos préférences"
+    },
+    "companions": "Vous voyagez",
+    "companionOptions": {
+      "solo": "Seul(e)",
+      "couple": "En couple",
+      "family": "En famille",
+      "friends": "Entre amis",
+      "business": "Pour affaires"
+    },
+    "participants": "Compagnons de voyage",
+    "participantsHint": "Facultatif — les noms aident à partager et organiser le programme.",
+    "participantName": "Nom du compagnon",
+    "isChild": "Enfant",
+    "addParticipant": "Ajouter un compagnon",
+    "removeParticipant": "Retirer le compagnon",
+    "budgetSplit": "Répartition par catégorie (facultatif)",
+    "split": {
+      "budgetAccommodation": "Hébergement",
+      "budgetFood": "Repas",
+      "budgetActivities": "Activités",
+      "budgetTransport": "Transports"
+    },
+    "budgetDisclaimer": "Votre budget oriente les suggestions. Triplan n'affiche des coûts que si des données fiables existent et les signale comme estimations.",
+    "accommodationQuestion": "Avez-vous déjà un hébergement ?",
+    "accommodationOptions": {
+      "booked": "Oui, c'est réservé",
+      "recommend": "Proposez-moi des options",
+      "compare": "Je veux comparer les types"
+    },
+    "accommodationHints": {
+      "booked": "Chaque journée partira de là",
+      "recommend": "Nous indiquerons des sites fiables",
+      "compare": "Hôtels, appartements, auberges…"
+    },
+    "accommodationName": "Nom de l'hébergement",
+    "accommodationAddress": "Adresse",
+    "accommodationTypes": "Types envisagés",
+    "accommodationTypeOptions": {
+      "hotel": "Hôtel",
+      "apartment": "Appartement",
+      "hostel": "Auberge de jeunesse",
+      "guesthouse": "Maison d'hôtes",
+      "resort": "Complexe hôtelier"
+    },
+    "pickOnMap": "Carte — touchez pour placer votre hébergement",
+    "pickOnMapHint": "Touchez la carte à l'endroit où vous logez, ou saisissez les coordonnées ci-dessous.",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "morning": "Matinées",
+    "morningOptions": {
+      "early": "Départs matinaux",
+      "relaxed": "Matinées tranquilles"
+    },
+    "dayLength": "Journées",
+    "dayLengthOptions": {
+      "full": "Journées bien remplies",
+      "flexible": "Programme flexible"
+    },
+    "activityBalance": "Équilibre",
+    "balanceOptions": {
+      "more_activities": "Plus d'activités",
+      "balanced": "Équilibré",
+      "more_free_time": "Plus de temps libre"
+    },
+    "walking": "Marche",
+    "walkingOptions": {
+      "low": "Peu de marche",
+      "medium": "Marcher ne me dérange pas",
+      "high": "J'adore les longues marches"
+    },
+    "back": "Retour",
+    "next": "Suivant",
+    "edit": "Modifier",
+    "fixErrors": "Veuillez corriger les informations signalées.",
+    "dates": "Dates",
+    "nights": "{n, plural, one {# nuit} other {# nuits}}",
+    "travellers": "Voyageurs",
+    "adultsCount": "{n, plural, one {# adulte} other {# adultes}}",
+    "childrenCount": "{n, plural, one {# enfant} other {# enfants}}",
+    "budget": "Budget",
+    "notSet": "Non défini",
+    "stay": "Hébergement",
+    "rhythm": "Rythme quotidien"
+  },
+  "trips": {
+    "title": "Mes voyages",
+    "welcome": "Bon retour, {name}",
+    "lead": "Tous vos voyages enregistrés, à venir et passés au même endroit.",
+    "newTrip": "Nouveau voyage",
+    "verifyEmail": "Veuillez vérifier votre e-mail pour publier dans la communauté.",
+    "annualActive": "Formule annuelle active",
+    "freeLeft": "{n, plural, =0 {Plus de voyage gratuit} one {# voyage gratuit restant} other {# voyages gratuits restants}}",
+    "credits": "{n, plural, =0 {Aucun crédit de voyage} one {# crédit de voyage} other {# crédits de voyage}}",
+    "getMore": "Obtenir plus de voyages",
+    "filterLabel": "Filtrer les voyages",
+    "filters": {
+      "all": "Tous",
+      "upcoming": "À venir",
+      "drafts": "Brouillons",
+      "completed": "Terminés"
+    },
+    "status": {
+      "draft": "Brouillon",
+      "planned": "Planifié",
+      "completed": "Terminé"
+    },
+    "mode": {
+      "fast": "Voyage express",
+      "detailed": "Voyage détaillé"
+    },
+    "days": "{n, plural, one {# jour} other {# jours}}",
+    "updated": "Mis à jour le {date}",
+    "emptyTitle": "Aucun voyage pour l'instant",
+    "emptyFiltered": "Aucun voyage dans cette vue",
+    "emptyBody": "Planifiez votre premier voyage — cela ne prend que quelques minutes.",
+    "planFirst": "Planifier un voyage",
+    "copySuffix": "copie"
+  },
+  "itinerary": {
+    "backToTrips": "Mes voyages",
+    "tripTitle": "Nom du voyage",
+    "travellers": "{n, plural, one {# voyageur} other {# voyageurs}}",
+    "sourceAi": "Programme assisté par IA",
+    "sourceRules": "Programme issu de notre guide",
+    "status": "Statut du voyage",
+    "statuses": {
+      "draft": "Brouillon",
+      "planned": "Planifié",
+      "completed": "Terminé"
+    },
+    "regenerateTrip": "Régénérer le voyage",
+    "confirmRegenerateTrip": "Régénérer tout l'itinéraire ? Les étapes verrouillées seront conservées.",
+    "regenerated": "Itinéraire régénéré",
+    "duplicate": "Dupliquer",
+    "delete": "Supprimer",
+    "confirmDelete": "Supprimer définitivement ce voyage ?",
+    "bookingLinks": "Liens de réservation et de voyage",
+    "linkCategories": {
+      "accommodation": "Hébergement",
+      "flights": "Vols",
+      "activities": "Activités et visites",
+      "luggage": "Consigne à bagages",
+      "transport": "Transports"
+    },
+    "externalNote": "Ces liens ouvrent des sites partenaires. Triplan n'affiche pas leurs prix ni leurs disponibilités.",
+    "days": "Jours",
+    "dayN": "Jour {n}",
+    "regenerateDay": "Régénérer la journée",
+    "dayRegenerated": "Journée régénérée",
+    "openInMaps": "Ouvrir dans Google Maps",
+    "dragHint": "Faites glisser les étapes pour les réorganiser, ou sélectionnez-en une pour plus d'options. Les horaires se mettent à jour automatiquement.",
+    "meals": {
+      "breakfast": "Petit-déjeuner",
+      "lunch": "Déjeuner",
+      "snack": "Pause café",
+      "dinner": "Dîner",
+      "drinks": "Verre en soirée"
+    },
+    "mealNear": "{meal} près de {place}",
+    "freeTime": "Temps libre",
+    "freeTimeNear": "Temps libre autour de {place}",
+    "showOnMap": "Voir sur la carte",
+    "perPerson": "par personne",
+    "total": "au total",
+    "estimated": "estimation",
+    "confirmed": "confirmé",
+    "costUnknown": "Prix : voir le site officiel",
+    "locked": "Verrouillée",
+    "lock": "Verrouiller",
+    "unlock": "Déverrouiller",
+    "findFood": "Trouver où manger ({meal})",
+    "details": "Détails",
+    "website": "Site web",
+    "replace": "Remplacer",
+    "replaced": "Étape remplacée",
+    "noAlternative": "Aucune alternative proche disponible",
+    "duration": "Durée",
+    "moveToDay": "Déplacer vers le jour…",
+    "moved": "Étape déplacée",
+    "moveUp": "Monter",
+    "moveDown": "Descendre",
+    "remove": "Retirer",
+    "removed": "Étape retirée",
+    "drag": "Glisser pour réorganiser",
+    "modes": {
+      "walking": "À pied",
+      "transit": "Transports en commun",
+      "driving": "En voiture",
+      "cycling": "À vélo"
+    },
+    "approx": "env.",
+    "estimateNote": "Les temps de trajet marqués « env. » sont estimés à partir de la distance. Consultez une navigation en direct une fois sur place.",
+    "addStop": "Ajouter une étape",
+    "fromGuide": "Depuis le guide",
+    "custom": "Étape personnalisée",
+    "search": "Rechercher des lieux",
+    "noCandidates": "Tous les lieux du guide figurent déjà dans votre voyage. Ajoutez plutôt une étape personnalisée.",
+    "customName": "Nom",
+    "add": "Ajouter l'étape",
+    "added": "Étape ajoutée",
+    "close": "Fermer",
+    "showMap": "Carte",
+    "showList": "Itinéraire",
+    "working": "Mise à jour de votre itinéraire…",
+    "saved": "Enregistré",
+    "actionFailed": "Un problème est survenu. Veuillez réessayer.",
+    "accommodation": "Votre hébergement",
+    "notGenerated": "Vos préférences sont enregistrées, mais l'itinéraire n'a pas encore été généré.",
+    "generateNow": "Générer l'itinéraire",
+    "generated": "Itinéraire prêt"
+  },
+  "map": {
+    "label": "Carte de l'itinéraire",
+    "note": "Les lignes relient les étapes dans l'ordre et ne sont pas des itinéraires détaillés. Utilisez « Ouvrir dans Google Maps » pour la navigation.",
+    "unavailable": "La carte n'a pas pu être chargée. Votre itinéraire reste disponible."
+  },
+  "community": {
+    "eyebrow": "Communauté",
+    "title": "Recommandations de voyageurs",
+    "lead": "Pépites, conseils et avis sincères partagés par les membres de Triplan.",
+    "opinionNotice": "Les publications de la communauté sont des opinions et expériences personnelles, pas des faits vérifiés.",
+    "opinion": "Avis",
+    "opinionHint": "Partagé par un voyageur — non vérifié par Triplan",
+    "types": {
+      "recommendation": "Recommandation",
+      "hidden_gem": "Pépite cachée",
+      "review": "Avis",
+      "restaurant": "Restaurant",
+      "tip": "Conseil de voyage"
+    },
+    "ratingLabel": "Noté {n} sur 5",
+    "helpful": "Utile",
+    "save": "Enregistrer",
+    "saved": "Enregistré",
+    "report": "Signaler",
+    "reportReason": "Motif",
+    "reasons": {
+      "spam": "Spam ou publicité",
+      "offensive": "Offensant ou haineux",
+      "misleading": "Trompeur ou faux",
+      "unsafe": "Conseil dangereux",
+      "other": "Autre"
+    },
+    "reportDetails": "Détails (facultatif)",
+    "sendReport": "Envoyer le signalement",
+    "cancel": "Annuler",
+    "status": {
+      "reportReceived": "Merci — nos modérateurs examineront cette publication.",
+      "signInRequired": "Veuillez d'abord vous connecter.",
+      "rateLimited": "Trop de signalements. Veuillez réessayer plus tard."
+    },
+    "signInToInteract": "Connectez-vous pour aimer, enregistrer ou signaler des publications.",
+    "signIn": "Se connecter",
+    "allDestinations": "Toutes les destinations",
+    "allTypes": "Tous les types",
+    "apply": "Appliquer",
+    "destination": "Destination",
+    "type": "Type",
+    "emptyTitle": "Aucune publication",
+    "emptyBody": "Soyez le premier à partager une recommandation pour cette sélection.",
+    "joinTitle": "Rejoindre la communauté",
+    "joinBody": "Créez un compte gratuit pour partager des pépites et enregistrer des conseils utiles.",
+    "join": "Créer un compte",
+    "verifyToPost": "Vérifiez votre adresse e-mail pour publier.",
+    "shareTitle": "Partager une recommandation",
+    "shareRules": "Partagez votre propre expérience. Les publications contenant beaucoup de liens peuvent être mises en attente de vérification.",
+    "chooseDestination": "Choisissez une destination",
+    "rating": "Note",
+    "postTitle": "Titre",
+    "body": "Votre recommandation",
+    "bodyHint": "Qu'est-ce qui l'a rendue spéciale ? Les détails pratiques aident les autres (20 caractères minimum).",
+    "publish": "Publier",
+    "guidelinesTitle": "Règles de la communauté",
+    "guideline1": "Ne partagez que vos propres expériences réelles.",
+    "guideline2": "Restez respectueux — ni haine, ni harcèlement, ni données personnelles.",
+    "guideline3": "Pas de publicité ni de spam d'affiliation.",
+    "guideline4": "Ne publiez que des photos que vous avez le droit de partager."
+  },
+  "reviews": {
+    "eyebrow": "Avis et opinions",
+    "title": "Ce que les voyageurs disent de Triplan",
+    "lead": "Avis de membres vérifiés de Triplan. Chaque avis est vérifié par un modérateur avant publication — nous ne publions jamais de faux avis.",
+    "average": "Note moyenne {avg}/5 sur {count, plural, one {# avis} other {# avis}}",
+    "anonymous": "Membre Triplan",
+    "ratingLabel": "Noté {n} sur 5",
+    "emptyTitle": "Aucun avis publié pour l'instant",
+    "emptyBody": "Triplan est nouveau. Les avis apparaîtront ici au fur et à mesure que les membres partageront leur expérience.",
+    "formTitle": "Écrire un avis",
+    "rating": "Note",
+    "body": "Votre avis",
+    "moderated": "Les avis sont publiés après modération.",
+    "submit": "Envoyer l'avis",
+    "verifyFirst": "Vérifiez votre e-mail pour écrire un avis.",
+    "signInToReview": "Connectez-vous pour écrire un avis.",
+    "signIn": "Se connecter"
+  },
+  "auth": {
+    "visualEyebrow": "TRIPLAN",
+    "visualTitle": "Planifiez moins. Explorez plus.",
+    "loginTitle": "Bon retour parmi nous",
+    "loginLead": "Connectez-vous pour voir et modifier vos voyages.",
+    "loginToPlan": "Connectez-vous pour créer et enregistrer votre voyage. Vos choix seront conservés.",
+    "signupTitle": "Créez votre compte",
+    "signupLead": "Inscription gratuite. Votre premier voyage est offert.",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "name": "Votre nom",
+    "confirmPassword": "Confirmer le mot de passe",
+    "newPassword": "Nouveau mot de passe",
+    "passwordHint": "Au moins 10 caractères.",
+    "show": "Afficher",
+    "hide": "Masquer",
+    "forgot": "Mot de passe oublié ?",
+    "loginCta": "Se connecter",
+    "signupCta": "Créer un compte",
+    "noAccount": "Nouveau sur Triplan ?",
+    "signupLink": "Créer un compte",
+    "haveAccount": "Vous avez déjà un compte ?",
+    "loginLink": "Se connecter",
+    "google": "Continuer avec Google",
+    "or": "ou",
+    "agree": "J'accepte les <terms>Conditions générales</terms> et j'ai lu la <privacy>Politique de confidentialité</privacy>.",
+    "forgotTitle": "Réinitialiser votre mot de passe",
+    "forgotLead": "Saisissez votre e-mail et nous vous enverrons un lien pour choisir un nouveau mot de passe.",
+    "forgotCta": "Envoyer le lien",
+    "backToLogin": "Retour à la connexion",
+    "resetTitle": "Choisissez un nouveau mot de passe",
+    "resetCta": "Enregistrer le mot de passe",
+    "resetMissing": "Ce lien est incomplet. Veuillez demander un nouveau lien.",
+    "verifiedTitle": "E-mail vérifié",
+    "verifiedBody": "Merci — votre adresse e-mail est confirmée.",
+    "verifyFailedTitle": "Lien expiré ou invalide",
+    "verifyFailedBody": "Ce lien de vérification ne peut pas être utilisé. Vous pouvez en demander un nouveau depuis votre compte.",
+    "continue": "Continuer",
+    "goToAccount": "Aller à mon compte"
+  },
+  "account": {
+    "title": "Profil et paramètres",
+    "verified": "E-mail vérifié",
+    "unverified": "E-mail non vérifié",
+    "verifyPrompt": "Veuillez vérifier votre adresse e-mail.",
+    "profile": "Profil",
+    "displayName": "Nom affiché",
+    "homeCity": "Ville de résidence",
+    "bio": "À propos de vous",
+    "save": "Enregistrer",
+    "preferences": "Préférences",
+    "language": "Langue",
+    "currency": "Devise préférée",
+    "units": "Unités",
+    "metric": "Métrique (km)",
+    "imperial": "Impérial (miles)",
+    "timeFormat": "Format de l'heure",
+    "timeAuto": "Automatique (selon la langue)",
+    "marketing": "Recevoir occasionnellement des nouveautés par e-mail",
+    "changePassword": "Changer de mot de passe",
+    "setPassword": "Définir un mot de passe",
+    "currentPassword": "Mot de passe actuel",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le nouveau mot de passe",
+    "updatePassword": "Mettre à jour le mot de passe",
+    "privacyTitle": "Vos données",
+    "privacyBody": "Téléchargez une copie de toutes les données que Triplan conserve à votre sujet, dans un format lisible par machine.",
+    "export": "Télécharger mes données",
+    "deleteTitle": "Supprimer le compte",
+    "deleteBody": "Cela supprime définitivement votre compte, vos voyages, publications et favoris, et résilie tout abonnement actif. Action irréversible.",
+    "deleteConfirm": "Saisissez {email} pour confirmer",
+    "deleteCta": "Supprimer mon compte"
+  },
+  "saved": {
+    "title": "Favoris",
+    "destinations": "Destinations",
+    "restaurants": "Restaurants",
+    "activities": "Activités",
+    "attractions": "Lieux",
+    "posts": "Publications de la communauté",
+    "emptyDestinations": "Aucune destination enregistrée.",
+    "explore": "Explorer les destinations",
+    "emptyGroup": "Rien d'enregistré ici pour l'instant.",
+    "emptyPosts": "Aucune publication enregistrée.",
+    "map": "Carte"
+  },
+  "billing": {
+    "title": "Abonnement et facturation",
+    "checkoutSuccess": "Merci ! Votre paiement est en cours de confirmation auprès de Stripe — votre formule se mettra à jour automatiquement dans quelques instants.",
+    "unavailable": "Les paiements en ligne ne sont pas encore disponibles.",
+    "currentPlan": "Formule actuelle",
+    "annual": "Annuelle",
+    "free": "Gratuite",
+    "renewsOn": "Renouvellement le {date}",
+    "endsOn": "Se termine le {date}",
+    "statusLabel": "statut : {status}",
+    "tripsCreated": "Voyages créés",
+    "freeRemaining": "{n, plural, =0 {Voyage gratuit utilisé} one {# voyage gratuit restant} other {# voyages gratuits restants}}",
+    "credits": "Crédits de voyage",
+    "buyMore": "Acheter un autre voyage",
+    "upgrade": "Passer à une formule supérieure",
+    "viewPlans": "Voir les formules",
+    "manage": "Gérer l'abonnement et les moyens de paiement",
+    "history": "Historique des paiements",
+    "date": "Date",
+    "item": "Article",
+    "amount": "Montant",
+    "status": "Statut",
+    "items": {
+      "free": "Formule gratuite",
+      "trip_pack": "Voyage supplémentaire",
+      "annual": "Formule annuelle"
+    },
+    "paymentStatus": {
+      "paid": "Payé",
+      "failed": "Échoué",
+      "refunded": "Remboursé"
+    },
+    "noPayments": "Aucun paiement pour l'instant.",
+    "cardNote": "Les paiements sont traités en toute sécurité par Stripe. Triplan ne conserve jamais vos données de carte."
+  },
+  "pricing": {
+    "eyebrow": "Tarifs",
+    "title": "Des tarifs simples et transparents",
+    "lead": "Commencez gratuitement. Ne payez que lorsque vous en avez besoin — sans frais cachés ni prélèvements surprises.",
+    "limitReached": "Vous avez utilisé votre voyage gratuit. Choisissez une option ci-dessous pour créer votre prochain voyage — vos préférences sont conservées.",
+    "cancelled": "Le paiement a été annulé. Aucun montant n'a été prélevé.",
+    "paymentsUnavailable": "Les paiements en ligne ne sont pas encore activés. Vous pouvez toujours utiliser votre voyage gratuit.",
+    "bestValue": "Meilleure offre",
+    "freePrice": "Gratuit",
+    "perYear": "/ an",
+    "perTrip": "/ voyage",
+    "plans": {
+      "free": {
+        "name": "Gratuite",
+        "desc": "Tout le nécessaire pour votre premier voyage.",
+        "f1": "1 voyage planifié",
+        "f2": "Itinéraire quotidien avec carte",
+        "f3": "Modifier, verrouiller et régénérer les étapes",
+        "f4": "Enregistré dans votre compte"
+      },
+      "trip_pack": {
+        "name": "Voyage supplémentaire",
+        "desc": "Payez une fois pour un voyage complet de plus.",
+        "f1": "1 voyage supplémentaire",
+        "f2": "Toutes les fonctionnalités de planification",
+        "f3": "Le crédit n'expire jamais",
+        "f4": "Sans abonnement"
+      },
+      "annual": {
+        "name": "Annuelle",
+        "desc": "Pour les voyageurs fréquents qui planifient souvent.",
+        "f1": "Voyages illimités pendant 12 mois (usage raisonnable)",
+        "f2": "Toutes les fonctionnalités de planification",
+        "f3": "Résiliable à tout moment depuis votre compte",
+        "f4": "Renouvellement annuel sauf résiliation"
+      }
+    },
+    "startPlanning": "Commencer à planifier",
+    "createAccount": "Créer un compte gratuit",
+    "manage": "Gérer l'abonnement",
+    "subscribe": "S'abonner — {price}",
+    "buy": "Acheter — {price}",
+    "transparencyTitle": "Notre engagement",
+    "transparency1": "Aucun prélèvement sans confirmation sur la page de paiement sécurisée de Stripe.",
+    "transparency2": "L'accès payant ne démarre qu'après confirmation du paiement sur nos serveurs.",
+    "transparency3": "Résiliez la formule annuelle à tout moment — l'accès continue jusqu'à la fin de l'année payée.",
+    "transparency4": "Les prix incluent les taxes applicables, sauf mention contraire lors du paiement.",
+    "transparency5": "Vos voyages enregistrés restent disponibles même si un abonnement prend fin.",
+    "policyLink": "Lire la politique d'abonnement"
+  },
+  "about": {
+    "eyebrow": "À propos de Triplan",
+    "title": "Une façon plus sereine et plus intelligente de voyager",
+    "lead": "Triplan transforme le travail éparpillé de la préparation d'un voyage en un plan clair, élégant et fiable.",
+    "mission": {
+      "title": "Mission",
+      "body": "Aider chaque voyageur à organiser tout son voyage — vols, hébergements, repas, transports et programmes quotidiens — en un seul endroit."
+    },
+    "purpose": {
+      "title": "Raison d'être",
+      "body": "Rendre aux voyageurs les heures perdues dans les onglets et tableurs, pour qu'ils arrivent préparés et passent leur séjour à explorer."
+    },
+    "vision": {
+      "title": "Vision",
+      "body": "Un compagnon de voyage mondial de confiance, dans toutes les langues, pour tous les voyageurs et toutes les destinations."
+    },
+    "principlesTitle": "Nos valeurs",
+    "principle1": {
+      "title": "Honnêteté",
+      "body": "Nous signalons les estimations, n'inventons jamais de prix ni d'avis, et indiquons l'origine des informations."
+    },
+    "principle2": {
+      "title": "Sens pratique",
+      "body": "Les itinéraires respectent la géographie, les heures de repas et le repos — des programmes réellement faisables."
+    },
+    "principle3": {
+      "title": "Inclusion",
+      "body": "Huit langues dont l'arabe entièrement de droite à gauche, un design accessible et le respect des besoins alimentaires."
+    },
+    "principle4": {
+      "title": "Confidentialité",
+      "body": "Vos voyages vous appartiennent. Exportez ou supprimez vos données à tout moment."
+    },
+    "principle5": {
+      "title": "Ouverture",
+      "body": "Nous vous orientons vers les meilleurs prestataires plutôt que de les cacher, pour réserver en toute confiance."
+    },
+    "nameTitle": "Pourquoi « Triplan » ?",
+    "nameBody": "Trip + Plan : voyage + plan. Un seul mot pour tout le voyage — de la première idée à la dernière soirée.",
+    "cta": "Planifier un voyage",
+    "contact": "Nous contacter"
+  },
+  "faq": {
+    "eyebrow": "Centre d'aide",
+    "title": "Questions fréquentes",
+    "lead": "Des réponses rapides sur la planification, les comptes, les paiements, les langues et la confidentialité.",
+    "groups": {
+      "planning": "Planifier un voyage",
+      "accounts": "Comptes",
+      "savedTrips": "Voyages enregistrés",
+      "payments": "Paiements",
+      "languages": "Langues",
+      "maps": "Cartes",
+      "bookings": "Réservations externes",
+      "subscriptions": "Abonnements",
+      "privacy": "Confidentialité"
+    },
+    "planning": {
+      "q1": "Quelle est la différence entre Voyage express et Voyage détaillé ?",
+      "a1": "Le Voyage express ne pose que l'essentiel et crée un premier itinéraire en quelques instants. Le Voyage détaillé permet de définir budgets, hébergement, besoins alimentaires, rythme et préférences de marche en sept courtes étapes. Les deux sont modifiables ensuite.",
+      "q2": "Comment Triplan construit-il un itinéraire ?",
+      "a2": "Triplan regroupe les lieux proches sur la même journée, les ordonne pour limiter les trajets et ajoute petit-déjeuner, déjeuner, pause café et dîner près de vos étapes. Si l'IA est activée, elle rédige le programme uniquement à partir des lieux de notre base.",
+      "q3": "Puis-je modifier le programme ?",
+      "a3": "Oui. Faites glisser les étapes, retirez-en ou ajoutez-en, remplacez une visite, verrouillez ce que vous voulez garder et régénérez une journée ou tout le voyage. Les étapes verrouillées ne sont jamais modifiées sans votre accord."
+    },
+    "accounts": {
+      "q1": "Pourquoi faut-il un compte pour planifier ?",
+      "a1": "Vos voyages sont enregistrés dans votre compte afin d'être accessibles sur tous vos appareils. Tout ce que vous avez saisi avant de vous connecter est conservé.",
+      "q2": "J'ai oublié mon mot de passe. Que faire ?",
+      "a2": "Utilisez « Mot de passe oublié ? » sur la page de connexion : nous vous enverrons un lien sécurisé valable une heure."
+    },
+    "savedTrips": {
+      "q1": "Où sont stockés mes voyages ?",
+      "a1": "Dans notre base de données sécurisée, liés à votre compte — pas seulement dans votre navigateur. Vous seul pouvez voir vos voyages.",
+      "q2": "Puis-je dupliquer ou supprimer un voyage ?",
+      "a2": "Oui, depuis la page du voyage. La duplication permet d'essayer une variante sans perdre l'original."
+    },
+    "payments": {
+      "q1": "Triplan est-il gratuit ?",
+      "a1": "Chaque compte inclut un voyage gratuit. Vous pouvez acheter un voyage supplémentaire ou choisir la formule annuelle pour des voyages illimités.",
+      "q2": "Comment les paiements sont-ils traités ?",
+      "a2": "Par Stripe, un prestataire de paiement de premier plan. Triplan ne voit ni ne conserve jamais vos données de carte complètes.",
+      "q3": "Serai-je prélevé automatiquement ?",
+      "a3": "Seule la formule annuelle se renouvelle automatiquement, et vous pouvez la résilier à tout moment. Les voyages à l'unité sont des paiements ponctuels."
+    },
+    "languages": {
+      "q1": "Quelles langues sont disponibles ?",
+      "a1": "Anglais, arabe, français, espagnol, italien, chinois simplifié, russe et portugais. L'arabe utilise une mise en page entièrement de droite à gauche.",
+      "q2": "Changer de langue me fera-t-il perdre mon voyage ?",
+      "a2": "Non. Vos voyages sont enregistrés dans votre compte et les formulaires de planification conservent vos saisies lorsque vous changez de langue."
+    },
+    "maps": {
+      "q1": "Les temps de trajet sont-ils précis ?",
+      "a1": "Les temps sont marqués « env. » lorsqu'ils sont estimés à partir de la distance. Si un service d'itinéraires est configuré, les durées réelles sont affichées.",
+      "q2": "Puis-je naviguer avec Triplan ?",
+      "a2": "Triplan affiche vos étapes sur une carte interactive et passe le relais à Google Maps pour la navigation détaillée."
+    },
+    "bookings": {
+      "q1": "Puis-je réserver hôtels et vols sur Triplan ?",
+      "a1": "Triplan vous oriente vers des prestataires fiables comme Booking.com, Airbnb, Google Flights et Skyscanner. Réservations et paiements se font sur leurs sites.",
+      "q2": "Pourquoi n'affichez-vous pas les prix ni les disponibilités ?",
+      "a2": "Nous n'affichons que des informations vérifiables. Les prix et disponibilités en temps réel sont indiqués par chaque prestataire."
+    },
+    "subscriptions": {
+      "q1": "Que comprend la formule annuelle ?",
+      "a1": "Des voyages illimités pendant 12 mois (usage raisonnable) avec toutes les fonctionnalités de planification.",
+      "q2": "Comment résilier ?",
+      "a2": "Allez dans Profil → Abonnement → Gérer l'abonnement. Votre accès continue jusqu'à la fin de la période payée."
+    },
+    "privacy": {
+      "q1": "Quelles données conservez-vous ?",
+      "a1": "Les informations de votre compte, les voyages que vous créez et ce que vous publiez. Consultez la politique de confidentialité pour plus de détails.",
+      "q2": "Puis-je supprimer mes données ?",
+      "a2": "Oui. Vous pouvez télécharger vos données ou supprimer définitivement votre compte depuis votre profil à tout moment."
+    },
+    "more": "Vous avez encore une question ?",
+    "contactUs": "Contactez-nous"
+  },
+  "contact": {
+    "eyebrow": "Contact",
+    "title": "Nous contacter",
+    "lead": "Questions, retours ou idées de partenariat — nous serions ravis de vous lire.",
+    "name": "Nom",
+    "email": "E-mail",
+    "topic": "Sujet",
+    "topics": {
+      "general": "Question générale",
+      "account": "Compte et connexion",
+      "billing": "Paiements et abonnement",
+      "partnership": "Partenariats",
+      "press": "Presse",
+      "privacy": "Confidentialité et données"
+    },
+    "message": "Message",
+    "privacy": "Nous utilisons vos coordonnées uniquement pour vous répondre.",
+    "send": "Envoyer le message",
+    "beforeTitle": "Avant d'écrire",
+    "beforeBody": "Beaucoup de réponses se trouvent déjà dans notre centre d'aide.",
+    "faqLink": "Lire la FAQ",
+    "responseNote": "Nous répondons généralement sous deux jours ouvrés."
+  },
+  "legal": {
+    "titles": {
+      "privacy": "Politique de confidentialité",
+      "terms": "Conditions générales",
+      "cookies": "Politique de cookies",
+      "subscriptions": "Politique d'abonnement et de paiement"
+    },
+    "description": "Informations légales de Triplan.",
+    "updated": "Dernière mise à jour : {date}",
+    "englishNotice": "Ce texte juridique est actuellement fourni en anglais. Les versions traduites seront publiées après relecture juridique ; la version anglaise prévaut."
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "body": "Cette page n'existe pas ou a été déplacée. Reprenons le bon chemin.",
+    "home": "Retour à l'accueil",
+    "explore": "Explorer les destinations"
+  },
+  "errorPage": {
+    "title": "Un problème est survenu",
+    "body": "Impossible de charger cette page. Veuillez réessayer dans un instant.",
+    "retry": "Réessayer"
+  },
+  "errors": {
+    "required": "Ce champ est obligatoire.",
+    "email": "Saisissez une adresse e-mail valide.",
+    "emailTaken": "Un compte existe déjà avec cet e-mail. Essayez de vous connecter.",
+    "passwordShort": "Utilisez au moins 10 caractères.",
+    "passwordMismatch": "Les mots de passe ne correspondent pas.",
+    "wrongPassword": "Votre mot de passe actuel est incorrect.",
+    "tooLong": "C'est trop long.",
+    "invalid": "Veuillez vérifier cette valeur.",
+    "dateOrder": "Le départ doit être le jour de l'arrivée ou après.",
+    "tripTooLong": "Un voyage peut durer jusqu'à 21 jours.",
+    "terms": "Veuillez accepter les conditions pour continuer.",
+    "unsupportedDestination": "Veuillez choisir une destination dans la liste.",
+    "confirmEmail": "Saisissez exactement votre adresse e-mail pour confirmer."
+  },
+  "status": {
+    "genericError": "Un problème est survenu. Veuillez réessayer.",
+    "rateLimited": "Trop de tentatives. Patientez quelques minutes puis réessayez.",
+    "invalidCredentials": "E-mail ou mot de passe incorrect.",
+    "resetSent": "Si un compte existe pour cet e-mail, un lien de réinitialisation est en route.",
+    "tokenInvalid": "Ce lien a expiré ou a déjà été utilisé. Veuillez en demander un nouveau.",
+    "signInRequired": "Veuillez d'abord vous connecter.",
+    "alreadyVerified": "Votre e-mail est déjà vérifié.",
+    "verificationSent": "E-mail de vérification envoyé.",
+    "verifyEmailFirst": "Veuillez d'abord vérifier votre adresse e-mail.",
+    "postPublished": "Merci ! Votre publication est en ligne.",
+    "postPending": "Merci ! Votre publication apparaîtra après une rapide vérification.",
+    "reviewPending": "Merci ! Votre avis sera publié après modération.",
+    "contactSent": "Merci — votre message a été envoyé. Nous vous répondrons par e-mail.",
+    "saved": "Enregistré.",
+    "passwordChanged": "Votre mot de passe a été mis à jour.",
+    "oauthFailed": "La connexion avec Google n'a pas abouti. Veuillez réessayer."
+  },
+  "email": {
+    "footer": "Vous recevez cet e-mail en raison d'une activité sur votre compte Triplan.",
+    "verify": {
+      "subject": "Confirmez votre e-mail pour Triplan",
+      "heading": "Confirmez votre e-mail",
+      "body": "Bienvenue sur Triplan ! Veuillez confirmer votre adresse e-mail pour finaliser votre compte. Ce lien est valable 48 heures.",
+      "cta": "Confirmer l'e-mail"
+    },
+    "reset": {
+      "subject": "Réinitialisez votre mot de passe Triplan",
+      "heading": "Réinitialisez votre mot de passe",
+      "body": "Nous avons reçu une demande de réinitialisation de votre mot de passe. Ce lien est valable une heure. Si vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail.",
+      "cta": "Choisir un nouveau mot de passe"
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "name": "triplan",
+  "version": "0.1.0",
+  "private": true,
+  "description": "TRIPLAN \u2014 Plan less. Explore more. International travel-planning platform.",
+  "engines": {
+    "node": ">=20.11"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "vercel-build": "npm run db:setup && next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "db:seed": "tsx scripts/seed.ts",
+    "db:setup": "npm run db:migrate && npm run db:seed",
+    "make-admin": "tsx scripts/make-admin.ts",
+    "i18n:check": "tsx scripts/check-i18n.ts",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.60.0",
+    "@electric-sql/pglite": "^0.3.0",
+    "bcryptjs": "^3.0.2",
+    "drizzle-orm": "^0.44.0",
+    "leaflet": "^1.9.4",
+    "next": "^15.5.0",
+    "next-intl": "^4.3.0",
+    "postgres": "^3.4.5",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "server-only": "^0.0.1",
+    "stripe": "^18.4.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.54.0",
+    "@types/leaflet": "^1.9.20",
+    "@types/node": "^22.15.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "drizzle-kit": "^0.31.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.2.0"
+  }
+}

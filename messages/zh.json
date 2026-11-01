@@ -1,0 +1,1224 @@
+{
+  "meta": {
+    "title": "TRIPLAN — 少一点规划，多一点探索。",
+    "description": "一站式整理整趟旅程：每日行程、互动地图、餐饮、交通、行李寄存，以及覆盖全球目的地的可信预订链接。"
+  },
+  "common": {
+    "backToTop": "返回顶部",
+    "resendVerification": "重新发送验证邮件",
+    "save": "保存",
+    "saved": "已保存",
+    "affiliateDisclosure": "部分合作伙伴链接可能是联盟推广链接：如果您通过这些链接预订，TRIPLAN 可能会获得佣金，您无需支付任何额外费用。这绝不会影响我们展示的选项及其排序。"
+  },
+  "nav": {
+    "home": "首页",
+    "plan": "规划旅行",
+    "planShort": "规划",
+    "explore": "探索",
+    "destinations": "目的地",
+    "community": "社区",
+    "about": "关于我们",
+    "login": "登录",
+    "signup": "注册",
+    "myTrips": "我的旅行",
+    "account": "个人资料",
+    "billing": "订阅",
+    "saved": "收藏",
+    "admin": "管理后台",
+    "logout": "退出登录",
+    "menu": "菜单",
+    "close": "关闭",
+    "accountMenu": "账户菜单",
+    "mainNav": "主导航",
+    "mobileNav": "快捷导航",
+    "language": "语言",
+    "skip": "跳至主要内容"
+  },
+  "footer": {
+    "about": "Triplan 将航班、住宿、餐饮、交通和每日计划整合在一个清晰、从容的地方——适用于全球任何目的地。",
+    "product": "产品",
+    "company": "Triplan",
+    "legal": "法律信息",
+    "pricing": "价格",
+    "aboutLink": "关于 Triplan",
+    "reviews": "评价与反馈",
+    "faq": "常见问题",
+    "contact": "联系我们",
+    "privacy": "隐私政策",
+    "terms": "服务条款",
+    "cookies": "Cookie 政策",
+    "subscriptions": "订阅条款",
+    "cookieSettings": "Cookie 设置",
+    "rights": "保留所有权利。"
+  },
+  "cookie": {
+    "title": "您的隐私",
+    "body": "我们只使用保持登录和记住语言所必需的 Cookie。可选的分析功能在您允许前保持关闭。",
+    "learnMore": "Cookie 政策",
+    "necessary": "必要 Cookie",
+    "necessaryHint": "登录、语言以及本项选择。始终开启。",
+    "analytics": "分析",
+    "analyticsHint": "匿名使用统计，帮助我们改进 Triplan。",
+    "acceptAll": "全部接受",
+    "necessaryOnly": "仅必要",
+    "customize": "自定义",
+    "save": "保存选择"
+  },
+  "hero": {
+    "carouselLabel": "全球目的地",
+    "slideOf": "第 {n} 张，共 {total} 张",
+    "photoBy": "摄影：",
+    "chooseSlide": "选择目的地",
+    "goTo": "显示：{place}",
+    "previous": "上一个目的地",
+    "next": "下一个目的地",
+    "pause": "暂停轮播",
+    "play": "继续轮播"
+  },
+  "home": {
+    "hero": {
+      "tagline": "少一点规划，多一点探索。",
+      "title": "您的下一段旅程从这里开始。",
+      "lead": "从航班、住宿到餐厅、活动和每日行程——在一个地方安排好整趟旅行。",
+      "start": "开始规划",
+      "explore": "探索目的地"
+    },
+    "quick": {
+      "label": "Triplan 涵盖的内容",
+      "flights": "航班",
+      "hotels": "酒店",
+      "restaurants": "餐厅",
+      "activities": "活动",
+      "luggage": "行李寄存",
+      "transport": "交通"
+    },
+    "how": {
+      "eyebrow": "Triplan 如何运作",
+      "title": "三步，从想法到行程",
+      "lead": "告诉我们要点，Triplan 负责整理，而每个细节仍由您掌控。",
+      "tell": {
+        "title": "介绍您的旅行",
+        "body": "去哪里、什么时候、和谁一起、预算多少、喜欢什么——两分钟内即可完成。"
+      },
+      "organize": {
+        "title": "交给 Triplan 安排",
+        "body": "获得一份切实可行的每日计划，包含餐饮、休息以及相邻地点之间的交通时间。"
+      },
+      "explore": {
+        "title": "带着计划和地图出发",
+        "body": "按地图上编号的地点游览，随时调整，出行时一键切换到导航。"
+      }
+    },
+    "everything": {
+      "eyebrow": "旅行所需，一应俱全",
+      "title": "旅程的每个环节，都在一个地方",
+      "lead": "Triplan 把旅行者通常分散在十几个标签页里的信息整合到一起。",
+      "flights": {
+        "title": "航班",
+        "body": "添加航班时间，在可信平台上搜索机票，日期已为您填好。"
+      },
+      "accommodation": {
+        "title": "住宿",
+        "body": "每天从您的住处出发，或比较酒店、公寓和青年旅舍。"
+      },
+      "restaurants": {
+        "title": "餐厅",
+        "body": "餐饮融入每一天，兼顾清真、素食、纯素等饮食偏好。"
+      },
+      "transport": {
+        "title": "交通",
+        "body": "步行、公共交通、驾车或骑行于各地点之间，时间估算清晰明了。"
+      },
+      "activities": {
+        "title": "活动",
+        "body": "来自官方网站和可信合作伙伴的博物馆、导览和体验。"
+      },
+      "luggage": {
+        "title": "行李寄存",
+        "body": "入住前或退房后，可在车站、机场或景点附近寄存行李。"
+      },
+      "maps": {
+        "title": "互动地图",
+        "body": "编号标记与行程同步——点击某个地点即可在地图上看到它。"
+      },
+      "itineraries": {
+        "title": "每日行程",
+        "body": "从早到晚的安排，包含休息和自由时间——绝不是不可能完成的日程。"
+      }
+    },
+    "discover": {
+      "eyebrow": "目的地",
+      "title": "下一站去哪里？",
+      "lead": "覆盖 {countries} 个国家的 {count} 个目的地——从城市周末游到远方海岛。",
+      "all": "查看全部目的地"
+    },
+    "modes": {
+      "eyebrow": "按您的方式规划",
+      "title": "赶时间就快速规划，重细节就详细规划。",
+      "lead": "两种方式生成的行程之后都可以修改。",
+      "fast": {
+        "title": "快速旅行",
+        "body": "回答几个关键问题，立即获得实用的行程。",
+        "point1": "目的地、日期、出行人数和预算",
+        "point2": "您的兴趣、饮食与交通偏好",
+        "point3": "之后可随时修改",
+        "cta": "规划快速旅行"
+      },
+      "detailed": {
+        "title": "详细旅行",
+        "body": "全面掌控预算、住宿、餐饮、节奏和步行强度。",
+        "point1": "航班时间、同行人员与预算分配",
+        "point2": "每天从已预订的住处出发",
+        "point3": "生成前可检查所有偏好",
+        "cta": "规划详细旅行"
+      }
+    },
+    "why": {
+      "eyebrow": "为什么选择 Triplan？",
+      "title": "少花时间规划，多花时间体验。",
+      "time": {
+        "title": "节省数小时",
+        "body": "无需再拼凑地图、笔记和预订标签页。"
+      },
+      "organized": {
+        "title": "按区域安排",
+        "body": "相近的地点安排在同一天，减少路上奔波的时间。"
+      },
+      "honest": {
+        "title": "信息真实",
+        "body": "估算一律标注为估算。我们从不编造价格、评价或余量。"
+      },
+      "global": {
+        "title": "面向全球",
+        "body": "八种语言、阿拉伯语从右到左显示，目的地遍及各大洲。"
+      },
+      "statDestinations": "个目的地",
+      "statCountries": "个国家",
+      "statRegions": "个世界区域",
+      "statLanguages": "种语言"
+    },
+    "community": {
+      "eyebrow": "社区推荐",
+      "title": "来自其他旅行者的私藏好去处",
+      "lead": "Triplan 会员的真实经历——并明确标注为个人观点。",
+      "all": "前往社区",
+      "emptyTitle": "成为第一位分享者",
+      "emptyBody": "社区刚刚起步。分享一个私藏好去处、一条实用建议或您最爱的地方吧。",
+      "share": "分享推荐"
+    },
+    "cta": {
+      "eyebrow": "准备好了就出发",
+      "title": "您的下一次冒险，值得一份更好的计划。",
+      "body": "第一次旅行免费，无需绑定银行卡。",
+      "button": "开始规划"
+    }
+  },
+  "explore": {
+    "eyebrow": "探索",
+    "title": "探索目的地",
+    "lead": "按地区、旅行风格、预算、气候和最佳出行月份搜索和筛选目的地。",
+    "filters": "筛选",
+    "search": "搜索目的地",
+    "searchPlaceholder": "城市或国家",
+    "any": "不限",
+    "continent": "地区",
+    "country": "国家",
+    "style": "旅行风格",
+    "experience": "体验类型",
+    "budget": "预算",
+    "climate": "气候",
+    "month": "适合出行的月份",
+    "reset": "重置筛选",
+    "sort": "排序",
+    "sortPopular": "最受欢迎",
+    "sortName": "按名称（A–Z）",
+    "sortShort": "行程最短",
+    "results": "{count, plural, =0 {没有目的地} other {# 个目的地}}",
+    "noResults": "没有符合这些筛选条件的目的地",
+    "noResultsHint": "试试移除某个筛选条件或搜索其他地方。",
+    "continents": {
+      "europe": "欧洲",
+      "mena": "中东和北非",
+      "asia": "亚洲",
+      "north_america": "北美洲",
+      "south_america": "南美洲",
+      "africa": "非洲",
+      "oceania": "大洋洲"
+    },
+    "styles": {
+      "city_break": "城市短途",
+      "culture": "文化",
+      "beach": "海滩",
+      "nature": "自然",
+      "food": "美食",
+      "romantic": "浪漫",
+      "family": "家庭",
+      "adventure": "探险",
+      "luxury": "奢华",
+      "budget": "经济"
+    },
+    "experiences": {
+      "museums": "博物馆",
+      "architecture": "建筑",
+      "history": "历史",
+      "nightlife": "夜生活",
+      "shopping": "购物",
+      "beaches": "海滩",
+      "hiking": "徒步",
+      "food": "美食",
+      "markets": "市集",
+      "photography": "摄影",
+      "relaxation": "放松",
+      "local": "当地生活",
+      "culture": "文化",
+      "nature": "自然",
+      "family": "家庭",
+      "adventure": "探险",
+      "hidden_gems": "私藏好去处",
+      "romantic": "浪漫"
+    },
+    "climates": {
+      "temperate": "温带",
+      "mediterranean": "地中海式",
+      "tropical": "热带",
+      "desert": "沙漠",
+      "continental": "大陆性",
+      "subtropical": "亚热带",
+      "oceanic": "海洋性"
+    }
+  },
+  "destinations": {
+    "eyebrow": "目的地",
+    "title": "全部目的地",
+    "lead": "Triplan 支持的所有目的地，按地区分类。我们会定期添加新的地方。",
+    "jump": "跳转到地区"
+  },
+  "destination": {
+    "home": "首页",
+    "explore": "探索",
+    "metaTitle": "{city}，{country}——旅行指南与行程",
+    "daysExact": "{n} 天",
+    "daysRange": "{min}–{max} 天",
+    "budget": {
+      "budget": "经济",
+      "mid": "中等",
+      "premium": "高端"
+    },
+    "planCta": "规划{city}之旅",
+    "photoBy": "摄影：",
+    "sections": "本页内容",
+    "nav": {
+      "overview": "概览",
+      "attractions": "景点",
+      "neighborhoods": "街区",
+      "food": "美食",
+      "stay": "住宿与航班",
+      "transport": "交通出行",
+      "luggage": "行李寄存",
+      "activities": "活动",
+      "community": "社区"
+    },
+    "sampleNotice": "这是尚未经编辑审核的示例内容。出行前请务必通过官方渠道确认开放时间和详细信息。",
+    "verified": "已核实",
+    "sample": "未核实",
+    "englishOnly": "此目的地的详细指南目前仅提供英文版本。",
+    "bestTime": "最佳时间",
+    "duration": "建议时长",
+    "budgetLevel": "预算水平",
+    "climate": "气候",
+    "budgetNote": "预算水平仅为大致参考。Triplan 只在有可靠数据时显示价格，并始终标注估算。",
+    "openMap": "在地图中打开",
+    "noAttractions": "此目的地的精选景点即将上线。您仍可规划行程并添加自己的地点。",
+    "noNeighborhoods": "街区指南即将上线。",
+    "noRestaurants": "未经核实的餐厅我们不会列出。请使用下方搜索查找附近的选择。",
+    "searchFood": "搜索附近：",
+    "foodSearch": {
+      "local": "当地美食",
+      "halal": "清真",
+      "vegetarian": "素食",
+      "vegan": "纯素",
+      "seafood": "海鲜",
+      "fine_dining": "高级餐厅",
+      "budget": "平价"
+    },
+    "diet": {
+      "halal": "清真（已核实）",
+      "vegetarian": "提供素食",
+      "vegan": "提供纯素",
+      "gluten_free": "提供无麸质餐",
+      "kosher": "符合犹太洁食（已核实）"
+    },
+    "website": "官网",
+    "dietNote": "饮食标签仅在核实后显示。清真状态、过敏原和配料请务必直接向餐厅确认。",
+    "stayIntro": "在可信的预订网站上比较住宿。Triplan 不显示第三方的价格或余量。",
+    "flights": "航班",
+    "externalNote": "外部链接将打开合作伙伴网站。价格和余量以对方网站为准，不在 Triplan 显示。",
+    "transportIntro": "公共交通、接送服务和租车：",
+    "moreInfo": "了解更多",
+    "luggageIntro": "入住前或退房后，可在车站、机场和景点附近寄存行李。",
+    "book": "预订",
+    "availabilityNote": "余量和价格由各服务商提供。Triplan 绝不显示无法核实的余量。",
+    "activitiesIntro": "来自可信合作伙伴和官方网站的导览、门票和体验。",
+    "communityNote": "Triplan 会员的个人观点，而非经核实的事实。",
+    "noPosts": "还没有关于{city}的帖子。",
+    "sharePost": "分享推荐",
+    "asideTitle": "用 Triplan 规划{city}之旅",
+    "asideBody": "几分钟内获得包含餐饮、地图和交通时间的每日计划。",
+    "fastCta": "快速旅行",
+    "detailedCta": "详细旅行",
+    "related": "您可能还喜欢"
+  },
+  "planIntro": {
+    "eyebrow": "规划",
+    "title": "按您的方式规划旅行",
+    "lead": "选择快速规划或全面掌控。无论哪种方式，之后都能修改每一个地点。",
+    "whereTo": "去哪里？",
+    "anyDestination": "稍后决定",
+    "from": "从",
+    "to": "到",
+    "start": "开始规划",
+    "accountNote": "保存旅行需要登录或创建免费账户，您的选择会被保留。",
+    "limitReached": "您已用完免费旅行次数。",
+    "seePricing": "查看方案",
+    "fastTitle": "快速旅行",
+    "fastBody": "回答几个关键问题，获得实用的行程。",
+    "fastPoint1": "大约两分钟",
+    "fastPoint2": "包含餐饮、休息和交通",
+    "fastPoint3": "之后可随时修改",
+    "fastCta": "开始快速旅行",
+    "detailedTitle": "详细旅行",
+    "detailedBody": "设定预算、住宿、饮食需求、每日节奏和步行强度。",
+    "detailedPoint1": "七个引导步骤",
+    "detailedPoint2": "以您的住处为起点",
+    "detailedPoint3": "生成前检查所有内容",
+    "detailedCta": "开始详细旅行",
+    "servicesEyebrow": "服务",
+    "servicesTitle": "Triplan 如何在每个环节提供帮助",
+    "servicesLead": "以下是 Triplan 直接处理的部分，以及何时将您引导至可信服务。",
+    "services": {
+      "flights": {
+        "title": "航班",
+        "body": "添加抵达和离开时间，让首末两天围绕航班安排。搜索机票时日期已自动填好。",
+        "how": "链接至 Google Flights、Skyscanner、Kiwi.com"
+      },
+      "hotels": {
+        "title": "住宿",
+        "body": "已经订好？住处将成为每天的起点。还在找？在可信网站上比较。",
+        "how": "链接至 Booking.com、Airbnb、Expedia 等"
+      },
+      "restaurants": {
+        "title": "餐厅",
+        "body": "每天在行程地点附近安排早餐、午餐、咖啡小憩和晚餐，并照顾您的偏好。",
+        "how": "已核实的地点 + 实时地图搜索"
+      },
+      "activities": {
+        "title": "活动",
+        "body": "按区域分组的博物馆、景点和体验，并附有门票和导览链接。",
+        "how": "链接至 GetYourGuide、Viator、Tiqets"
+      },
+      "luggage": {
+        "title": "行李寄存",
+        "body": "早到或晚走？在车站、机场或景点附近找到行李寄存处。",
+        "how": "链接至 Bounce、Radical Storage、LuggageHero"
+      },
+      "transport": {
+        "title": "交通",
+        "body": "各地点之间的时间和交通方式；若非来自路线服务，则标注为估算。",
+        "how": "估算 + Google 地图导航"
+      }
+    }
+  },
+  "planner": {
+    "fastEyebrow": "快速旅行",
+    "fastTitle": "规划快速旅行",
+    "fastLead": "只填要点。行程生成后可以再细化其他内容。",
+    "detailedEyebrow": "详细旅行",
+    "detailedTitle": "规划详细旅行",
+    "detailedLead": "七个简短步骤，全面掌控您的旅程。",
+    "defaultTitle": "{city}之旅",
+    "destination": "目的地",
+    "chooseDestination": "选择目的地",
+    "departureCity": "出发城市",
+    "departureHint": "您从哪里出发（可选）",
+    "arrivalDate": "抵达日期",
+    "departureDate": "离开日期",
+    "arrivalTime": "抵达时间",
+    "returnTime": "离开时间",
+    "adults": "成人",
+    "children": "儿童",
+    "increase": "增加{label}",
+    "decrease": "减少{label}",
+    "budgetTotal": "总预算",
+    "budgetPerPerson": "人均预算",
+    "currency": "货币",
+    "budgetCategory": "预算类别",
+    "budgetCategories": {
+      "budget": "经济",
+      "mid": "中等",
+      "premium": "高端",
+      "luxury": "奢华"
+    },
+    "pace": "旅行节奏",
+    "paces": {
+      "relaxed": "悠闲",
+      "balanced": "适中",
+      "packed": "紧凑"
+    },
+    "paceHints": {
+      "relaxed": "每天 2 个主要地点",
+      "balanced": "每天 3 个主要地点",
+      "packed": "每天 4 个及以上"
+    },
+    "interests": "主要兴趣",
+    "interestsQuestion": "您喜欢什么？可多选。",
+    "interestOptions": {
+      "culture": "文化",
+      "architecture": "建筑",
+      "history": "历史",
+      "museums": "博物馆",
+      "nature": "自然",
+      "beaches": "海滩",
+      "shopping": "购物",
+      "food": "美食",
+      "nightlife": "夜生活",
+      "photography": "摄影",
+      "family": "亲子活动",
+      "adventure": "探险",
+      "local": "当地生活",
+      "hidden_gems": "私藏好去处",
+      "relaxation": "放松"
+    },
+    "transport": "偏好的交通方式",
+    "transportOptions": {
+      "walking": "以步行为主",
+      "public": "公共交通",
+      "driving": "驾车 / 出租车",
+      "cycling": "骑行",
+      "mixed": "多种结合"
+    },
+    "food": "饮食偏好",
+    "foodQuestion": "有饮食偏好吗？请选择所有适用项。",
+    "foodOptions": {
+      "halal": "清真",
+      "seafood": "海鲜",
+      "vegetarian": "素食",
+      "vegan": "纯素",
+      "fast_food": "快餐",
+      "local": "当地美食",
+      "fine_dining": "高级餐厅",
+      "budget": "平价",
+      "international": "国际美食"
+    },
+    "dietaryNotes": "过敏或饮食限制",
+    "dietaryHint": "只需填写规划时需要考虑的内容，可随时修改。",
+    "halalNote": "Triplan 仅在核实后显示清真及其他饮食标签。请务必向餐厅确认。",
+    "optional": "可选",
+    "limitedData": "{city}的精选地点仍在完善中。您的计划会包含餐饮和自由时间——可以添加自己的地点。",
+    "aiNote": "行程由 AI 基于我们数据库中的地点辅助生成。出行前请务必核实细节。",
+    "rulesNote": "行程基于我们指南中的地点生成，并按区域分组以减少交通时间。",
+    "editLater": "之后可随时修改。",
+    "generate": "生成行程",
+    "generating": "正在生成您的行程…",
+    "coveredBySubscription": "此次旅行包含在您的年度方案中。",
+    "coveredByFree": "此次旅行将使用您的免费旅行次数。",
+    "coveredByCredit": "将使用您的 1 个旅行额度（共 {n} 个）。",
+    "needsPurchase": "您已用完免费旅行次数。可购买单次旅行或年度方案——未经您确认不会扣款。",
+    "seePlans": "查看方案",
+    "steps": "规划步骤",
+    "stepOf": "第 {n} 步，共 {total} 步",
+    "stepNames": {
+      "basics": "基本信息",
+      "budget": "预算",
+      "stay": "住宿",
+      "interests": "兴趣",
+      "food": "餐饮",
+      "rhythm": "节奏",
+      "review": "确认"
+    },
+    "stepTitles": {
+      "basics": "去哪里、什么时候、和谁一起",
+      "budget": "您的预算",
+      "stay": "您将住在哪里",
+      "interests": "您喜欢什么",
+      "food": "饮食偏好",
+      "rhythm": "您的每日节奏",
+      "review": "确认您的偏好"
+    },
+    "companions": "出行方式",
+    "companionOptions": {
+      "solo": "独自出行",
+      "couple": "情侣 / 两人",
+      "family": "家庭",
+      "friends": "朋友",
+      "business": "商务"
+    },
+    "participants": "同行人员",
+    "participantsHint": "可选——填写姓名便于分享和安排旅行。",
+    "participantName": "同行人姓名",
+    "isChild": "儿童",
+    "addParticipant": "添加同行人",
+    "removeParticipant": "移除同行人",
+    "budgetSplit": "分项预算（可选）",
+    "split": {
+      "budgetAccommodation": "住宿",
+      "budgetFood": "餐饮",
+      "budgetActivities": "活动",
+      "budgetTransport": "交通"
+    },
+    "budgetDisclaimer": "预算会影响推荐内容。Triplan 只在有可靠数据时显示费用，并标注为估算。",
+    "accommodationQuestion": "您已经订好住宿了吗？",
+    "accommodationOptions": {
+      "booked": "是，已预订",
+      "recommend": "请推荐选择",
+      "compare": "想比较不同类型"
+    },
+    "accommodationHints": {
+      "booked": "每天从那里出发",
+      "recommend": "我们会提供可信网站链接",
+      "compare": "酒店、公寓、青旅……"
+    },
+    "accommodationName": "住宿名称",
+    "accommodationAddress": "地址",
+    "accommodationTypes": "合适的住宿类型",
+    "accommodationTypeOptions": {
+      "hotel": "酒店",
+      "apartment": "公寓",
+      "hostel": "青年旅舍",
+      "guesthouse": "民宿",
+      "resort": "度假村"
+    },
+    "pickOnMap": "地图——点击设置您的住处",
+    "pickOnMapHint": "在地图上点击您的住处位置，或在下方输入坐标。",
+    "latitude": "纬度",
+    "longitude": "经度",
+    "morning": "早晨",
+    "morningOptions": {
+      "early": "早起",
+      "relaxed": "悠闲的早晨"
+    },
+    "dayLength": "每日安排",
+    "dayLengthOptions": {
+      "full": "安排满满",
+      "flexible": "灵活安排"
+    },
+    "activityBalance": "平衡",
+    "balanceOptions": {
+      "more_activities": "更多活动",
+      "balanced": "适中",
+      "more_free_time": "更多自由时间"
+    },
+    "walking": "步行",
+    "walkingOptions": {
+      "low": "少走路",
+      "medium": "可以适度步行",
+      "high": "喜欢长距离步行"
+    },
+    "back": "上一步",
+    "next": "下一步",
+    "edit": "编辑",
+    "fixErrors": "请修正标出的内容。",
+    "dates": "日期",
+    "nights": "{n} 晚",
+    "travellers": "出行人",
+    "adultsCount": "{n} 位成人",
+    "childrenCount": "{n} 位儿童",
+    "budget": "预算",
+    "notSet": "未设置",
+    "stay": "住宿",
+    "rhythm": "节奏"
+  },
+  "trips": {
+    "title": "我的旅行",
+    "welcome": "欢迎回来，{name}",
+    "lead": "所有已保存、即将开始和已结束的旅行都在这里。",
+    "newTrip": "新建旅行",
+    "verifyEmail": "请验证邮箱以在社区发帖。",
+    "annualActive": "年度方案已生效",
+    "freeLeft": "{n, plural, =0 {免费旅行已用完} other {剩余 # 次免费旅行}}",
+    "credits": "{n, plural, =0 {没有旅行额度} other {# 个旅行额度}}",
+    "getMore": "获取更多旅行",
+    "filterLabel": "筛选旅行",
+    "filters": {
+      "all": "全部",
+      "upcoming": "即将开始",
+      "drafts": "草稿",
+      "completed": "已完成"
+    },
+    "status": {
+      "draft": "草稿",
+      "planned": "已规划",
+      "completed": "已完成"
+    },
+    "mode": {
+      "fast": "快速旅行",
+      "detailed": "详细旅行"
+    },
+    "days": "{n} 天",
+    "updated": "更新于 {date}",
+    "emptyTitle": "还没有旅行",
+    "emptyFiltered": "此分类下没有旅行",
+    "emptyBody": "规划您的第一次旅行——只需几分钟。",
+    "planFirst": "规划旅行",
+    "copySuffix": "副本"
+  },
+  "itinerary": {
+    "backToTrips": "我的旅行",
+    "tripTitle": "旅行名称",
+    "travellers": "{n} 位出行人",
+    "sourceAi": "由 AI 辅助规划",
+    "sourceRules": "基于我们的指南规划",
+    "status": "旅行状态",
+    "statuses": {
+      "draft": "草稿",
+      "planned": "已规划",
+      "completed": "已完成"
+    },
+    "regenerateTrip": "重新生成旅行",
+    "confirmRegenerateTrip": "要重新生成整个行程吗？已锁定的地点会保留。",
+    "regenerated": "行程已重新生成",
+    "duplicate": "复制",
+    "delete": "删除",
+    "confirmDelete": "确定永久删除此旅行吗？",
+    "bookingLinks": "预订与出行链接",
+    "linkCategories": {
+      "accommodation": "住宿",
+      "flights": "航班",
+      "activities": "活动与导览",
+      "luggage": "行李寄存",
+      "transport": "交通"
+    },
+    "externalNote": "链接将打开合作伙伴网站。Triplan 不显示其价格或余量。",
+    "days": "天数",
+    "dayN": "第 {n} 天",
+    "regenerateDay": "重新生成当天",
+    "dayRegenerated": "当天行程已重新生成",
+    "openInMaps": "在 Google 地图中打开",
+    "dragHint": "拖动地点以调整顺序，或选择地点进行更多操作。时间会自动更新。",
+    "meals": {
+      "breakfast": "早餐",
+      "lunch": "午餐",
+      "snack": "咖啡小憩",
+      "dinner": "晚餐",
+      "drinks": "晚间小酌"
+    },
+    "mealNear": "{place}附近的{meal}",
+    "freeTime": "自由时间",
+    "freeTimeNear": "{place}自由活动",
+    "showOnMap": "在地图上显示",
+    "perPerson": "每人",
+    "total": "合计",
+    "estimated": "估算",
+    "confirmed": "已确认",
+    "costUnknown": "价格：见官方网站",
+    "locked": "已锁定",
+    "lock": "锁定",
+    "unlock": "解锁",
+    "findFood": "查找{meal}地点",
+    "details": "详情",
+    "website": "官网",
+    "replace": "替换",
+    "replaced": "地点已替换",
+    "noAlternative": "附近没有可替换的地点",
+    "duration": "时长",
+    "moveToDay": "移到某一天…",
+    "moved": "地点已移动",
+    "moveUp": "上移",
+    "moveDown": "下移",
+    "remove": "移除",
+    "removed": "地点已移除",
+    "drag": "拖动以调整顺序",
+    "modes": {
+      "walking": "步行",
+      "transit": "公共交通",
+      "driving": "驾车",
+      "cycling": "骑行"
+    },
+    "approx": "≈",
+    "estimateNote": "标有“≈”的时间根据距离估算。出行时请使用实时导航。",
+    "addStop": "添加地点",
+    "fromGuide": "从指南中选择",
+    "custom": "自定义地点",
+    "search": "搜索地点",
+    "noCandidates": "指南中的地点都已加入此旅行。请添加自定义地点。",
+    "customName": "名称",
+    "add": "添加地点",
+    "added": "地点已添加",
+    "close": "关闭",
+    "showMap": "地图",
+    "showList": "行程",
+    "working": "正在更新行程…",
+    "saved": "已保存",
+    "actionFailed": "出了点问题，请重试。",
+    "accommodation": "您的住处",
+    "notGenerated": "您的偏好已保存，但尚未生成行程。",
+    "generateNow": "生成行程",
+    "generated": "行程已生成"
+  },
+  "map": {
+    "label": "行程地图",
+    "note": "连线按顺序连接各地点，并非逐向导航路线。需要导航请使用“在 Google 地图中打开”。",
+    "unavailable": "无法加载地图。您的行程仍可正常查看。"
+  },
+  "community": {
+    "eyebrow": "社区",
+    "title": "旅行者推荐",
+    "lead": "来自 Triplan 会员的私藏好去处、实用建议和真实评价。",
+    "opinionNotice": "社区帖子为个人观点和经历，而非经核实的事实。",
+    "opinion": "观点",
+    "opinionHint": "由旅行者发布——未经 Triplan 核实",
+    "types": {
+      "recommendation": "推荐",
+      "hidden_gem": "私藏好去处",
+      "review": "评价",
+      "restaurant": "餐厅",
+      "tip": "建议"
+    },
+    "ratingLabel": "评分 {n}/5",
+    "helpful": "有帮助",
+    "save": "收藏",
+    "saved": "已收藏",
+    "report": "举报",
+    "reportReason": "原因",
+    "reasons": {
+      "spam": "垃圾信息或广告",
+      "offensive": "冒犯或仇恨言论",
+      "misleading": "误导性内容",
+      "unsafe": "不安全的建议",
+      "other": "其他"
+    },
+    "reportDetails": "详情（可选）",
+    "sendReport": "提交举报",
+    "cancel": "取消",
+    "status": {
+      "reportReceived": "谢谢——版主将审核此帖子。",
+      "signInRequired": "请先登录。",
+      "rateLimited": "举报过于频繁，请稍后再试。"
+    },
+    "signInToInteract": "登录后可点赞、收藏或举报帖子。",
+    "signIn": "登录",
+    "allDestinations": "全部目的地",
+    "allTypes": "全部类型",
+    "apply": "应用",
+    "destination": "目的地",
+    "type": "类型",
+    "emptyTitle": "还没有帖子",
+    "emptyBody": "成为第一个在此分类下分享推荐的人吧。",
+    "joinTitle": "加入社区",
+    "joinBody": "创建免费账户，分享您的发现并收藏实用建议。",
+    "join": "创建账户",
+    "verifyToPost": "请验证邮箱后发帖。",
+    "shareTitle": "分享推荐",
+    "shareRules": "请只分享您的亲身经历。包含大量链接的帖子可能需要审核。",
+    "chooseDestination": "选择目的地",
+    "rating": "评分",
+    "postTitle": "标题",
+    "body": "您的推荐",
+    "bodyHint": "这里有什么特别之处？实用的细节会对他人很有帮助（至少 20 个字符）。",
+    "publish": "发布",
+    "guidelinesTitle": "社区准则",
+    "guideline1": "只分享您的真实经历。",
+    "guideline2": "保持尊重——禁止仇恨、骚扰或泄露个人信息。",
+    "guideline3": "禁止广告和推广链接刷屏。",
+    "guideline4": "只上传您有权分享的照片。"
+  },
+  "reviews": {
+    "eyebrow": "评价与反馈",
+    "title": "旅行者如何评价 Triplan",
+    "lead": "来自已验证 Triplan 会员的评价。每条评价在发布前都经过版主审核——我们绝不发布虚假评价。",
+    "average": "平均评分 {avg}/5（{count} 条评价）",
+    "anonymous": "Triplan 会员",
+    "ratingLabel": "评分 {n}/5",
+    "emptyTitle": "暂无已发布的评价",
+    "emptyBody": "Triplan 是一项新服务。会员分享体验后，评价将显示在这里。",
+    "formTitle": "撰写评价",
+    "rating": "评分",
+    "body": "您的评价",
+    "moderated": "评价经审核后发布。",
+    "submit": "提交评价",
+    "verifyFirst": "请验证邮箱后撰写评价。",
+    "signInToReview": "登录后撰写评价。",
+    "signIn": "登录"
+  },
+  "auth": {
+    "visualEyebrow": "TRIPLAN",
+    "visualTitle": "少一点规划，多一点探索。",
+    "loginTitle": "欢迎回来",
+    "loginLead": "登录以查看和编辑您的旅行。",
+    "loginToPlan": "登录后即可创建并保存旅行，您的选择会被保留。",
+    "signupTitle": "创建账户",
+    "signupLead": "注册免费，第一次旅行由我们请客。",
+    "email": "邮箱",
+    "password": "密码",
+    "name": "您的姓名",
+    "confirmPassword": "确认密码",
+    "newPassword": "新密码",
+    "passwordHint": "至少 10 个字符。",
+    "show": "显示",
+    "hide": "隐藏",
+    "forgot": "忘记密码？",
+    "loginCta": "登录",
+    "signupCta": "创建账户",
+    "noAccount": "初次使用 Triplan？",
+    "signupLink": "创建账户",
+    "haveAccount": "已有账户？",
+    "loginLink": "登录",
+    "google": "使用 Google 继续",
+    "or": "或",
+    "agree": "我同意<terms>服务条款</terms>，并已阅读<privacy>隐私政策</privacy>。",
+    "forgotTitle": "重置密码",
+    "forgotLead": "输入您的邮箱，我们将发送一个设置新密码的链接。",
+    "forgotCta": "发送重置链接",
+    "backToLogin": "返回登录",
+    "resetTitle": "设置新密码",
+    "resetCta": "保存密码",
+    "resetMissing": "此链接不完整，请重新申请。",
+    "verifiedTitle": "邮箱已验证",
+    "verifiedBody": "谢谢——您的邮箱地址已确认。",
+    "verifyFailedTitle": "链接已过期或无效",
+    "verifyFailedBody": "此验证链接无法使用。您可以在账户中申请新的链接。",
+    "continue": "继续",
+    "goToAccount": "前往账户"
+  },
+  "account": {
+    "title": "个人资料与设置",
+    "verified": "邮箱已验证",
+    "unverified": "邮箱未验证",
+    "verifyPrompt": "请验证您的邮箱地址。",
+    "profile": "个人资料",
+    "displayName": "显示名称",
+    "homeCity": "所在城市",
+    "bio": "简介",
+    "save": "保存",
+    "preferences": "偏好设置",
+    "language": "语言",
+    "currency": "首选货币",
+    "units": "单位",
+    "metric": "公制（公里）",
+    "imperial": "英制（英里）",
+    "timeFormat": "时间格式",
+    "timeAuto": "自动（随语言）",
+    "marketing": "偶尔通过邮件接收产品更新",
+    "changePassword": "修改密码",
+    "setPassword": "设置密码",
+    "currentPassword": "当前密码",
+    "newPassword": "新密码",
+    "confirmPassword": "确认新密码",
+    "updatePassword": "更新密码",
+    "privacyTitle": "您的数据",
+    "privacyBody": "以机器可读格式下载 Triplan 保存的关于您的全部数据。",
+    "export": "下载我的数据",
+    "deleteTitle": "删除账户",
+    "deleteBody": "将永久删除您的账户、旅行、帖子和收藏，并取消有效订阅。此操作无法撤销。",
+    "deleteConfirm": "输入 {email} 以确认",
+    "deleteCta": "删除我的账户"
+  },
+  "saved": {
+    "title": "收藏",
+    "destinations": "目的地",
+    "restaurants": "餐厅",
+    "activities": "活动",
+    "attractions": "地点",
+    "posts": "社区帖子",
+    "emptyDestinations": "还没有收藏的目的地。",
+    "explore": "探索目的地",
+    "emptyGroup": "这里还没有内容。",
+    "emptyPosts": "还没有收藏的帖子。",
+    "map": "地图"
+  },
+  "billing": {
+    "title": "订阅与账单",
+    "checkoutSuccess": "谢谢！Stripe 正在确认您的付款——几秒钟后方案会自动更新。",
+    "unavailable": "在线支付暂不可用。",
+    "currentPlan": "当前方案",
+    "annual": "年度",
+    "free": "免费",
+    "renewsOn": "{date} 续订",
+    "endsOn": "{date} 结束",
+    "statusLabel": "状态：{status}",
+    "tripsCreated": "已创建旅行",
+    "freeRemaining": "{n, plural, =0 {免费旅行已使用} other {剩余 # 次免费旅行}}",
+    "credits": "旅行额度",
+    "buyMore": "再购买一次旅行",
+    "upgrade": "升级",
+    "viewPlans": "查看方案",
+    "manage": "管理订阅和付款方式",
+    "history": "付款记录",
+    "date": "日期",
+    "item": "项目",
+    "amount": "金额",
+    "status": "状态",
+    "items": {
+      "free": "免费方案",
+      "trip_pack": "额外旅行",
+      "annual": "年度方案"
+    },
+    "paymentStatus": {
+      "paid": "已支付",
+      "failed": "失败",
+      "refunded": "已退款"
+    },
+    "noPayments": "暂无付款记录。",
+    "cardNote": "付款由 Stripe 安全处理。Triplan 从不保存您的银行卡信息。"
+  },
+  "pricing": {
+    "eyebrow": "价格",
+    "title": "简单透明的价格",
+    "lead": "免费开始，需要更多时再付费——没有隐藏费用，也没有意外扣款。",
+    "limitReached": "您已用完免费旅行。请在下方选择方案以创建下一次旅行——您的偏好已保存。",
+    "cancelled": "已取消结账，未产生扣款。",
+    "paymentsUnavailable": "在线支付尚未开通，您仍可使用免费旅行。",
+    "bestValue": "最超值",
+    "freePrice": "免费",
+    "perYear": "/ 年",
+    "perTrip": "/ 次",
+    "plans": {
+      "free": {
+        "name": "免费",
+        "desc": "第一次旅行所需的一切。",
+        "f1": "1 个旅行计划",
+        "f2": "带地图的每日行程",
+        "f3": "编辑、锁定和重新生成地点",
+        "f4": "保存在您的账户中"
+      },
+      "trip_pack": {
+        "name": "额外旅行",
+        "desc": "一次性购买另一份完整旅行计划。",
+        "f1": "1 个额外旅行计划",
+        "f2": "全部规划功能",
+        "f3": "额度永不过期",
+        "f4": "无需订阅"
+      },
+      "annual": {
+        "name": "年度",
+        "desc": "适合经常出行和规划的旅行者。",
+        "f1": "12 个月内不限次数旅行（合理使用）",
+        "f2": "全部规划功能",
+        "f3": "可随时在账户中取消",
+        "f4": "取消前每年自动续订"
+      }
+    },
+    "startPlanning": "开始规划",
+    "createAccount": "创建免费账户",
+    "manage": "管理订阅",
+    "subscribe": "订阅 — {price}",
+    "buy": "购买 — {price}",
+    "transparencyTitle": "我们的承诺",
+    "transparency1": "未经您在 Stripe 安全结账页面确认，不会产生任何扣款。",
+    "transparency2": "只有在我们的服务器确认付款后，付费权益才会开通。",
+    "transparency3": "年度方案可随时取消——权益保留至已付费年度结束。",
+    "transparency4": "除结账页面另有说明外，价格均含适用税费。",
+    "transparency5": "即使订阅结束，已保存的旅行仍可访问。",
+    "policyLink": "订阅条款"
+  },
+  "about": {
+    "eyebrow": "关于 Triplan",
+    "title": "更聪明、更从容的旅行方式",
+    "lead": "Triplan 把零散的旅行规划变成一份清晰、美观、可信的计划。",
+    "mission": {
+      "title": "使命",
+      "body": "帮助每一位旅行者在一个地方安排好整趟旅程——航班、住宿、餐饮、交通和每日计划。"
+    },
+    "purpose": {
+      "title": "宗旨",
+      "body": "把浪费在标签页和表格上的时间还给您，让您有备而来，把时间留给探索。"
+    },
+    "vision": {
+      "title": "愿景",
+      "body": "成为全球值得信赖的旅行伙伴——适用于每种语言、每位旅行者、每个目的地。"
+    },
+    "principlesTitle": "我们的理念",
+    "principle1": {
+      "title": "诚实",
+      "body": "我们标注估算，从不编造价格或评价，并说明信息来源。"
+    },
+    "principle2": {
+      "title": "实用",
+      "body": "行程尊重地理、用餐时间和休息——是真正能照着走的计划。"
+    },
+    "principle3": {
+      "title": "包容",
+      "body": "八种语言，包括完整支持从右到左的阿拉伯语；无障碍设计；尊重饮食需求。"
+    },
+    "principle4": {
+      "title": "隐私",
+      "body": "您的旅行属于您。可随时导出或删除您的数据。"
+    },
+    "principle5": {
+      "title": "开放",
+      "body": "我们引导您前往最好的服务，而不是把它们藏起来，让您放心预订。"
+    },
+    "nameTitle": "为什么叫“Triplan”？",
+    "nameBody": "Trip（旅行）+ Plan（计划）。一个词涵盖整个旅程——从最初的灵感到最后一晚。",
+    "cta": "规划旅行",
+    "contact": "联系我们"
+  },
+  "faq": {
+    "eyebrow": "帮助中心",
+    "title": "常见问题",
+    "lead": "关于规划、账户、付款、语言和隐私的简明解答。",
+    "groups": {
+      "planning": "规划",
+      "accounts": "账户",
+      "savedTrips": "已保存的旅行",
+      "payments": "付款",
+      "languages": "语言",
+      "maps": "地图",
+      "bookings": "外部预订",
+      "subscriptions": "订阅",
+      "privacy": "隐私"
+    },
+    "planning": {
+      "q1": "“快速旅行”和“详细旅行”有什么区别？",
+      "a1": "快速旅行只问关键问题并立即生成行程。详细旅行通过七个简短步骤，让您设定预算、住宿、饮食需求、每日节奏和步行强度。两者之后都可以修改。",
+      "q2": "Triplan 如何生成行程？",
+      "a2": "Triplan 将相近的地点安排在同一天，按减少交通的顺序排列，并在附近安排早餐、午餐、咖啡小憩和晚餐。启用 AI 时，它只会使用我们数据库中的地点来编排计划。",
+      "q3": "我可以修改计划吗？",
+      "a3": "可以。拖动调整顺序、移除或添加地点、替换景点、锁定想保留的地点，并可重新生成某一天或整趟旅行。已锁定的地点未经您同意绝不会更改。"
+    },
+    "accounts": {
+      "q1": "为什么规划需要账户？",
+      "a1": "旅行保存在您的账户中，可在任何设备上打开。登录前填写的内容会被保留。",
+      "q2": "忘记密码怎么办？",
+      "a2": "在登录页点击“忘记密码？”，我们会发送一个一小时内有效的安全链接。"
+    },
+    "savedTrips": {
+      "q1": "我的旅行保存在哪里？",
+      "a1": "保存在我们与您账户关联的安全数据库中，而不只是在浏览器里。只有您能看到自己的旅行。",
+      "q2": "可以复制或删除旅行吗？",
+      "a2": "可以，在旅行页面操作。复制便于尝试不同方案而不丢失原计划。"
+    },
+    "payments": {
+      "q1": "Triplan 免费吗？",
+      "a1": "每个账户包含一次免费旅行。您可以购买额外旅行，或选择不限次数的年度方案。",
+      "q2": "付款如何处理？",
+      "a2": "通过领先的支付服务商 Stripe 处理。Triplan 从不查看或保存您完整的银行卡信息。",
+      "q3": "会自动扣款吗？",
+      "a3": "只有年度方案会自动续订，且可随时取消。单次旅行为一次性付款。"
+    },
+    "languages": {
+      "q1": "支持哪些语言？",
+      "a1": "英语、阿拉伯语、法语、西班牙语、意大利语、简体中文、俄语和葡萄牙语。阿拉伯语使用完整的从右到左界面。",
+      "q2": "切换语言会丢失旅行吗？",
+      "a2": "不会。旅行保存在您的账户中，规划表单在切换语言时会保留已填写的内容。"
+    },
+    "maps": {
+      "q1": "交通时间有多准确？",
+      "a1": "标有“≈”的时间根据距离估算。连接路线服务后，会显示真实时长。",
+      "q2": "可以把 Triplan 当导航用吗？",
+      "a2": "Triplan 在互动地图上显示地点，逐向导航则交给 Google 地图。"
+    },
+    "bookings": {
+      "q1": "可以在 Triplan 预订酒店或门票吗？",
+      "a1": "Triplan 会引导您前往 Booking.com、Airbnb、Google Flights、Skyscanner 等可信服务。预订和付款在对方网站完成。",
+      "q2": "为什么不显示价格和余量？",
+      "a2": "我们只显示可以核实的信息。实时价格和余量由各服务商提供。"
+    },
+    "subscriptions": {
+      "q1": "年度方案包含什么？",
+      "a1": "12 个月内不限次数旅行（合理使用），包含全部规划功能。",
+      "q2": "如何取消订阅？",
+      "a2": "前往 个人资料 → 订阅 → 管理订阅。权益保留至已付费期间结束。"
+    },
+    "privacy": {
+      "q1": "你们保存哪些数据？",
+      "a1": "您的账户信息、您创建的旅行以及您的帖子。详情请参阅隐私政策。",
+      "q2": "可以删除我的数据吗？",
+      "a2": "可以。您可以随时在个人资料中下载数据或永久删除账户。"
+    },
+    "more": "还有其他问题？",
+    "contactUs": "联系我们"
+  },
+  "contact": {
+    "eyebrow": "联系",
+    "title": "联系我们",
+    "lead": "问题、反馈或合作意向——期待您的来信。",
+    "name": "姓名",
+    "email": "邮箱",
+    "topic": "主题",
+    "topics": {
+      "general": "一般问题",
+      "account": "账户与登录",
+      "billing": "账单与订阅",
+      "partnership": "合作",
+      "press": "媒体",
+      "privacy": "隐私与数据"
+    },
+    "message": "留言",
+    "privacy": "我们仅使用您的信息来回复此留言。",
+    "send": "发送留言",
+    "beforeTitle": "写信之前",
+    "beforeBody": "许多答案已在帮助中心中。",
+    "faqLink": "阅读常见问题",
+    "responseNote": "我们会尽量在两个工作日内回复。"
+  },
+  "legal": {
+    "titles": {
+      "privacy": "隐私政策",
+      "terms": "服务条款",
+      "cookies": "Cookie 政策",
+      "subscriptions": "订阅与付款条款"
+    },
+    "description": "Triplan 法律信息。",
+    "updated": "最后更新：{date}",
+    "englishNotice": "此法律文本目前仅提供英文版本。译文将在法律审核后发布；以英文版本为准。"
+  },
+  "notFound": {
+    "title": "页面未找到",
+    "body": "此页面不存在或已移动。让我们回到正轨。",
+    "home": "返回首页",
+    "explore": "探索目的地"
+  },
+  "errorPage": {
+    "title": "出了点问题",
+    "body": "无法加载此页面，请稍后再试。",
+    "retry": "重试"
+  },
+  "errors": {
+    "required": "此项为必填项。",
+    "email": "请输入有效的邮箱地址。",
+    "emailTaken": "该邮箱已注册账户，请尝试登录。",
+    "passwordShort": "请至少使用 10 个字符。",
+    "passwordMismatch": "两次输入的密码不一致。",
+    "wrongPassword": "当前密码不正确。",
+    "tooLong": "内容过长。",
+    "invalid": "请检查此值。",
+    "dateOrder": "离开日期不能早于抵达日期。",
+    "tripTooLong": "旅行最长 21 天。",
+    "terms": "请同意条款后继续。",
+    "unsupportedDestination": "请从列表中选择目的地。",
+    "confirmEmail": "请准确输入您的邮箱以确认。"
+  },
+  "status": {
+    "genericError": "出了点问题，请重试。",
+    "rateLimited": "尝试次数过多，请等待几分钟后重试。",
+    "invalidCredentials": "邮箱或密码不正确。",
+    "resetSent": "如果该邮箱存在账户，重置链接已发送。",
+    "tokenInvalid": "此链接已过期或已被使用，请重新申请。",
+    "signInRequired": "请先登录。",
+    "alreadyVerified": "您的邮箱已验证。",
+    "verificationSent": "验证邮件已发送。",
+    "verifyEmailFirst": "请先验证邮箱。",
+    "postPublished": "谢谢！您的帖子已发布。",
+    "postPending": "谢谢！您的帖子将在简短审核后显示。",
+    "reviewPending": "谢谢！您的评价将在审核后发布。",
+    "contactSent": "谢谢——留言已发送，我们会通过邮件回复。",
+    "saved": "已保存。",
+    "passwordChanged": "密码已更新。",
+    "oauthFailed": "Google 登录未完成，请重试。"
+  },
+  "email": {
+    "footer": "您收到此邮件是因为您的 Triplan 账户有相关操作。",
+    "verify": {
+      "subject": "验证您的 Triplan 邮箱",
+      "heading": "验证您的邮箱",
+      "body": "欢迎来到 Triplan！请确认您的邮箱地址以完成账户设置。此链接 48 小时内有效。",
+      "cta": "验证邮箱"
+    },
+    "reset": {
+      "subject": "重置您的 Triplan 密码",
+      "heading": "重置密码",
+      "body": "我们收到了重置您密码的请求。此链接一小时内有效。如果不是您本人操作，请忽略此邮件。",
+      "cta": "设置新密码"
+    }
+  }
+}
