@@ -6,9 +6,11 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Icon } from "@/components/ui/Icon";
 import { formatDate, formatDistance, formatDuration, formatMoney, formatTime } from "@/lib/format";
-import { googleMapsDirectionsUrl, googleMapsPlaceUrl } from "@/lib/geo";
-import { restaurantSearchUrl } from "@/lib/links";
-import type { DayView, StopView, TripView } from "@/lib/trips";
+import { chooseMode, estimateLeg, googleMapsDirectionsUrl, googleMapsPlaceUrl, haversineMeters } from "@/lib/geo";
+import { restaurantSearchUrl, type OutboundLink } from "@/lib/links";
+import { OutboundLinks, PartnerDisclosure } from "@/components/ui/OutboundLinks";
+import type { DayView, StayArea, StopView, TripPlanning, TripView } from "@/lib/trips";
+import { AccommodationPanel, JourneyDetails, MODE_ICON as JOURNEY_ICON, RouteSummary, SplitSuggestionCard } from "./PlanPanels";
 import type { MapStop } from "@/components/map/TripMap";
 import {
   addCustomStopAction,
@@ -19,6 +21,10 @@ import {
   regenerateDayAction,
   regenerateTripAction,
   removeStopAction,
+  acceptSplitAction,
+  declineSplitAction,
+  resetSplitAction,
+  setAccommodationAction,
   reorderStopsAction,
   replaceStopAction,
   toggleLockAction,
@@ -31,6 +37,7 @@ const LocationPicker = dynamic(() => import("@/components/map/LocationPicker").t
 
 export interface CandidateOption {
   id: string;
+  destinationId: string;
   name: string;
   kind: string;
   neighborhood: string | null;
@@ -42,6 +49,7 @@ const DURATIONS = [15, 30, 45, 60, 75, 90, 120, 150, 180, 240, 300];
 
 export function TripWorkspace({
   initialTrip,
+  initialPlanning,
   candidates,
   center,
   externalLinks,
@@ -49,16 +57,18 @@ export function TripWorkspace({
   units,
 }: {
   initialTrip: TripView;
+  initialPlanning: TripPlanning;
   candidates: CandidateOption[];
   center: { lat: number; lng: number };
-  externalLinks: { category: string; provider: string; url: string }[];
+  externalLinks: OutboundLink[];
   timeFormat: "auto" | "12h" | "24h";
   units: "metric" | "imperial";
 }) {
   const t = useTranslations("itinerary");
-  const tc = useTranslations("common");
   const locale = useLocale();
   const [trip, setTrip] = useState(initialTrip);
+  const [planning, setPlanning] = useState(initialPlanning);
+  const [area, setArea] = useState<{ lat: number; lng: number; label: string } | null>(null);
   const [dayIdx, setDayIdx] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [showMap, setShowMap] = useState(false);
@@ -71,7 +81,15 @@ export function TripWorkspace({
   const listRef = useRef<HTMLDivElement>(null);
   const day: DayView | undefined = trip.days[Math.min(dayIdx, trip.days.length - 1)];
   const prefs = trip.preferences;
-  const home = prefs?.accommodation?.lat != null && prefs?.accommodation?.lng != null ? { lat: Number(prefs.accommodation.lat), lng: Number(prefs.accommodation.lng), label: prefs.accommodation.name || t("accommodation") } : null;
+  const segments = (prefs?.segments?.length ?? 0) > 1 ? prefs.segments! : null;
+  const segmentOf = (d: DayView | undefined) => segments?.find((x) => x.destinationId === d?.destinationId) ?? null;
+  // The booked accommodation is in the main destination: it starts and ends the days spent there.
+  const onBaseDay = !day || !segments || (day.destinationId === trip.destinationId && day.kind !== "day_trip");
+  const savedHome = prefs?.accommodation?.status === "booked" && prefs?.accommodation?.lat != null && prefs?.accommodation?.lng != null ? { lat: Number(prefs.accommodation.lat), lng: Number(prefs.accommodation.lng), label: prefs.accommodation.name || t("accommodation") } : null;
+  const home = onBaseDay ? savedHome : null;
+  const daySeg = segmentOf(day);
+  const dayCenter = daySeg ? { lat: daySeg.lat, lng: daySeg.lng } : center;
+  const dayPlaceName = daySeg?.name ?? trip.destinationName;
 
   // Clear planner drafts once a trip exists.
   useEffect(() => {
@@ -90,13 +108,14 @@ export function TripWorkspace({
   }, [toast]);
 
   const run = useCallback(
-    (fn: () => Promise<TripView | null | { trip: TripView | null; replaced: boolean }>, success?: string) => {
+    (fn: () => Promise<TripView | null | { trip: TripView | null; replaced?: boolean; planning?: TripPlanning | null }>, success?: string) => {
       start(async () => {
         try {
           const res = await fn();
           const next = res && "trip" in res ? res.trip : res;
-          if (res && "replaced" in res && !res.replaced) setToast(t("noAlternative"));
+          if (res && "replaced" in res && res.replaced === false) setToast(t("noAlternative"));
           else if (success) setToast(success);
+          if (res && "planning" in res && res.planning) setPlanning(res.planning);
           if (next) setTrip(next as TripView);
         } catch {
           setToast(t("actionFailed"));
@@ -127,6 +146,7 @@ export function TripWorkspace({
     if ((s.kind === "meal" || s.kind === "break") && s.mealType && !s.placeId) return s.title ? t("mealNear", { meal: t(`meals.${s.mealType}`), place: s.title }) : t(`meals.${s.mealType}`);
     if (s.kind === "meal" && s.mealType) return `${t(`meals.${s.mealType}`)} · ${s.title}`;
     if (s.kind === "break" && !s.mealType) return s.title ? t("freeTimeNear", { place: s.title }) : t("freeTime");
+    if (s.kind === "transport" && s.intercity) return t("journeyTo", { place: s.intercity.to });
     return s.title;
   }
 
@@ -170,6 +190,15 @@ export function TripWorkspace({
     prefs?.transport === "driving" ? "driving" : prefs?.transport === "cycling" ? "cycling" : prefs?.transport === "walking" ? "walking" : "transit",
   );
   const estimateLegs = day?.stops.some((s) => s.travelSource === "estimate");
+  // Getting from the accommodation to the first stop of the day, and back after the last (estimates).
+  const located = mapStops;
+  const homeLeg = (to: { lat: number; lng: number } | undefined) => {
+    if (!home || !to) return null;
+    const mode = chooseMode(prefs.transport, haversineMeters(home, to));
+    return { mode, ...estimateLeg(home, to, mode) };
+  };
+  const fromHome = day?.kind === "travel" ? null : homeLeg(located[0]);
+  const backHome = day?.kind === "travel" ? null : homeLeg(located[located.length - 1]);
 
   if (!trip.days.length) {
     return (
@@ -211,6 +240,29 @@ export function TripWorkspace({
             <span><Icon name="users" />{t("travellers", { n: trip.adults + trip.children })}</span>
             <span className="badge badge--outline">{trip.generationSource === "ai" ? t("sourceAi") : t("sourceRules")}</span>
           </div>
+          {planning.suggestion ? (
+            <SplitSuggestionCard
+              planning={planning}
+              busy={pending}
+              onAccept={(c) => run(() => acceptSplitAction(trip.id, c), t("reorganized"))}
+              onDecline={() => run(() => declineSplitAction(trip.id))}
+            />
+          ) : null}
+          {segments ? <RouteSummary segments={segments} busy={pending} onReset={() => run(() => resetSplitAction(trip.id), t("reorganized"))} /> : null}
+          <AccommodationPanel
+            accommodation={prefs.accommodation}
+            stayAreas={planning.stayAreas}
+            baseName={trip.destinationName}
+            center={center}
+            busy={pending}
+            onSave={(a) => run(() => setAccommodationAction(trip.id, a), t("reorganized"))}
+            onShowArea={(a: StayArea) => {
+              const i = trip.days.findIndex((d) => d.destinationId === a.destinationId);
+              if (i >= 0) setDayIdx(i);
+              setArea({ lat: a.lat, lng: a.lng, label: a.area ? `${a.area}, ${a.city}` : a.city });
+              if (window.matchMedia("(max-width: 980px)").matches) setShowMap(true);
+            }}
+          />
           <div className="cluster" style={{ gap: 8 }}>
             <label className="visually-hidden" htmlFor="trip-status">{t("status")}</label>
             <select id="trip-status" className="select" style={{ inlineSize: "auto", minBlockSize: 36, paddingBlock: 4, fontSize: 14 }} value={trip.status} onChange={(e) => run(() => updateTripMetaAction(trip.id, { status: e.target.value as TripView["status"] }), t("saved"))}>
@@ -232,23 +284,25 @@ export function TripWorkspace({
               {(["accommodation", "flights", "activities", "luggage", "transport"] as const).map((cat) => (
                 <div key={cat}>
                   <p className="small muted" style={{ marginBlockEnd: 6 }}>{t(`linkCategories.${cat}`)}</p>
-                  <div className="link-list">
-                    {externalLinks.filter((l) => l.category === cat).map((l) => (
-                      <a key={l.provider} className="ext-link" href={l.url} target="_blank" rel="noopener noreferrer nofollow">{l.provider}<Icon name="external" className="flip-rtl" /></a>
-                    ))}
-                  </div>
+                  <OutboundLinks links={externalLinks.filter((l) => l.category === cat)} />
                 </div>
               ))}
-              <p className="small muted">{t("externalNote")} {tc("affiliateDisclosure")}</p>
+              <p className="small muted">{t("externalNote")} <PartnerDisclosure links={externalLinks} /></p>
             </div>
           </details>
         </div>
 
         <div className="day-tabs" role="tablist" aria-label={t("days")}>
           {trip.days.map((d, i) => (
-            <button key={d.id} type="button" role="tab" className="day-tab" aria-selected={i === dayIdx} aria-controls="day-panel" onClick={() => { setDayIdx(i); setSelected(null); }}>
+            <button key={d.id} type="button" role="tab" className="day-tab" aria-selected={i === dayIdx} aria-controls="day-panel" onClick={() => { setDayIdx(i); setSelected(null); setArea(null); }}>
               <strong>{t("dayN", { n: i + 1 })}</strong>
               {d.date ? formatDate(d.date, locale, { weekday: "short", day: "numeric", month: "short" }) : null}
+              {segments ? (
+                <span className="day-tab__place">
+                  {d.kind === "travel" ? <Icon name="arrowRight" className="flip-rtl" /> : d.kind === "day_trip" ? <Icon name="compass" /> : null}
+                  {segmentOf(d)?.name ?? trip.destinationName}
+                </span>
+              ) : null}
             </button>
           ))}
         </div>
@@ -260,6 +314,7 @@ export function TripWorkspace({
                 <h2>{day.title}</h2>
                 <p className="small muted" style={{ margin: 0 }}>
                   {day.date ? formatDate(day.date, locale, { weekday: "long", day: "numeric", month: "long" }) : null}
+                  {segments ? ` · ${day.kind === "travel" ? t("kinds.travel") : day.kind === "day_trip" ? t("kinds.day_trip", { place: dayPlaceName }) : dayPlaceName}` : null}
                 </p>
               </div>
               <div className="cluster" style={{ gap: 6 }}>
@@ -274,18 +329,25 @@ export function TripWorkspace({
               </div>
             </div>
             <p className="small muted">{t("dragHint")}</p>
+            {fromHome ? (
+              <p className="leg leg--home">
+                <Icon name="home" />
+                {t("fromAccommodation", { place: home!.label })} · <Icon name={MODE_ICON[fromHome.mode]} />{formatDuration(fromHome.minutes, locale)} · {formatDistance(fromHome.meters, locale, units)} · {t("approx")}
+              </p>
+            ) : null}
 
             <ol className="timeline">
               {day.stops.map((s, i) => {
                 const n = numbering.get(s.id);
                 const isMealLike = s.kind === "meal" || (s.kind === "break" && s.mealType);
                 const label = stopLabel(s);
-                const mealUrl = isMealLike && !s.placeId ? restaurantSearchUrl({ mealType: s.mealType, foodPrefs: prefs?.foodPrefs, near: s.lat != null ? { lat: s.lat, lng: s.lng! } : null, area: s.title, city: trip.destinationName }) : null;
+                const mealUrl = isMealLike && !s.placeId ? restaurantSearchUrl({ mealType: s.mealType, foodPrefs: prefs?.foodPrefs, near: s.lat != null ? { lat: s.lat, lng: s.lng! } : null, area: s.title, city: dayPlaceName }) : null;
+                const journey = s.kind === "transport" && s.intercity ? s.intercity : null;
                 return (
                   <li
                     key={s.id}
                     data-stop={s.id}
-                    className={`stop stop--${s.kind === "meal" ? "meal" : s.kind === "break" ? "break" : "place"} ${selected === s.id ? "is-selected" : ""} ${dragId === s.id ? "is-dragging" : ""} ${overId === s.id ? "is-drop-target" : ""}`}
+                    className={`stop stop--${s.kind === "meal" ? "meal" : s.kind === "break" ? "break" : journey ? "journey" : "place"} ${selected === s.id ? "is-selected" : ""} ${dragId === s.id ? "is-dragging" : ""} ${overId === s.id ? "is-drop-target" : ""}`}
                     draggable
                     onDragStart={(e) => { setDragId(s.id); e.dataTransfer.effectAllowed = "move"; }}
                     onDragOver={(e) => { e.preventDefault(); setOverId(s.id); }}
@@ -298,7 +360,7 @@ export function TripWorkspace({
                       <div className="stop__card">
                         <div className="stop__row">
                           <button type="button" className="stop__marker" onClick={() => setSelected(s.id)} aria-label={t("showOnMap")}>
-                            {n ?? <Icon name={s.kind === "meal" ? "utensils" : s.kind === "break" ? "coffee" : "pin"} />}
+                            {journey ? <Icon name={JOURNEY_ICON[journey.mode]} /> : n ?? <Icon name={s.kind === "meal" ? "utensils" : s.kind === "break" ? "coffee" : "pin"} />}
                           </button>
                           <div className="stop__main">
                             <button type="button" className="stop__title" onClick={() => setSelected(s.id)} aria-expanded={selected === s.id}>
@@ -316,7 +378,9 @@ export function TripWorkspace({
                               {s.locked ? <span className="lock-on"><Icon name="lock" style={{ display: "inline", inlineSize: 12, verticalAlign: -1 }} /> {t("locked")}</span> : null}
                             </div>
                             {s.description ? <p className="stop__desc">{s.description}</p> : null}
-                            {selected === s.id ? (
+                            {journey && selected !== s.id ? <JourneyDetails info={journey} linkUrl={s.linkUrl} /> : null}
+                            {selected === s.id && journey ? <JourneyDetails info={journey} linkUrl={s.linkUrl} /> : null}
+                            {selected === s.id && !journey ? (
                               <div className="stop__actions">
                                 {mealUrl ? (
                                   <a className="btn btn--sm btn--gold" href={mealUrl} target="_blank" rel="noopener noreferrer">
@@ -324,7 +388,7 @@ export function TripWorkspace({
                                   </a>
                                 ) : null}
                                 {(s.kind === "attraction" || s.kind === "activity" || s.kind === "custom") && s.lat != null ? (
-                                  <a className="btn btn--sm" href={googleMapsPlaceUrl(s.title, trip.destinationName)} target="_blank" rel="noopener noreferrer">
+                                  <a className="btn btn--sm" href={googleMapsPlaceUrl(s.title, dayPlaceName)} target="_blank" rel="noopener noreferrer">
                                     <Icon name="external" className="flip-rtl" />{t("details")}
                                   </a>
                                 ) : null}
@@ -368,10 +432,15 @@ export function TripWorkspace({
                           </span>
                         </div>
                       </div>
-                      {s.travelMinutes != null && s.travelMode && i < day.stops.length - 1 && (s.travelMeters ?? 0) >= 40 ? (
+                      {s.travelMinutes != null && s.travelMode && i < day.stops.length - 1 && ((s.travelMeters ?? 0) >= 40 || journey || day.stops[i + 1]?.intercity) ? (
                         <p className="leg">
                           <Icon name={MODE_ICON[s.travelMode]} />
-                          {t(`modes.${s.travelMode}`)} · {formatDuration(s.travelMinutes, locale)}
+                          {day.stops[i + 1]?.intercity
+                            ? t(`transfer.to_${day.stops[i + 1].intercity!.mode}`)
+                            : journey
+                              ? t("transfer.from", { place: journey.to })
+                              : t(`modes.${s.travelMode}`)}{" "}
+                          · {formatDuration(s.travelMinutes, locale)}
                           {s.travelMeters ? ` · ${formatDistance(s.travelMeters, locale, units)}` : ""}
                           {s.travelSource === "estimate" ? ` · ${t("approx")}` : ""}
                         </p>
@@ -381,6 +450,12 @@ export function TripWorkspace({
                 );
               })}
             </ol>
+            {backHome && day.stops.length ? (
+              <p className="leg leg--home">
+                <Icon name="home" />
+                {t("backToAccommodation", { place: home!.label })} · <Icon name={MODE_ICON[backHome.mode]} />{formatDuration(backHome.minutes, locale)} · {formatDistance(backHome.meters, locale, units)} · {t("approx")}
+              </p>
+            ) : null}
             {estimateLegs ? <p className="small muted">{t("estimateNote")}</p> : null}
 
             <button type="button" className="btn btn--block" style={{ marginBlockStart: 12 }} onClick={() => setAdding(true)}>
@@ -397,7 +472,7 @@ export function TripWorkspace({
       </div>
 
       <div className="workspace__map">
-        <TripMap stops={mapStops} selectedId={selected} onSelect={selectStop} home={home} center={center} active={showMap} />
+        <TripMap stops={mapStops} selectedId={selected} onSelect={selectStop} home={home} area={area} center={dayCenter} active={showMap} />
       </div>
 
       <button type="button" className="btn btn--primary workspace__mobile-toggle" onClick={() => setShowMap((m) => !m)} aria-pressed={showMap}>
@@ -408,8 +483,8 @@ export function TripWorkspace({
       {adding && day ? (
         <AddStopDialog
           onClose={() => setAdding(false)}
-          candidates={candidates.filter((c) => !usedPlaceIds.has(c.id))}
-          center={center}
+          candidates={candidates.filter((c) => !usedPlaceIds.has(c.id) && c.destinationId === (day.destinationId ?? trip.destinationId))}
+          center={dayCenter}
           onAddPlace={(placeId) => { setAdding(false); run(() => addPlaceStopAction(trip.id, day.id, placeId), t("added")); }}
           onAddCustom={(c) => { setAdding(false); run(() => addCustomStopAction(trip.id, day.id, c), t("added")); }}
         />

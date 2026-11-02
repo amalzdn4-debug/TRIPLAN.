@@ -46,6 +46,13 @@ export interface TripPreferences {
     lng?: number | null;
     types?: string[];
   };
+  /**
+   * Multi-city plan accepted by the traveller (first entry = main destination). Absent or a single
+   * entry = the whole trip is spent at the main destination.
+   */
+  segments?: import("./split").TripSegment[];
+  /** The traveller's answer to the stay-length suggestion, so it isn't shown again. */
+  splitDecision?: "accepted" | "declined" | null;
 }
 
 export interface CandidatePlace extends LatLng {
@@ -55,6 +62,24 @@ export interface CandidatePlace extends LatLng {
   tags: string[];
   durationMin: number | null;
   neighborhood: string | null;
+  /** Number of Wikipedia editions covering the place (imported from Wikidata) — a popularity signal. */
+  popularity?: number;
+  /** Which destination this place belongs to (multi-city trips). */
+  destinationSlug?: string;
+}
+
+/** Intercity journey shown on a travel stop. Typical times only — never live schedules or prices. */
+export interface IntercityDetails {
+  from: string;
+  to: string;
+  mode: "train" | "bus" | "ferry" | "flight" | "car";
+  minutes: number;
+  direct: boolean;
+  source: "curated" | "estimate";
+  note?: string | null;
+  distanceKm: number;
+  /** "out" / "back" for day trips, "onward" for moving to the next stay. */
+  direction: "onward" | "out" | "back";
 }
 
 export interface PlannedStop {
@@ -81,6 +106,8 @@ export interface PlannedStop {
   travelMinutes?: number | null;
   travelMeters?: number | null;
   travelSource?: "provider" | "estimate" | null;
+  /** Extra structured data, e.g. { intercity: IntercityDetails }. */
+  details?: { intercity?: IntercityDetails } | null;
 }
 
 export interface PlannedDay {
@@ -89,4 +116,7 @@ export interface PlannedDay {
   title: string;
   startTime: string;
   stops: PlannedStop[];
+  /** Which destination the day is spent in (multi-city trips). */
+  destinationId?: string | null;
+  kind?: "normal" | "travel" | "day_trip";
 }

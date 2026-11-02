@@ -29,7 +29,7 @@ export default async function AdminUsers({ params, searchParams }: { params: Pro
         {users.map((u) => (
           <tr key={u.id}>
             <td><strong>{u.name}</strong><br /><span className="small ltr">{u.email}</span> {u.verified ? "✓" : ""}</td>
-            <td><span className="badge">{u.role}</span> {u.status === "suspended" ? <span className="badge badge--alert">{t("suspended")}</span> : null}</td>
+            <td><span className="badge">{t(`roles.${u.role}`)}</span> {u.status === "suspended" ? <span className="badge badge--alert">{t("suspended")}</span> : null}</td>
             <td>{u.trips}</td>
             <td>{formatDate(u.createdAt.toISOString(), locale)}</td>
             <td>{u.id !== me?.id ? (

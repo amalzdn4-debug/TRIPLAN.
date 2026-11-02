@@ -7,6 +7,7 @@ import { getDb, schema } from "@/db";
 import { getCurrentUser } from "@/lib/auth/session";
 import { formToObject, flattenErrors, type ActionState } from "@/lib/validation";
 import { LOCALES } from "@/config/locales";
+import { checkTemplate } from "@/lib/affiliate-template";
 
 async function admin() {
   const user = await getCurrentUser();
@@ -87,6 +88,8 @@ const destinationSchema = z.object({
   imageUrl: z.union([url, z.literal("")]).optional().default(""),
   imageAlt: z.string().trim().max(200).optional().default(""),
   imageCredit: z.string().trim().max(120).optional().default(""),
+  kind: z.enum(["city", "coastal", "island", "nature"]).optional().default("city"),
+  wikiTitle: z.string().trim().max(200).optional().default(""),
 });
 
 export async function saveDestinationAction(_prev: ActionState, fd: FormData): Promise<ActionState> {
@@ -112,9 +115,16 @@ export async function saveDestinationAction(_prev: ActionState, fd: FormData): P
     contentStatus: v.contentStatus,
     featured: v.featured,
     published: v.published,
+    kind: v.kind,
+    wikiTitle: v.wikiTitle || null,
     updatedAt: new Date(),
   };
   let destId = v.id;
+  // A new or corrected Wikipedia title queues the destination for a fresh content import.
+  if (destId) {
+    const [old] = await db.select({ wikiTitle: schema.destinations.wikiTitle }).from(schema.destinations).where(eq(schema.destinations.id, destId));
+    if (old && (old.wikiTitle ?? "") !== (v.wikiTitle || "")) Object.assign(values, { enrichmentStatus: "pending" as const, enrichmentError: null });
+  }
   if (destId) await db.update(schema.destinations).set(values).where(eq(schema.destinations.id, destId));
   else [{ id: destId }] = await db.insert(schema.destinations).values(values).returning({ id: schema.destinations.id });
   if (v.imageUrl) {
@@ -182,6 +192,37 @@ export async function placeCommandAction(id: string, command: "verify" | "unveri
   revalidatePath("/[locale]/admin/destinations/[id]", "page");
 }
 
+/* ───────────── Content import (Wikipedia / Wikimedia / Wikidata) ───────────── */
+
+export interface EnrichResult {
+  ok: boolean;
+  processed: number;
+  done: number;
+  partial: number;
+  failed: number;
+  remaining: number;
+  errors: { slug: string; error: string }[];
+  message?: string;
+}
+
+/** Imports content for the next pending destinations (or the given one), within ~40 s. */
+export async function enrichContentAction(slug?: string): Promise<EnrichResult> {
+  await admin();
+  const { connectRaw } = await import("@/db/raw");
+  const { enrichBatch } = await import("@/lib/enrich/run");
+  const db = await connectRaw();
+  try {
+    const s = await enrichBatch(db, { budgetMs: 40_000, slugs: slug ? [slug] : undefined });
+    revalidateTag("destinations");
+    revalidatePath("/[locale]/admin/destinations", "page");
+    return { ok: true, ...s };
+  } catch (e) {
+    return { ok: false, processed: 0, done: 0, partial: 0, failed: 0, remaining: 0, errors: [], message: (e as Error).message };
+  } finally {
+    await db.close();
+  }
+}
+
 /* ───────────── Moderation ───────────── */
 
 export async function moderatePostAction(postId: string, status: "published" | "hidden" | "removed") {
@@ -191,6 +232,20 @@ export async function moderatePostAction(postId: string, status: "published" | "
   await db.update(schema.reports).set({ status: status === "published" ? "dismissed" : "resolved", resolvedBy: user.id }).where(and(eq(schema.reports.postId, postId), eq(schema.reports.status, "open")));
   revalidatePath("/[locale]/admin/moderation", "page");
   revalidatePath("/[locale]/community", "page");
+}
+
+export async function moderateCommentAction(commentId: string, status: "published" | "hidden" | "removed") {
+  const user = await admin();
+  const db = await getDb();
+  const [c] = await db.update(schema.postComments).set({ status }).where(eq(schema.postComments.id, commentId)).returning({ postId: schema.postComments.postId });
+  await db.update(schema.reports).set({ status: status === "published" ? "dismissed" : "resolved", resolvedBy: user.id }).where(and(eq(schema.reports.commentId, commentId), eq(schema.reports.status, "open")));
+  if (c) {
+    await db
+      .update(schema.communityPosts)
+      .set({ commentCount: sql`(select count(*)::int from post_comments x where x.post_id = ${c.postId} and x.status = 'published')` })
+      .where(eq(schema.communityPosts.id, c.postId));
+  }
+  revalidatePath("/[locale]/admin/moderation", "page");
 }
 
 export async function moderateReviewAction(reviewId: string, status: "published" | "hidden") {
@@ -221,11 +276,13 @@ export async function savePlanAction(_prev: ActionState, fd: FormData): Promise<
   await admin();
   const parsed = z
     .object({
-      id: z.enum(["free", "trip_pack", "annual"]),
+      id: z.enum(["free", "trip_pack", "monthly", "annual"]),
       name: z.string().trim().min(1).max(60),
       price: z.coerce.number().min(0).max(10000),
       currency: z.string().trim().toUpperCase().regex(/^[A-Z]{3}$/),
       active: z.preprocess((v) => v === "on", z.boolean()),
+      // Only the Monthly plan has a configurable number of trips per billing month.
+      tripsIncluded: z.preprocess((v) => (v === "" || v == null ? null : Number(v)), z.number().int().min(1).max(100).nullable()).optional(),
     })
     .safeParse(formToObject(fd));
   if (!parsed.success) return { ok: false, errors: flattenErrors(parsed.error) };
@@ -233,10 +290,67 @@ export async function savePlanAction(_prev: ActionState, fd: FormData): Promise<
   const db = await getDb();
   await db
     .update(schema.subscriptionPlans)
-    .set({ name: v.name, priceCents: Math.round(v.price * 100), currency: v.currency, active: v.id === "free" ? true : v.active, updatedAt: new Date() })
+    .set({
+      name: v.name,
+      priceCents: Math.round(v.price * 100),
+      currency: v.currency,
+      active: v.id === "free" ? true : v.active,
+      ...(v.id === "monthly" && v.tripsIncluded ? { tripsIncluded: v.tripsIncluded } : {}),
+      updatedAt: new Date(),
+    })
     .where(eq(schema.subscriptionPlans.id, v.id));
   revalidatePath("/[locale]/pricing", "page");
   return { ok: true, message: "saved" };
+}
+
+/* ───────────── Affiliates ───────────── */
+
+const affiliateSchema = z.object({
+  id: z.string().uuid().optional().or(z.literal("")),
+  name: z.string().trim().min(1).max(80),
+  slug: z.string().trim().toLowerCase().regex(/^[a-z0-9][a-z0-9-]{1,40}$/),
+  category: z.enum(schema.AFFILIATE_CATEGORIES),
+  linkTemplate: z.string().trim().max(1000).superRefine((v, ctx) => {
+    const problem = checkTemplate(v);
+    if (problem) ctx.addIssue({ code: z.ZodIssueCode.custom, message: problem });
+  }),
+  websiteUrl: z.union([url, z.literal("")]).optional(),
+  notes: z.string().trim().max(1000).optional(),
+  sortOrder: z.coerce.number().int().min(0).max(999).default(0),
+});
+
+/** Adds or edits a partner. New partners start as "pending" and are never shown until approved. */
+export async function saveAffiliateAction(_prev: ActionState, fd: FormData): Promise<ActionState> {
+  await admin();
+  const raw = formToObject(fd);
+  // Say exactly what's wrong with a tracking link (https only, placeholders after the host…).
+  const templateProblem = checkTemplate(String(raw.linkTemplate ?? ""));
+  if (templateProblem) return { ok: false, errors: { linkTemplate: templateProblem }, values: raw };
+  const parsed = affiliateSchema.safeParse(raw);
+  if (!parsed.success) return { ok: false, errors: flattenErrors(parsed.error), values: raw };
+  const v = parsed.data;
+  const db = await getDb();
+  const values = { name: v.name, slug: v.slug, category: v.category, linkTemplate: v.linkTemplate, websiteUrl: v.websiteUrl || null, notes: v.notes || null, sortOrder: v.sortOrder, updatedAt: new Date() };
+  try {
+    if (v.id) await db.update(schema.affiliatePartners).set(values).where(eq(schema.affiliatePartners.id, v.id));
+    else await db.insert(schema.affiliatePartners).values({ ...values, status: "pending" });
+  } catch {
+    return { ok: false, errors: { slug: "taken" }, values: raw };
+  }
+  revalidatePath("/[locale]/admin/affiliates", "page");
+  return { ok: true, message: "saved" };
+}
+
+export async function affiliateCommandAction(id: string, command: "approved" | "paused" | "rejected" | "pending" | "delete") {
+  await admin();
+  const db = await getDb();
+  if (command === "delete") await db.delete(schema.affiliatePartners).where(eq(schema.affiliatePartners.id, id));
+  else
+    await db
+      .update(schema.affiliatePartners)
+      .set({ status: command, updatedAt: new Date(), ...(command === "approved" ? { approvedAt: new Date() } : {}) })
+      .where(eq(schema.affiliatePartners.id, id));
+  revalidatePath("/[locale]/admin/affiliates", "page");
 }
 
 /* ───────────── Translations ───────────── */

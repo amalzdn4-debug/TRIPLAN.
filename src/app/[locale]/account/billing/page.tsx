@@ -3,7 +3,8 @@ import { desc, eq } from "drizzle-orm";
 import { requireUser } from "@/lib/auth/guards";
 import { getDb, schema } from "@/db";
 import { getUsage } from "@/lib/entitlements";
-import { features } from "@/lib/env";
+import { features, stripeMode } from "@/lib/env";
+import { SubscriptionControls } from "@/components/account/SubscriptionControls";
 import { formatCents, formatDate } from "@/lib/format";
 import { AccountNav } from "@/components/account/AccountNav";
 import { Notice } from "@/components/ui/Form";
@@ -34,21 +35,40 @@ export default async function BillingPage({ params, searchParams }: { params: Pr
           <h1 style={{ fontSize: "var(--fs-2xl)" }}>{t("title")}</h1>
           {sp.checkout === "success" ? <Notice tone="success">{t("checkoutSuccess")}</Notice> : null}
           {sp.status === "unavailable" || !features.stripe() ? <Notice tone="warning">{t("unavailable")}</Notice> : null}
+          {sp.status === "alreadySubscribed" ? <Notice>{t("alreadySubscribed")}</Notice> : null}
+          {stripeMode() === "test" ? <Notice tone="warning">{t("testMode")}</Notice> : null}
           <div className="grid grid--3">
             <div className="card">
               <p className="small muted">{t("currentPlan")}</p>
-              <h2 style={{ fontSize: "var(--fs-xl)" }}>{sub ? t("annual") : t("free")}</h2>
+              <h2 style={{ fontSize: "var(--fs-xl)" }}>{sub ? t(`planNames.${sub.planId}`) : t("free")}</h2>
               {sub ? (
-                <p className="small">
-                  {sub.cancelAtPeriodEnd ? t("endsOn", { date: formatDate(sub.currentPeriodEnd?.toISOString(), locale) }) : t("renewsOn", { date: formatDate(sub.currentPeriodEnd?.toISOString(), locale) })}
-                  {sub.status !== "active" ? ` · ${t("statusLabel", { status: sub.status })}` : ""}
-                </p>
+                <>
+                  <p className="small">
+                    {sub.cancelAtPeriodEnd ? t("endsOn", { date: formatDate(sub.currentPeriodEnd?.toISOString(), locale) }) : t("renewsOn", { date: formatDate(sub.currentPeriodEnd?.toISOString(), locale) })}
+                    {sub.status !== "active" ? ` · ${t("statusLabel", { status: sub.status })}` : ""}
+                    {!sub.livemode ? <> · <span className="badge badge--alert">{t("test")}</span></> : null}
+                  </p>
+                  {features.stripe() ? <SubscriptionControls cancelAtPeriodEnd={sub.cancelAtPeriodEnd} endDate={formatDate(sub.currentPeriodEnd?.toISOString(), locale)} /> : null}
+                </>
               ) : null}
             </div>
             <div className="card">
-              <p className="small muted">{t("tripsCreated")}</p>
-              <h2 style={{ fontSize: "var(--fs-xl)" }}>{usage.tripsCreated}</h2>
-              <p className="small">{t("freeRemaining", { n: usage.freeRemaining })}</p>
+              {sub && sub.tripsIncluded != null ? (
+                <>
+                  <p className="small muted">{t("thisPeriod")}</p>
+                  <h2 style={{ fontSize: "var(--fs-xl)" }}>{t("tripsUsedOf", { used: sub.tripsUsedInPeriod, total: sub.tripsIncluded })}</h2>
+                  <div className="meter" role="meter" aria-valuemin={0} aria-valuemax={sub.tripsIncluded} aria-valuenow={sub.tripsUsedInPeriod} aria-label={t("thisPeriod")}>
+                    <span style={{ inlineSize: `${Math.min(100, (sub.tripsUsedInPeriod / Math.max(1, sub.tripsIncluded)) * 100)}%` }} />
+                  </div>
+                  <p className="small">{sub.cancelAtPeriodEnd ? t("periodEnds", { date: formatDate(sub.currentPeriodEnd?.toISOString(), locale) }) : t("resetsOn", { date: formatDate(sub.currentPeriodEnd?.toISOString(), locale) })}</p>
+                </>
+              ) : (
+                <>
+                  <p className="small muted">{t("tripsCreated")}</p>
+                  <h2 style={{ fontSize: "var(--fs-xl)" }}>{usage.tripsCreated}</h2>
+                  <p className="small">{sub ? t("unlimited") : t("freeRemaining", { n: usage.freeRemaining })}</p>
+                </>
+              )}
             </div>
             <div className="card">
               <p className="small muted">{t("credits")}</p>
@@ -74,7 +94,7 @@ export default async function BillingPage({ params, searchParams }: { params: Pr
                     {payments.map((p) => (
                       <tr key={p.id}>
                         <td>{formatDate(p.createdAt.toISOString(), locale)}</td>
-                        <td>{t(`items.${p.planId}`)}</td>
+                        <td>{t.has(`items.${p.planId}`) ? t(`items.${p.planId}`) : p.planId}{!p.livemode ? <> <span className="badge badge--alert">{t("test")}</span></> : null}</td>
                         <td className="ltr">{formatCents(p.amountCents, p.currency, locale)}</td>
                         <td><span className={`badge ${p.status === "paid" ? "badge--blue" : "badge--alert"}`}>{t(`paymentStatus.${p.status}`)}</span></td>
                       </tr>

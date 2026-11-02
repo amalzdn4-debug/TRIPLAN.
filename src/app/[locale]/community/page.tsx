@@ -1,6 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { getPosts } from "@/lib/community";
+import { getPosts, POST_TYPES } from "@/lib/community";
 import { getDestinationCards } from "@/lib/destinations";
 import { getCurrentUser } from "@/lib/auth/session";
 import { countryName } from "@/lib/format";
@@ -10,6 +10,7 @@ import { Notice } from "@/components/ui/Form";
 import { Icon } from "@/components/ui/Icon";
 import { ResendVerification } from "@/components/account/ResendVerification";
 import { pageMetadata } from "@/lib/seo";
+import { features } from "@/lib/env";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -17,7 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return pageMetadata({ locale, path: "/community", title: t("title"), description: t("lead") });
 }
 
-const TYPES = ["recommendation", "hidden_gem", "review", "restaurant", "tip"];
+const TYPES: string[] = [...POST_TYPES];
 
 export default async function CommunityPage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ destination?: string; type?: string }> }) {
   const { locale } = await params;
@@ -26,7 +27,7 @@ export default async function CommunityPage({ params, searchParams }: { params: 
   const t = await getTranslations("community");
   const user = await getCurrentUser();
   const cards = await getDestinationCards(locale);
-  const dests = cards.map((c) => ({ slug: c.slug, label: `${c.city}, ${countryName(c.countryCode, locale)}` })).sort((a, b) => a.label.localeCompare(b.label, locale));
+  const dests = cards.map((c) => ({ slug: c.slug, label: `${c.city}, ${countryName(c.countryCode, locale)}`, lat: c.lat, lng: c.lng })).sort((a, b) => a.label.localeCompare(b.label, locale));
   const destination = dests.some((d) => d.slug === sp.destination) ? sp.destination : undefined;
   const type = TYPES.includes(sp.type ?? "") ? sp.type : undefined;
   const posts = await getPosts({ destinationSlug: destination, type, limit: 60 });
@@ -78,7 +79,7 @@ export default async function CommunityPage({ params, searchParams }: { params: 
             ) : !user.emailVerified ? (
               <Notice tone="warning">{t("verifyToPost")} <ResendVerification /></Notice>
             ) : (
-              <PostForm destinations={dests} defaultDestination={destination} />
+              <PostForm destinations={dests} defaultDestination={destination} uploadsEnabled={features.uploads()} />
             )}
             <div className="card card--muted card--flat small stack">
               <strong>{t("guidelinesTitle")}</strong>

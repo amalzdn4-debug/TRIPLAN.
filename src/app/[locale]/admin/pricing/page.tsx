@@ -13,6 +13,7 @@ export default async function AdminPricing({ params }: { params: Promise<{ local
   return (
     <AdminShell current="/admin/pricing" title={t("sections.pricing")}>
       <p className="small muted">{t("pricingHelp")}</p>
+      <p className="small muted">{t("pricingExisting")}</p>
       <div className="grid grid--3">
         {plans.map((p) => (
           <AdminForm key={p.id} kind="plan" submitLabel={t("save")}>
@@ -24,6 +25,9 @@ export default async function AdminPricing({ params }: { params: Promise<{ local
               <div className="field"><label>{t("currency")}</label><input name="currency" className="input" maxLength={3} defaultValue={p.currency} /></div>
             </div>
             {p.id === "free" ? <input type="hidden" name="price" value="0" /> : null}
+            {p.id === "monthly" ? (
+              <div className="field"><label>{t("tripsPerMonth")}</label><input name="tripsIncluded" type="number" min="1" max="100" className="input" defaultValue={p.tripsIncluded ?? 4} /></div>
+            ) : null}
             <label className="checkbox"><input type="checkbox" name="active" defaultChecked={p.active} disabled={p.id === "free"} /><span>{t("active")}</span></label>
           </AdminForm>
         ))}

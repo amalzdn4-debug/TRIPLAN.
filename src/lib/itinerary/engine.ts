@@ -4,10 +4,14 @@
  *  • as the fallback whenever the AI response is missing or invalid.
  * It only schedules places that exist in the database — it never invents venues or prices.
  */
-import { chooseMode, estimateLeg, haversineMeters, type LatLng } from "@/lib/geo";
-import type { CandidatePlace, PlannedDay, PlannedStop, TripPreferences } from "./types";
+import { chooseMode, estimateLeg, googleMapsDirectionsUrl, haversineMeters, type LatLng } from "@/lib/geo";
+import type { CandidatePlace, IntercityDetails, PlannedDay, PlannedStop, TripPreferences } from "./types";
+import { PER_DAY, type DaySlot, type TripSegment } from "./split";
 
-const PER_DAY = { relaxed: 2, balanced: 3, packed: 4 } as const;
+/** Getting to/from a station, port or airport around an intercity journey (estimate). */
+export const STATION_TRANSFER_MIN = { train: 25, bus: 25, ferry: 30, flight: 90, car: 10 } as const;
+/** Most museums close in the late afternoon; we avoid starting one after this time. */
+const LATEST_MUSEUM_START = 16 * 60 + 30;
 const RADIUS_M = { low: 2_000, medium: 4_000, high: 7_000 } as const;
 
 export function toMinutes(hhmm: string): number {
@@ -29,6 +33,8 @@ export function scorePlace(p: CandidatePlace, prefs: Pick<TripPreferences, "inte
   for (const tag of p.tags) if (interests.has(tag)) s += 2;
   if (p.tags.includes("landmark")) s += 0.75;
   if (prefs.children > 0 && p.tags.includes("family")) s += 1;
+  // Widely covered places (many Wikipedia editions) are usually the ones worth the time.
+  if (p.popularity) s += Math.min(1.5, p.popularity / 60);
   return s;
 }
 
@@ -52,6 +58,115 @@ function orderNearestNeighbour<T extends LatLng>(items: T[], start: LatLng | nul
     cursor = next;
   }
   return out;
+}
+
+interface Orderable extends LatLng {
+  durationMin: number;
+  museum?: boolean;
+}
+
+/** Route cost in metres, with penalties for museums that would start after closing-time risk. */
+function routeCost<T extends Orderable>(order: T[], start: LatLng | null, startMinutes: number): number {
+  let cost = 0;
+  let clock = startMinutes;
+  let lunch = false;
+  let prev: LatLng | null = start;
+  for (const p of order) {
+    if (prev) {
+      const d = haversineMeters(prev, p);
+      cost += d;
+      clock += (d * 1.3) / 75; // ~4.5 km/h walking-equivalent, minutes
+    }
+    if (!lunch && clock >= 12 * 60 + 15) {
+      clock += 75;
+      lunch = true;
+    }
+    if (p.museum && clock > LATEST_MUSEUM_START) cost += 3000;
+    clock += p.durationMin;
+    prev = p;
+  }
+  return cost;
+}
+
+function permutations<T>(items: T[]): T[][] {
+  if (items.length <= 1) return [items.slice()];
+  const out: T[][] = [];
+  items.forEach((x, i) => {
+    for (const rest of permutations([...items.slice(0, i), ...items.slice(i + 1)])) out.push([x, ...rest]);
+  });
+  return out;
+}
+
+/** Shortest sensible visiting order: exhaustive for up to 7 stops, nearest-neighbour + 2-opt beyond. */
+export function bestOrder<T extends Orderable>(items: T[], start: LatLng | null, startMinutes = 9 * 60): T[] {
+  if (items.length <= 1) return items.slice();
+  if (items.length <= 7) {
+    let best = items;
+    let bestCost = Infinity;
+    for (const perm of permutations(items)) {
+      const c = routeCost(perm, start, startMinutes);
+      if (c < bestCost) {
+        bestCost = c;
+        best = perm;
+      }
+    }
+    return best.slice();
+  }
+  let route = orderNearestNeighbour(items, start);
+  let improved = true;
+  while (improved) {
+    improved = false;
+    for (let i = 0; i < route.length - 1; i++) {
+      for (let j = i + 1; j < route.length; j++) {
+        const candidate = [...route.slice(0, i), ...route.slice(i, j + 1).reverse(), ...route.slice(j + 1)];
+        if (routeCost(candidate, start, startMinutes) + 1 < routeCost(route, start, startMinutes)) {
+          route = candidate;
+          improved = true;
+        }
+      }
+    }
+  }
+  return route;
+}
+
+/**
+ * Splits places into one compact geographic group per day (balanced k-means), so every day has a
+ * similar amount to do and nearby sights are visited together.
+ */
+export function assignDayGroups(places: CandidatePlace[], scores: Map<string, number>, targets: number[]): CandidatePlace[][] {
+  const k = targets.length;
+  const groups: CandidatePlace[][] = targets.map(() => []);
+  if (!k || !places.length) return groups;
+  const wanted = targets.reduce((a, b) => a + b, 0);
+  const ranked = [...places].sort((a, b) => (scores.get(b.id) ?? 0) - (scores.get(a.id) ?? 0)).slice(0, wanted);
+  // Farthest-point seeding from the best place gives well-separated starting centres.
+  const centers: LatLng[] = [ranked[0]];
+  while (centers.length < Math.min(k, ranked.length)) {
+    let far = ranked[0];
+    let farD = -1;
+    for (const p of ranked) {
+      const d = Math.min(...centers.map((c) => haversineMeters(c, p)));
+      if (d > farD) {
+        farD = d;
+        far = p;
+      }
+    }
+    centers.push(far);
+  }
+  while (centers.length < k) centers.push(centers[centers.length - 1]);
+  for (let iter = 0; iter < 8; iter++) {
+    groups.forEach((g) => (g.length = 0));
+    // Assign the most important places first so they get their nearest centre.
+    for (const p of ranked) {
+      const order = centers.map((c, i) => ({ i, d: haversineMeters(c, p) })).sort((a, b) => a.d - b.d);
+      const slot = order.find((o) => groups[o.i].length < targets[o.i]) ?? order[0];
+      groups[slot.i].push(p);
+    }
+    groups.forEach((g, i) => {
+      if (g.length) centers[i] = { lat: g.reduce((s, p) => s + p.lat, 0) / g.length, lng: g.reduce((s, p) => s + p.lng, 0) / g.length };
+    });
+  }
+  return groups;
 }
 
 /** Pick a geographically coherent set of places for one day. */
@@ -115,7 +230,16 @@ export function scheduleDay(stops: PlannedStop[], startTime: string, transport: 
     stop.startTime = toHHMM(cursor);
     cursor += stop.durationMin;
     const next = out[i + 1];
-    if (next && stop.lat != null && stop.lng != null && next.lat != null && next.lng != null) {
+    const transferMode = (s: PlannedStop) => s.details?.intercity?.mode ?? "train";
+    if (next && (next.kind === "transport" || stop.kind === "transport")) {
+      // Getting to the station/airport before an intercity leg, or from it afterwards (estimate).
+      const minutes = next.kind === "transport" ? STATION_TRANSFER_MIN[transferMode(next)] : Math.min(30, STATION_TRANSFER_MIN[transferMode(stop)]);
+      stop.travelMode = transferMode(next.kind === "transport" ? next : stop) === "car" ? "driving" : "transit";
+      stop.travelMinutes = minutes;
+      stop.travelMeters = null;
+      stop.travelSource = "estimate";
+      cursor += minutes;
+    } else if (next && stop.lat != null && stop.lng != null && next.lat != null && next.lng != null) {
       // Keep a provider-supplied leg if one exists and the endpoints haven't changed.
       if (stop.travelSource !== "provider" || stop.travelMinutes == null) {
         const mode = chooseMode(transport, haversineMeters(stop as LatLng, next as LatLng));
@@ -146,6 +270,14 @@ export interface BuildDayInput {
   start?: LatLng | null; // accommodation
   isArrivalDay?: boolean;
   isDepartureDay?: boolean;
+  /** Start the day at this time (e.g. after arriving by train). */
+  startAt?: string;
+  noBreakfast?: boolean;
+  noDinner?: boolean;
+  /** Adjust the number of sights (e.g. -1 on travel days). */
+  targetDelta?: number;
+  /** Destination name for the day title when no sights are planned. */
+  placeName?: string;
 }
 
 export function buildDay(input: BuildDayInput): { day: PlannedDay; used: string[] } {
@@ -156,7 +288,8 @@ export function buildDay(input: BuildDayInput): { day: PlannedDay; used: string[
   if (prefs.activityBalance === "more_activities") target += 1;
   if (prefs.activityBalance === "more_free_time") target -= 1;
   if (input.isArrivalDay || input.isDepartureDay) target -= 1;
-  target = Math.max(1, Math.min(5, target));
+  target += input.targetDelta ?? 0;
+  target = Math.max(0, Math.min(5, target));
 
   const lockedAttractions = locked.filter((s) => s.kind === "attraction" || s.kind === "activity" || s.kind === "custom");
   const seedPlaces: CandidatePlace[] = lockedAttractions
@@ -172,7 +305,11 @@ export function buildDay(input: BuildDayInput): { day: PlannedDay; used: string[
   ];
   const coordsStops = attractionStops.filter((s) => s.lat != null && s.lng != null) as (PlannedStop & LatLng)[];
   const noCoords = attractionStops.filter((s) => s.lat == null || s.lng == null);
-  const ordered: PlannedStop[] = [...orderNearestNeighbour(coordsStops, input.start ?? null), ...noCoords];
+  const startTimeForOrder = toMinutes(input.startAt ?? dayStartTime(prefs));
+  const museumIds = new Set(picked.filter((p) => p.tags.includes("museums")).map((p) => p.id));
+  // Wrappers keep the original stop objects (locked stops are matched by identity below).
+  const orderable = coordsStops.map((stop) => ({ stop, lat: stop.lat!, lng: stop.lng!, durationMin: stop.durationMin, museum: stop.placeId ? museumIds.has(stop.placeId) : false }));
+  const ordered: PlannedStop[] = [...bestOrder(orderable, input.start ?? null, startTimeForOrder).map((o) => o.stop), ...noCoords];
 
   const placeById = new Map(picked.map((p) => [p.id, p]));
   const nearFor = (s: PlannedStop | undefined): CandidatePlace | PlannedStop | null => (s ? (s.placeId && placeById.get(s.placeId)) || s : null);
@@ -180,7 +317,7 @@ export function buildDay(input: BuildDayInput): { day: PlannedDay; used: string[
   const meal = (type: NonNullable<PlannedStop["mealType"]>, near: PlannedStop | undefined, dur: number) => lockedMeal(type) ?? mealStop(type, nearFor(near), dur);
 
   // Assemble the day by simulating the clock so meals land at realistic times.
-  const startTime = input.isArrivalDay && prefs.departureTime ? toHHMM(Math.max(toMinutes(dayStartTime(prefs)), toMinutes("12:00"))) : dayStartTime(prefs);
+  const startTime = input.startAt ?? (input.isArrivalDay && prefs.departureTime ? toHHMM(Math.max(toMinutes(dayStartTime(prefs)), toMinutes("12:00"))) : dayStartTime(prefs));
   const legMinutes = (a: PlannedStop | undefined, b: PlannedStop | undefined) =>
     a?.lat != null && a?.lng != null && b?.lat != null && b?.lng != null
       ? estimateLeg(a as LatLng, b as LatLng, chooseMode(prefs.transport, haversineMeters(a as LatLng, b as LatLng))).minutes
@@ -196,7 +333,7 @@ export function buildDay(input: BuildDayInput): { day: PlannedDay; used: string[
     stops.push(s);
     clock += s.durationMin;
   };
-  if (!input.isArrivalDay && clock < toMinutes("11:00")) push(meal("breakfast", ordered[0], 45));
+  if (!input.isArrivalDay && !input.noBreakfast && clock < toMinutes("11:00")) push(meal("breakfast", ordered[0], 45));
   ordered.forEach((a, i) => {
     const prev = ordered[i - 1];
     const arrive = clock + legMinutes(stops[stops.length - 1], a);
@@ -213,7 +350,7 @@ export function buildDay(input: BuildDayInput): { day: PlannedDay; used: string[
   const last = ordered[n - 1];
   if (!lunchDone && clock <= toMinutes("15:00")) push(meal("lunch", last, 75));
   if (!snackDone && n >= 2 && clock >= toMinutes("15:00") && clock <= toMinutes("17:00")) push(meal("snack", last, 30));
-  if (!input.isDepartureDay) {
+  if (!input.isDepartureDay && !input.noDinner) {
     const gap = toMinutes("19:00") - clock - 15;
     if (gap >= 60) {
       stops.push({ kind: "break", mealType: null, title: last?.title ?? prefs.destinationName, lat: last?.lat ?? null, lng: last?.lng ?? null, durationMin: Math.min(gap, 240), locked: false });
@@ -227,7 +364,7 @@ export function buildDay(input: BuildDayInput): { day: PlannedDay; used: string[
 
   const scheduled = scheduleDay(stops, startTime, prefs.transport);
   const hoods = Array.from(new Set(ordered.map((s) => (s.placeId ? placeById.get(s.placeId)?.neighborhood : null)).filter(Boolean))) as string[];
-  const title = hoods.slice(0, 2).join(" · ") || ordered.slice(0, 2).map((s) => s.title).join(" · ") || prefs.destinationName;
+  const title = hoods.slice(0, 2).join(" · ") || ordered.slice(0, 2).map((s) => s.title).join(" · ") || input.placeName || prefs.destinationName;
 
   return {
     day: { dayIndex: input.dayIndex, date: input.date, title, startTime, stops: scheduled },
@@ -246,23 +383,144 @@ export function enumerateDates(start: string, end: string, maxDays: number): str
   return out;
 }
 
+function dayTargets(prefs: TripPreferences, n: number, flags: { arrival: boolean; departure: boolean }): number[] {
+  let base: number = PER_DAY[prefs.pace];
+  if (prefs.activityBalance === "more_activities") base += 1;
+  if (prefs.activityBalance === "more_free_time") base -= 1;
+  return Array.from({ length: n }, (_, i) => Math.max(1, base - ((flags.arrival && i === 0) || (flags.departure && i === n - 1 && n > 1) ? 1 : 0)));
+}
+
 export function buildItinerary(prefs: TripPreferences, places: CandidatePlace[], maxDays: number): PlannedDay[] {
   const dates = enumerateDates(prefs.startDate, prefs.endDate, maxDays);
   const scores = new Map(places.map((p, i) => [p.id, scorePlace(p, prefs, (places.length - i) / places.length)]));
   const start = prefs.accommodation.lat != null && prefs.accommodation.lng != null ? { lat: prefs.accommodation.lat, lng: prefs.accommodation.lng } : null;
+  const arrival = dates.length > 1 && Boolean(prefs.departureTime);
+  const departure = dates.length > 1 && Boolean(prefs.returnTime);
+  const groups = assignDayGroups(places, scores, dayTargets(prefs, dates.length, { arrival, departure }));
   let remaining = places.slice();
   return dates.map((date, i) => {
+    const group = groups[i].filter((p) => remaining.includes(p));
     const { day, used } = buildDay({
       dayIndex: i,
       date,
       prefs,
-      pool: remaining,
+      // The day's own geographic group first; fall back to anything unused if the group is short.
+      pool: group.length ? group : remaining,
       scores,
       start,
-      isArrivalDay: dates.length > 1 && i === 0 && Boolean(prefs.departureTime),
-      isDepartureDay: dates.length > 1 && i === dates.length - 1 && Boolean(prefs.returnTime),
+      isArrivalDay: arrival && i === 0,
+      isDepartureDay: departure && i === dates.length - 1,
     });
     remaining = remaining.filter((p) => !used.includes(p.id));
     return day;
+  });
+}
+
+/* ───────────── Multi-city trips ───────────── */
+
+function intercityStop(from: TripSegment, to: TripSegment, leg: NonNullable<TripSegment["leg"]>, direction: IntercityDetails["direction"]): PlannedStop {
+  const mode = leg.mode;
+  const travelmode = mode === "car" ? "driving" : "transit";
+  return {
+    kind: "transport",
+    title: to.name,
+    lat: to.lat,
+    lng: to.lng,
+    durationMin: leg.minutes,
+    linkUrl: mode === "flight" ? null : googleMapsDirectionsUrl([from, to], travelmode),
+    locked: false,
+    details: { intercity: { from: from.name, to: to.name, mode, minutes: leg.minutes, direct: leg.direct, source: leg.source, note: leg.note ?? null, distanceKm: leg.distanceKm, direction } },
+  };
+}
+
+export interface PlanInput {
+  prefs: TripPreferences;
+  slots: DaySlot[];
+  dates: string[];
+  /** Candidate places per destination slug. */
+  places: Record<string, CandidatePlace[]>;
+  /** Locked stops per day index (kept on regeneration). */
+  locked?: Record<number, PlannedStop[]>;
+}
+
+/** Builds a multi-city itinerary: stays, travel days between stays and day trips from the base. */
+export function buildPlan({ prefs, slots, dates, places, locked = {} }: PlanInput): PlannedDay[] {
+  const base = slots[0]?.segment;
+  const accommodation = prefs.accommodation.lat != null && prefs.accommodation.lng != null ? { lat: prefs.accommodation.lat, lng: prefs.accommodation.lng } : null;
+  const remaining: Record<string, CandidatePlace[]> = Object.fromEntries(Object.entries(places).map(([k, v]) => [k, v.slice()]));
+  const scores = new Map<string, number>();
+  for (const list of Object.values(places)) list.forEach((p, i) => scores.set(p.id, scorePlace(p, prefs, (list.length - i) / list.length)));
+
+  // Balanced geographic groups per destination, sized by how many normal days are spent there.
+  const groupsBySlug: Record<string, CandidatePlace[][]> = {};
+  for (const slug of new Set(slots.map((s) => s.segment.slug))) {
+    const daySlots = slots.filter((s) => s.segment.slug === slug && s.kind === "normal");
+    groupsBySlug[slug] = assignDayGroups(places[slug] ?? [], scores, daySlots.map(() => PER_DAY[prefs.pace]));
+  }
+  const groupCursor: Record<string, number> = {};
+  const nextGroup = (slug: string) => {
+    const g = groupsBySlug[slug]?.[groupCursor[slug] ?? 0] ?? [];
+    groupCursor[slug] = (groupCursor[slug] ?? 0) + 1;
+    return g;
+  };
+  const take = (slug: string, used: string[]) => {
+    remaining[slug] = (remaining[slug] ?? []).filter((p) => !used.includes(p.id));
+  };
+
+  return slots.map((slot, i) => {
+    const date = dates[i] ?? null;
+    const seg = slot.segment;
+    const isFirst = i === 0;
+    const isLast = i === slots.length - 1 && slots.length > 1;
+    const lockedHere = locked[i] ?? [];
+    const pool = remaining[seg.slug] ?? [];
+
+    if (slot.kind === "travel" && slot.from && seg.leg) {
+      // Breakfast, check out, travel, then a lighter afternoon in the new city.
+      const from = slot.from;
+      const morning: PlannedStop[] = [mealStop("breakfast", { title: from.name, lat: from.lat, lng: from.lng } as PlannedStop, 45), intercityStop(from, seg, seg.leg, "onward")];
+      const departAt = toMinutes(dayStartTime(prefs)) + 45 + STATION_TRANSFER_MIN[seg.leg.mode];
+      const arriveAt = departAt + seg.leg.minutes + Math.min(30, STATION_TRANSFER_MIN[seg.leg.mode]);
+      const afternoon = buildDay({
+        dayIndex: i, date, prefs, pool, scores, lockedStops: lockedHere, start: { lat: seg.lat, lng: seg.lng },
+        startAt: toHHMM(arriveAt), noBreakfast: true, isDepartureDay: isLast && Boolean(prefs.returnTime),
+        targetDelta: arriveAt >= 17 * 60 ? -9 : arriveAt >= 14 * 60 ? -2 : -1, placeName: seg.name,
+      });
+      take(seg.slug, afternoon.used);
+      const stops = scheduleDay([...morning, ...afternoon.day.stops], dayStartTime(prefs), prefs.transport);
+      return { dayIndex: i, date, title: `${from.name} → ${seg.name}`, startTime: dayStartTime(prefs), stops, destinationId: seg.destinationId, kind: "travel" as const };
+    }
+
+    if (slot.kind === "day_trip" && slot.from && seg.leg) {
+      // Out after breakfast, a few sights, back for dinner at the base.
+      const from = slot.from;
+      const departAt = toMinutes(dayStartTime(prefs)) + 45 + STATION_TRANSFER_MIN[seg.leg.mode];
+      const arriveAt = departAt + seg.leg.minutes + Math.min(30, STATION_TRANSFER_MIN[seg.leg.mode]);
+      const away = buildDay({
+        dayIndex: i, date, prefs, pool, scores, lockedStops: lockedHere, start: { lat: seg.lat, lng: seg.lng },
+        startAt: toHHMM(arriveAt), noBreakfast: true, noDinner: true, targetDelta: -1, placeName: seg.name,
+      });
+      take(seg.slug, away.used);
+      const stops: PlannedStop[] = [
+        mealStop("breakfast", { title: from.name, lat: from.lat, lng: from.lng } as PlannedStop, 45),
+        intercityStop(from, seg, seg.leg, "out"),
+        ...away.day.stops.filter((s) => s.kind !== "break"),
+        intercityStop(seg, from, seg.leg, "back"),
+        mealStop("dinner", { title: from.name, lat: from.lat, lng: from.lng } as PlannedStop, 90),
+      ];
+      if (prefs.interests.includes("nightlife")) stops.push(mealStop("drinks", { title: from.name, lat: from.lat, lng: from.lng } as PlannedStop, 75));
+      return { dayIndex: i, date, title: seg.name, startTime: dayStartTime(prefs), stops: scheduleDay(stops, dayStartTime(prefs), prefs.transport), destinationId: seg.destinationId, kind: "day_trip" as const };
+    }
+
+    const group = nextGroup(seg.slug).filter((p) => pool.includes(p));
+    const { day, used } = buildDay({
+      dayIndex: i, date, prefs, pool: group.length ? group : pool, scores, lockedStops: lockedHere,
+      start: seg.slug === base?.slug ? accommodation : { lat: seg.lat, lng: seg.lng },
+      isArrivalDay: isFirst && slots.length > 1 && Boolean(prefs.departureTime),
+      isDepartureDay: isLast && Boolean(prefs.returnTime),
+      placeName: seg.name,
+    });
+    take(seg.slug, used);
+    return { ...day, destinationId: seg.destinationId, kind: "normal" as const };
   });
 }

@@ -26,16 +26,16 @@ export default async function AdminDestination({ params }: { params: Promise<{ l
     <AdminShell current="/admin/destinations" title={`${row.c.name}`}>
       <Link href={`/destinations/${d.slug}`} className="small">{t("dest.viewPublic")}</Link>
       <AdminForm kind="destination" submitLabel={t("save")}>
-        <DestinationFields v={{ id: d.id, slug: d.slug, city: row.c.name, countryCode: row.c.countryCode, continent: row.continent, lat: row.c.lat, lng: row.c.lng, summary: d.summary, description: d.description, bestTime: d.bestTime, daysMin: d.suggestedDaysMin, daysMax: d.suggestedDaysMax, budgetLevel: d.budgetLevel, contentStatus: d.contentStatus, featured: d.featured, published: d.published }} />
+        <DestinationFields v={{ id: d.id, slug: d.slug, city: row.c.name, countryCode: row.c.countryCode, continent: row.continent, lat: row.c.lat, lng: row.c.lng, summary: d.summary, description: d.description, bestTime: d.bestTime, daysMin: d.suggestedDaysMin, daysMax: d.suggestedDaysMax, budgetLevel: d.budgetLevel, contentStatus: d.contentStatus, featured: d.featured, published: d.published, kind: d.kind, wikiTitle: d.wikiTitle }} />
       </AdminForm>
       <h2 style={{ fontSize: "var(--fs-lg)" }}>{t("places.title")} ({places.length})</h2>
       <div className="table-wrap"><table className="table"><thead><tr><th>{t("places.name")}</th><th>{t("places.kind")}</th><th>{t("places.coords")}</th><th>{t("status")}</th><th /></tr></thead><tbody>
         {places.map((p) => (
           <tr key={p.id}>
             <td><strong>{p.name}</strong><br /><span className="small muted">{p.neighborhood} {p.tags.join(", ")}</span></td>
-            <td>{p.kind}</td>
+            <td>{t(`placeKinds.${p.kind}`)}</td>
             <td className="ltr small">{p.lat.toFixed(4)}, {p.lng.toFixed(4)}</td>
-            <td><span className={`badge ${p.verification === "verified" ? "badge--blue" : "badge--outline"}`}>{p.verification}</span></td>
+            <td><span className={`badge ${p.verification === "verified" ? "badge--blue" : "badge--outline"}`}>{t(`verificationStates.${p.verification}`)}</span></td>
             <td><div className="cluster" style={{ gap: 4 }}>
               <CommandButton cmd={{ type: "place", id: p.id, command: p.verification === "verified" ? "unverify" : "verify" }} label={p.verification === "verified" ? t("places.unverify") : t("places.verify")} />
               <CommandButton cmd={{ type: "place", id: p.id, command: "delete" }} label={t("delete")} danger confirmText={t("confirmDelete")} />
@@ -50,10 +50,10 @@ export default async function AdminDestination({ params }: { params: Promise<{ l
         <div className="form-row">
           <div className="field"><label>{t("places.name")}</label><input name="name" className="input" required /></div>
           <div className="field"><label>{t("places.kind")}</label>
-            <select name="kind" className="select">{["attraction", "activity", "restaurant", "accommodation", "luggage_storage", "transport_hub"].map((k) => <option key={k} value={k}>{k}</option>)}</select>
+            <select name="kind" className="select">{["attraction", "activity", "restaurant", "accommodation", "luggage_storage", "transport_hub"].map((k) => <option key={k} value={k}>{t(`placeKinds.${k}`)}</option>)}</select>
           </div>
           <div className="field"><label>{t("places.verification")}</label>
-            <select name="verification" className="select"><option value="verified">verified</option><option value="sample">sample</option></select>
+            <select name="verification" className="select"><option value="verified">{t("verificationStates.verified")}</option><option value="sample">{t("verificationStates.sample")}</option></select>
           </div>
         </div>
         <div className="form-row">

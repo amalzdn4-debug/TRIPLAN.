@@ -4,11 +4,18 @@ import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { getDb, schema } from "@/db";
 import { DEFAULT_HERO_SLIDES, type HeroSlideData } from "@/data/hero";
 import { SEED_DESTINATIONS, COUNTRY_CONTINENT, seedImageFor } from "@/data/destinations";
+import { SEED_CONNECTIONS } from "@/data/connections";
+import type { CreditedImage } from "@/lib/images";
+import { nearbyDestinations, type ConnectionRow, type NearbyOption } from "@/lib/nearby";
+import { pickDiverseHero } from "@/lib/hero";
 
 export interface DestinationCardData {
   id: string;
   slug: string;
+  /** City name in the visitor's language when known (falls back to English). */
   city: string;
+  /** English city name (used for search and external links). */
+  cityEn: string;
   countryCode: string;
   continent: string;
   summary: string;
@@ -22,15 +29,18 @@ export interface DestinationCardData {
   popularity: number;
   featured: boolean;
   contentStatus: "sample" | "verified";
-  image: { url: string; alt: string; creditName: string | null; creditUrl: string | null } | null;
+  image: CreditedImage | null;
   placeCount: number;
+  lat: number;
+  lng: number;
+  kind: "city" | "coastal" | "island" | "nature";
 }
 
 function localized<T extends { summary: string; translations?: Record<string, { summary?: string }> | null }>(row: T, locale: string) {
   return row.translations?.[locale]?.summary || row.summary;
 }
 
-async function loadCards(): Promise<(DestinationCardData & { translations: Record<string, { summary?: string; description?: string; bestTime?: string }> })[]> {
+async function loadCards(): Promise<(Omit<DestinationCardData, "cityEn"> & { translations: Record<string, { summary?: string; description?: string; bestTime?: string; name?: string }> })[]> {
   const db = await getDb();
   const rows = await db
     .select({
@@ -51,6 +61,9 @@ async function loadCards(): Promise<(DestinationCardData & { translations: Recor
       popularity: schema.destinations.popularity,
       featured: schema.destinations.featured,
       contentStatus: schema.destinations.contentStatus,
+      lat: schema.cities.lat,
+      lng: schema.cities.lng,
+      kind: schema.destinations.kind,
       placeCount: sql<number>`(select count(*)::int from places p where p.destination_id = ${schema.destinations.id} and p.kind in ('attraction','activity'))`,
     })
     .from(schema.destinations)
@@ -62,12 +75,16 @@ async function loadCards(): Promise<(DestinationCardData & { translations: Recor
   const images = ids.length
     ? await db.select().from(schema.destinationImages).where(inArray(schema.destinationImages.destinationId, ids)).orderBy(asc(schema.destinationImages.sortOrder))
     : [];
+  const firstImage = new Map<string, (typeof images)[number]>();
+  for (const i of images) if (!firstImage.has(i.destinationId)) firstImage.set(i.destinationId, i);
   return rows.map((r) => {
-    const img = images.find((i) => i.destinationId === r.id);
+    const img = firstImage.get(r.id);
     return {
       ...r,
+      lat: Number(r.lat),
+      lng: Number(r.lng),
       placeCount: Number(r.placeCount),
-      image: img ? { url: img.url, alt: img.alt, creditName: img.creditName, creditUrl: img.creditUrl } : null,
+      image: img ? { url: img.url, alt: img.alt, creditName: img.creditName, creditUrl: img.creditUrl, license: img.license, licenseUrl: img.licenseUrl, source: img.source } : null,
     };
   });
 }
@@ -94,6 +111,9 @@ function seedCards() {
     contentStatus: "sample" as const,
     image: seedImageFor(d.slug),
     placeCount: d.places?.length ?? 0,
+    lat: d.lat,
+    lng: d.lng,
+    kind: d.kind ?? ("city" as const),
   }));
 }
 
@@ -112,22 +132,67 @@ const cachedCards = unstable_cache(
 
 export async function getDestinationCards(locale: string): Promise<DestinationCardData[]> {
   const cards = await cachedCards();
-  return cards.map(({ translations, ...c }) => ({ ...c, summary: localized({ summary: c.summary, translations }, locale) }));
+  return cards.map(({ translations, ...c }) => ({
+    ...c,
+    city: (translations as Record<string, { name?: string }>)?.[locale]?.name || c.city,
+    cityEn: c.city,
+    summary: localized({ summary: c.summary, translations }, locale),
+  }));
 }
+
+const HERO_TARGET = 24;
 
 export const getHeroSlides = unstable_cache(
   async (): Promise<HeroSlideData[]> => {
     try {
       const db = await getDb();
       const rows = await db.select().from(schema.heroSlides).where(eq(schema.heroSlides.enabled, true)).orderBy(asc(schema.heroSlides.sortOrder));
-      if (!rows.length) return DEFAULT_HERO_SLIDES;
-      return rows.map((r) => ({ id: r.id, imageUrl: r.imageUrl, alt: r.alt, city: r.city, countryCode: r.countryCode, destinationSlug: r.destinationSlug, creditName: r.creditName, creditUrl: r.creditUrl }));
+      const curated: HeroSlideData[] = (rows.length ? rows.map((r) => ({ id: r.id, imageUrl: r.imageUrl, alt: r.alt, city: r.city, countryCode: r.countryCode, destinationSlug: r.destinationSlug, creditName: r.creditName, creditUrl: r.creditUrl, source: "unsplash" as const })) : DEFAULT_HERO_SLIDES);
+      if (curated.length >= HERO_TARGET) return curated;
+      const used = new Set(curated.map((s) => s.destinationSlug).filter(Boolean));
+      const candidates = await db
+        .select({ img: schema.destinationImages, slug: schema.destinations.slug, popularity: schema.destinations.popularity, kind: schema.destinations.kind, city: schema.cities.name, countryCode: schema.cities.countryCode, continent: schema.countries.continent })
+        .from(schema.destinationImages)
+        .innerJoin(schema.destinations, eq(schema.destinations.id, schema.destinationImages.destinationId))
+        .innerJoin(schema.cities, eq(schema.cities.id, schema.destinations.cityId))
+        .innerJoin(schema.countries, eq(schema.countries.code, schema.cities.countryCode))
+        .where(and(eq(schema.destinationImages.heroEligible, true), eq(schema.destinations.published, true)))
+        .orderBy(desc(schema.destinations.popularity), asc(schema.destinationImages.sortOrder));
+      const firstPerDestination = new Map<string, (typeof candidates)[number]>();
+      for (const c of candidates) if (!used.has(c.slug) && !firstPerDestination.has(c.slug)) firstPerDestination.set(c.slug, c);
+      const extra = pickDiverseHero([...firstPerDestination.values()], HERO_TARGET - curated.length).map<HeroSlideData>((c) => ({
+        id: c.img.id,
+        imageUrl: c.img.url,
+        alt: c.img.alt,
+        city: c.city,
+        countryCode: c.countryCode,
+        destinationSlug: c.slug,
+        creditName: c.img.creditName,
+        creditUrl: c.img.creditUrl,
+        license: c.img.license,
+        licenseUrl: c.img.licenseUrl,
+        source: c.img.source,
+      }));
+      // Interleave so imported photos are spread through the curated ones.
+      const out: HeroSlideData[] = [];
+      for (let i = 0; i < Math.max(curated.length, extra.length); i++) {
+        if (curated[i]) out.push(curated[i]);
+        if (extra[i]) out.push(extra[i]);
+      }
+      // City names in every language, for captions (from the destination's translations).
+      const slugs = [...new Set(out.map((s) => s.destinationSlug).filter(Boolean) as string[])];
+      if (slugs.length) {
+        const tr = await db.select({ slug: schema.destinations.slug, t: schema.destinations.translations }).from(schema.destinations).where(inArray(schema.destinations.slug, slugs));
+        const names = new Map(tr.map((r) => [r.slug, Object.fromEntries(Object.entries(r.t ?? {}).filter(([, v]) => typeof v === "object" && v && "name" in v && v.name).map(([l, v]) => [l, (v as { name: string }).name]))]));
+        for (const s of out) if (s.destinationSlug && names.get(s.destinationSlug)) s.cityNames = names.get(s.destinationSlug);
+      }
+      return out;
     } catch {
       return DEFAULT_HERO_SLIDES;
     }
   },
   ["hero-slides"],
-  { revalidate: 300, tags: ["hero"] },
+  { revalidate: 300, tags: ["hero", "destinations"] },
 );
 
 type DestinationRow = typeof schema.destinations.$inferSelect;
@@ -159,7 +224,9 @@ function seedDetail(slug: string, locale: string) {
   }) as unknown as PlaceRow);
   return {
     ...dest,
+    displayName: d.city,
     translatedContent: locale === "en",
+    wikiUrl: null as string | null,
     city,
     continent: info?.continent ?? d.continent,
     localCurrency: info?.currency ?? null,
@@ -167,6 +234,42 @@ function seedDetail(slug: string, locale: string) {
     places,
     transport: [] as TransportRow[],
   };
+}
+
+const cachedConnections = unstable_cache(
+  async (): Promise<ConnectionRow[]> => {
+    try {
+      const db = await getDb();
+      const rows = await db.execute(sql`
+        select f.slug as "from", t.slug as "to", c.mode, c.typical_minutes as minutes, c.direct, c.note, c.verified
+        from destination_connections c
+        join destinations f on f.id = c.from_destination_id
+        join destinations t on t.id = c.to_destination_id`);
+      const list = (Array.isArray(rows) ? rows : (rows as { rows: unknown[] }).rows) as ConnectionRow[];
+      return list.map((r) => ({ ...r, minutes: Number(r.minutes) }));
+    } catch {
+      return SEED_CONNECTIONS.map((c) => ({ from: c.from, to: c.to, mode: c.mode, minutes: c.minutes, direct: c.direct, note: c.note ?? null }));
+    }
+  },
+  ["destination-connections"],
+  { revalidate: 600, tags: ["destinations"] },
+);
+
+export async function getConnections(): Promise<ConnectionRow[]> {
+  return cachedConnections();
+}
+
+/** Nearby destinations with how to get there, for a destination page or the planner. */
+export async function getNearby(slug: string, locale: string, limit = 8): Promise<(NearbyOption & { destinationId: string; image: CreditedImage | null; summary: string })[]> {
+  const [cards, connections] = await Promise.all([getDestinationCards(locale), getConnections()]);
+  const origin = cards.find((c) => c.slug === slug);
+  if (!origin) return [];
+  const bySlug = new Map(cards.map((c) => [c.slug, c]));
+  const candidates = cards.map((c) => ({
+    slug: c.slug, city: c.city, countryCode: c.countryCode, lat: c.lat, lng: c.lng, kind: c.kind,
+    daysMin: c.daysMin ?? 1, daysMax: c.daysMax ?? c.daysMin ?? 2, popularity: c.popularity, styles: c.travelStyles, experiences: c.experiences,
+  }));
+  return nearbyDestinations(origin, candidates, connections, { limit }).map((n) => ({ ...n, destinationId: bySlug.get(n.slug)!.id, image: bySlug.get(n.slug)?.image ?? null, summary: bySlug.get(n.slug)?.summary ?? "" }));
 }
 
 export async function getDestinationDetail(slug: string, locale: string) {
@@ -194,16 +297,19 @@ export async function getDestinationDetail(slug: string, locale: string) {
   if (!row) return null;
   const [images, places, transport] = await Promise.all([
     db.select().from(schema.destinationImages).where(eq(schema.destinationImages.destinationId, row.d.id)).orderBy(asc(schema.destinationImages.sortOrder)),
-    db.select().from(schema.places).where(eq(schema.places.destinationId, row.d.id)).orderBy(asc(schema.places.createdAt)),
+    db.select().from(schema.places).where(eq(schema.places.destinationId, row.d.id)).orderBy(desc(schema.places.popularity), asc(schema.places.createdAt)),
     db.select().from(schema.transportOptions).where(eq(schema.transportOptions.destinationId, row.d.id)),
   ]);
   const tr = row.d.translations?.[locale] ?? {};
   return {
     ...row.d,
+    /** City name in the visitor's language when known. */
+    displayName: tr.name || row.city.name,
     summary: tr.summary || row.d.summary,
     description: tr.description || row.d.description,
     bestTime: tr.bestTime || row.d.bestTime,
-    translatedContent: Boolean(tr.summary) || locale === "en",
+    translatedContent: Boolean(tr.summary || tr.description) || locale === "en",
+    wikiUrl: ((row.d.translations as Record<string, unknown>)?._wikiLinks as Record<string, string> | undefined)?.[locale] ?? row.d.wikipediaUrl ?? null,
     city: row.city,
     continent: row.continent,
     localCurrency: row.currency,

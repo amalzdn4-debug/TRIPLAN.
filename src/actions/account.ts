@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
 import { getDb, schema } from "@/db";
+import { deleteStored } from "@/lib/storage";
 import { redirect } from "@/i18n/navigation";
 import { getCurrentUser, destroySession } from "@/lib/auth/session";
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
@@ -75,7 +76,10 @@ export async function deleteAccountAction(_prev: ActionState, fd: FormData): Pro
       if (["active", "trialing", "past_due"].includes(s.status)) await stripe.subscriptions.cancel(s.stripeSubscriptionId).catch(() => undefined);
     }
   }
+  // Uploaded photos are files in storage, not just rows: delete them too.
+  const media = await db.select({ url: schema.mediaUploads.url }).from(schema.mediaUploads).where(eq(schema.mediaUploads.userId, user.id));
   await db.delete(schema.users).where(eq(schema.users.id, user.id));
+  await deleteStored(media.map((m) => m.url));
   await destroySession();
   redirect({ href: { pathname: "/", query: { deleted: "1" } }, locale: await getLocale() });
   return { ok: true };

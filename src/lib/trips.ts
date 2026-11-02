@@ -2,15 +2,21 @@ import "server-only";
 import { and, asc, desc, eq, inArray, ne, sql, gt, lt } from "drizzle-orm";
 import { getDb, schema } from "@/db";
 import { MAX_TRIP_DAYS } from "@/config/site";
-import { getActiveSubscription, type Entitlement } from "@/lib/entitlements";
-import { buildDay, buildItinerary, scheduleDay, scorePlace, dayStartTime } from "@/lib/itinerary/engine";
+import { getActiveSubscriptions, type Entitlement } from "@/lib/entitlements";
+import { buildDay, buildItinerary, buildPlan, enumerateDates, scheduleDay, scorePlace, dayStartTime } from "@/lib/itinerary/engine";
+import { customOption, layoutDays, segmentsFor, suggestSplit, type SplitOption, type BaseInfo, type NearbyWithId, type SplitSuggestion, type TripSegment } from "@/lib/itinerary/split";
+import { getDestinationCards, getNearby } from "@/lib/destinations";
+import { accommodationLinks, type OutboundLink } from "@/lib/links";
+import { withPartners } from "@/lib/affiliates";
 import { generateWithAI } from "@/lib/itinerary/ai";
 import { refineLegs } from "@/lib/itinerary/routing";
-import type { CandidatePlace, PlannedDay, PlannedStop, TripPreferences } from "@/lib/itinerary/types";
+import { haversineMeters } from "@/lib/geo";
+import type { CandidatePlace, IntercityDetails, PlannedDay, PlannedStop, TripPreferences } from "@/lib/itinerary/types";
 import { FREE_TRIPS_INCLUDED } from "@/config/site";
 
 export class NeedsPaymentError extends Error {
-  constructor() {
+  /** "period_limit" = a subscription's trips for this billing month are used up. */
+  constructor(public reason: "limit" | "period_limit" = "limit") {
     super("needs_payment");
   }
 }
@@ -43,6 +49,8 @@ export interface StopView {
   travelMinutes: number | null;
   travelMeters: number | null;
   travelSource: "provider" | "estimate" | null;
+  /** Intercity journey details (typical time, not a timetable). */
+  intercity: IntercityDetails | null;
 }
 
 export interface DayView {
@@ -52,6 +60,9 @@ export interface DayView {
   title: string;
   startTime: string;
   notes: string | null;
+  /** Destination this day is spent in (falls back to the trip's main destination). */
+  destinationId: string | null;
+  kind: "normal" | "travel" | "day_trip";
   stops: StopView[];
 }
 
@@ -105,6 +116,7 @@ function toStopView(s: typeof schema.itineraryStops.$inferSelect): StopView {
     travelMinutes: s.travelMinutes,
     travelMeters: s.travelMeters,
     travelSource: s.travelSource,
+    intercity: s.details?.intercity ?? null,
   };
 }
 
@@ -171,6 +183,8 @@ export async function getTrip(tripId: string, userId: string): Promise<TripView 
       title: d.title,
       startTime: d.startTime,
       notes: d.notes,
+      destinationId: d.destinationId ?? t.destinationId,
+      kind: d.kind,
       stops: stops.filter((s) => s.dayId === d.id).map(toStopView),
     })),
   };
@@ -184,34 +198,220 @@ export async function getCandidatePlaces(destinationId: string | null): Promise<
     .from(schema.places)
     .where(and(eq(schema.places.destinationId, destinationId), inArray(schema.places.kind, ["attraction", "activity"])))
     .orderBy(asc(schema.places.createdAt));
-  return rows.map((p) => ({ id: p.id, name: p.name, kind: p.kind, tags: p.tags, durationMin: p.durationMin, neighborhood: p.neighborhood, lat: p.lat, lng: p.lng }));
+  return rows.map((p) => ({ id: p.id, name: p.name, kind: p.kind, tags: p.tags, durationMin: p.durationMin, neighborhood: p.neighborhood, lat: p.lat, lng: p.lng, popularity: p.popularity }));
+}
+
+/* ───────────── Multi-city planning ───────────── */
+
+const isMultiCity = (prefs: TripPreferences) => (prefs.segments?.length ?? 0) > 1;
+
+/** Number of days in the trip (dates capped at MAX_TRIP_DAYS). */
+function tripDates(prefs: TripPreferences) {
+  return enumerateDates(prefs.startDate, prefs.endDate, MAX_TRIP_DAYS);
+}
+
+/** Stay-length analysis for a trip's main destination, plus practical nearby places (with ids). */
+export async function getPlanningContext(destinationId: string | null, locale: string): Promise<{ base: BaseInfo; nearby: (NearbyWithId & { summary: string })[] } | null> {
+  if (!destinationId) return null;
+  const cards = await getDestinationCards(locale);
+  const card = cards.find((c) => c.id === destinationId);
+  if (!card) return null;
+  const nearby = await getNearby(card.slug, locale, 8);
+  return {
+    base: { slug: card.slug, destinationId: card.id, name: card.city, countryCode: card.countryCode, lat: card.lat, lng: card.lng, daysMin: card.daysMin ?? 2, daysMax: card.daysMax ?? card.daysMin ?? 3, placeCount: card.placeCount },
+    nearby,
+  };
+}
+
+/** The suggestion shown on a trip, or null (already answered, multi-city already, or nothing to suggest). */
+export async function getSplitSuggestion(trip: Pick<TripView, "destinationId" | "preferences">, locale: string): Promise<(SplitSuggestion & { baseName: string }) | null> {
+  const prefs = trip.preferences;
+  if (prefs.splitDecision || isMultiCity(prefs)) return null;
+  const ctx = await getPlanningContext(trip.destinationId, locale);
+  if (!ctx) return null;
+  const s = suggestSplit(ctx.base, tripDates(prefs).length, prefs.pace, ctx.nearby);
+  return s ? { ...s, baseName: ctx.base.name } : null;
+}
+
+export interface NearbyChoice {
+  slug: string;
+  destinationId: string;
+  city: string;
+  countryCode: string;
+  summary: string;
+  mode: NearbyWithId["leg"]["mode"];
+  minutes: number;
+  direct: boolean;
+  source: NearbyWithId["leg"]["source"];
+  distanceKm: number;
+  suitability: NearbyWithId["suitability"];
+}
+
+export interface StayArea {
+  destinationId: string;
+  city: string;
+  /** The neighbourhood closest to the planned sights overall (from the places data), if known. */
+  area: string | null;
+  lat: number;
+  lng: number;
+  /** Planned sights within about 2.5 km of the suggested base. */
+  sights: number;
+  checkIn: string | null;
+  checkOut: string | null;
+  links: OutboundLink[];
+}
+
+export interface TripPlanning {
+  suggestion: (SplitSuggestion & { baseName: string }) | null;
+  /** Practical nearby places the traveller can pick instead of the suggestion. */
+  nearby: NearbyChoice[];
+  /** Where to stay, for each place the traveller sleeps in and hasn't booked. */
+  stayAreas: StayArea[];
+}
+
+const addDays = (iso: string, n: number) => {
+  const d = new Date(`${iso}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + n);
+  return d.toISOString().slice(0, 10);
+};
+
+/** Everything the trip workspace needs for the multi-city and accommodation steps. */
+export async function getTripPlanning(trip: TripView, locale: string): Promise<TripPlanning> {
+  const prefs = trip.preferences;
+  const ctx = await getPlanningContext(trip.destinationId, locale).catch(() => null);
+  const suggestion = ctx && !prefs.splitDecision && !isMultiCity(prefs) ? suggestSplit(ctx.base, tripDates(prefs).length, prefs.pace, ctx.nearby) : null;
+  const nearby: NearbyChoice[] = (ctx?.nearby ?? [])
+    .filter((n) => n.leg.effectiveMinutes <= 330)
+    .map((n) => ({ slug: n.slug, destinationId: n.destinationId, city: n.city, countryCode: n.countryCode, summary: n.summary, mode: n.leg.mode, minutes: n.leg.minutes, direct: n.leg.direct, source: n.leg.source, distanceKm: n.leg.distanceKm, suitability: n.suitability }));
+
+  // Where to stay: group sleeping days (not day trips) by destination.
+  const segments = isMultiCity(prefs) ? prefs.segments! : null;
+  const nameOf = (id: string | null) => segments?.find((x) => x.destinationId === id)?.name ?? (id === trip.destinationId ? trip.destinationName : null);
+  const groups = new Map<string, DayView[]>();
+  for (const d of trip.days) {
+    if (d.kind === "day_trip" || !d.destinationId) continue;
+    groups.set(d.destinationId, [...(groups.get(d.destinationId) ?? []), d]);
+  }
+  const placeIds = trip.days.flatMap((d) => d.stops.map((s) => s.placeId)).filter(Boolean) as string[];
+  const db = await getDb();
+  const hoods = placeIds.length
+    ? new Map((await db.select({ id: schema.places.id, n: schema.places.neighborhood }).from(schema.places).where(inArray(schema.places.id, placeIds))).map((r) => [r.id, r.n]))
+    : new Map<string, string | null>();
+  const booked = prefs.accommodation?.status === "booked" && prefs.accommodation.lat != null;
+  const stayAreas: StayArea[] = [];
+  for (const [destId, days] of groups) {
+    if (booked && destId === trip.destinationId) continue; // the booked place is in the main destination
+    const sights = days.flatMap((d) => d.stops).filter((s) => (s.kind === "attraction" || s.kind === "activity") && s.lat != null && s.lng != null) as (StopView & { lat: number; lng: number })[];
+    const city = nameOf(destId);
+    if (!city) continue;
+    const seg = segments?.find((x) => x.destinationId === destId);
+    let area: string | null = null;
+    let lat = seg?.lat ?? NaN;
+    let lng = seg?.lng ?? NaN;
+    let near = 0;
+    if (sights.length) {
+      // Candidate bases: the centre of each neighbourhood with planned sights, plus the centre of
+      // all sights. Pick the one with the shortest total distance to everything planned there.
+      const byHood = new Map<string, (typeof sights)[number][]>();
+      for (const s of sights) {
+        const h = s.placeId ? hoods.get(s.placeId) : null;
+        if (h) byHood.set(h, [...(byHood.get(h) ?? []), s]);
+      }
+      const mid = (ps: { lat: number; lng: number }[]) => ({ lat: ps.reduce((t, p) => t + p.lat, 0) / ps.length, lng: ps.reduce((t, p) => t + p.lng, 0) / ps.length });
+      const options = [{ area: null as string | null, at: mid(sights) }, ...[...byHood.entries()].map(([h, ps]) => ({ area: h as string | null, at: mid(ps) }))];
+      const cost = (at: { lat: number; lng: number }) => sights.reduce((t, s) => t + haversineMeters(at, s), 0);
+      // A named neighbourhood wins unless it's clearly worse (>15 %) than the plain centre point.
+      const centre = cost(options[0].at);
+      const named = options.slice(1).sort((x, y) => cost(x.at) - cost(y.at))[0];
+      const best = named && cost(named.at) <= centre * 1.15 ? named : options[0];
+      area = best.area;
+      lat = best.at.lat;
+      lng = best.at.lng;
+      near = sights.filter((s) => haversineMeters(best.at, s) <= 2500).length;
+    }
+    if (!Number.isFinite(lat)) {
+      const card = (await getDestinationCards(locale)).find((c) => c.id === destId);
+      if (!card) continue;
+      lat = card.lat;
+      lng = card.lng;
+    }
+    const dates = days.map((d) => d.date).filter(Boolean) as string[];
+    const checkIn = dates[0] ?? null;
+    const checkOut = dates.length ? addDays(dates[dates.length - 1], 1) : null;
+    const links = await withPartners(accommodationLinks(area ? `${area}, ${city}` : city, checkIn, checkOut, trip.adults), {
+      source: "stay-area",
+      destination: seg?.slug ?? trip.destinationSlug,
+      city,
+      checkin: checkIn,
+      checkout: checkOut,
+      adults: trip.adults,
+      lat: Number(lat.toFixed(5)),
+      lng: Number(lng.toFixed(5)),
+      locale,
+    });
+    stayAreas.push({ destinationId: destId, city, area, lat, lng, sights: near, checkIn, checkOut, links });
+  }
+  return { suggestion: suggestion ? { ...suggestion, baseName: ctx!.base.name } : null, nearby, stayAreas };
+}
+
+/** Places for each destination in a multi-city trip, keyed by slug. */
+async function placesBySegment(segments: TripSegment[]): Promise<Record<string, CandidatePlace[]>> {
+  const out: Record<string, CandidatePlace[]> = {};
+  for (const seg of segments) if (!out[seg.slug]) out[seg.slug] = (await getCandidatePlaces(seg.destinationId)).map((p) => ({ ...p, destinationSlug: seg.slug }));
+  return out;
 }
 
 /* ───────────── Creation ───────────── */
 
-/** Atomically claims the right to create one trip. Throws NeedsPaymentError when none is left. */
-async function claimEntitlement(userId: string): Promise<Entitlement> {
+/**
+ * Atomically claims the right to create one trip, in this order: an unlimited subscription, a
+ * subscription with trips left in its current billing period, the free trip, a purchased trip
+ * credit. Throws NeedsPaymentError when none is left.
+ */
+async function claimEntitlement(userId: string): Promise<{ entitlement: Entitlement; subscriptionId: string | null }> {
   const db = await getDb();
-  if (await getActiveSubscription(userId)) {
-    await db.update(schema.users).set({ tripsCreatedTotal: sql`${schema.users.tripsCreatedTotal} + 1` }).where(eq(schema.users.id, userId));
-    return "subscription";
+  const bumpTotal = () => db.update(schema.users).set({ tripsCreatedTotal: sql`${schema.users.tripsCreatedTotal} + 1` }).where(eq(schema.users.id, userId));
+  const subs = await getActiveSubscriptions(userId);
+  for (const s of subs) {
+    if (s.tripsIncluded == null) {
+      await bumpTotal();
+      return { entitlement: "subscription", subscriptionId: s.id };
+    }
+    // Conditional increment: two simultaneous requests can't both take the last trip of a period.
+    const claimed = await db
+      .update(schema.subscriptions)
+      .set({ tripsUsedInPeriod: sql`${schema.subscriptions.tripsUsedInPeriod} + 1` })
+      .where(and(eq(schema.subscriptions.id, s.id), lt(schema.subscriptions.tripsUsedInPeriod, s.tripsIncluded)))
+      .returning({ id: schema.subscriptions.id });
+    if (claimed.length) {
+      await bumpTotal();
+      return { entitlement: "subscription", subscriptionId: s.id };
+    }
   }
   const free = await db
     .update(schema.users)
     .set({ tripsCreatedTotal: sql`${schema.users.tripsCreatedTotal} + 1` })
     .where(and(eq(schema.users.id, userId), lt(schema.users.tripsCreatedTotal, FREE_TRIPS_INCLUDED)))
     .returning({ id: schema.users.id });
-  if (free.length) return "free";
+  if (free.length) return { entitlement: "free", subscriptionId: null };
   const credit = await db
     .update(schema.users)
     .set({ tripCredits: sql`${schema.users.tripCredits} - 1`, tripsCreatedTotal: sql`${schema.users.tripsCreatedTotal} + 1` })
     .where(and(eq(schema.users.id, userId), gt(schema.users.tripCredits, 0)))
     .returning({ id: schema.users.id });
-  if (credit.length) return "credit";
-  throw new NeedsPaymentError();
+  if (credit.length) return { entitlement: "credit", subscriptionId: null };
+  throw new NeedsPaymentError(subs.length ? "period_limit" : "limit");
 }
 
-async function generateDays(prefs: TripPreferences, destinationId: string | null, locale: string): Promise<{ days: PlannedDay[]; source: "ai" | "rules" }> {
+async function generateDays(prefs: TripPreferences, destinationId: string | null, locale: string, locked: Record<number, PlannedStop[]> = {}): Promise<{ days: PlannedDay[]; source: "ai" | "rules" }> {
+  if (isMultiCity(prefs)) {
+    // Multi-city trips use the rules engine: it knows the journeys between places and never invents them.
+    const segments = prefs.segments!;
+    const dates = tripDates(prefs);
+    const days = buildPlan({ prefs, slots: layoutDays(segments, dates.length), dates, places: await placesBySegment(segments), locked });
+    const refined = await Promise.all(days.map(async (d) => ({ ...d, stops: scheduleDay(await refineLegs(d.stops), d.startTime, prefs.transport) })));
+    return { days: refined, source: "rules" };
+  }
   const places = await getCandidatePlaces(destinationId);
   const ai = await generateWithAI(prefs, places, MAX_TRIP_DAYS, locale);
   const days = ai ?? buildItinerary(prefs, places, MAX_TRIP_DAYS);
@@ -247,6 +447,7 @@ function stopRow(tripId: string, dayId: string, s: PlannedStop, position: number
     travelMinutes: s.travelMinutes ?? null,
     travelMeters: s.travelMeters ?? null,
     travelSource: s.travelSource ?? null,
+    details: s.details ?? null,
   };
 }
 
@@ -257,7 +458,7 @@ async function persistDays(tripId: string, days: PlannedDay[]) {
     for (const d of days) {
       const [day] = await tx
         .insert(schema.itineraryDays)
-        .values({ tripId, dayIndex: d.dayIndex, date: d.date, title: d.title.slice(0, 200), startTime: d.startTime })
+        .values({ tripId, dayIndex: d.dayIndex, date: d.date, title: d.title.slice(0, 200), startTime: d.startTime, destinationId: d.destinationId ?? null, kind: d.kind ?? "normal" })
         .returning({ id: schema.itineraryDays.id });
       if (d.stops.length) await tx.insert(schema.itineraryStops).values(d.stops.map((s, i) => stopRow(tripId, day.id, s, i)));
     }
@@ -266,7 +467,7 @@ async function persistDays(tripId: string, days: PlannedDay[]) {
 }
 
 export async function createTrip(opts: { userId: string; mode: "fast" | "detailed"; prefs: TripPreferences; destinationId: string | null; title: string; locale: string; participants?: { name: string; isChild: boolean }[] }) {
-  const entitlement = await claimEntitlement(opts.userId);
+  const { entitlement, subscriptionId } = await claimEntitlement(opts.userId);
   const db = await getDb();
   const p = opts.prefs;
   const [trip] = await db
@@ -287,6 +488,7 @@ export async function createTrip(opts: { userId: string; mode: "fast" | "detaile
       currency: p.currency,
       preferences: p as unknown as Record<string, unknown>,
       entitlement,
+      subscriptionId,
     })
     .returning({ id: schema.trips.id });
   if (opts.participants?.length) {
@@ -321,8 +523,15 @@ async function loadDayStops(dayId: string, tripId: string) {
 }
 
 function rowToPlanned(s: typeof schema.itineraryStops.$inferSelect): PlannedStop {
-  const v = toStopView(s);
-  return { ...v, id: s.id };
+  const { intercity: _i, ...v } = toStopView(s);
+  return { ...v, id: s.id, details: s.details ?? null };
+}
+
+/** The destination a given day is spent in (multi-city days carry their own). */
+async function dayDestination(dayId: string, tripId: string, fallback: string | null) {
+  const db = await getDb();
+  const [d] = await db.select({ destinationId: schema.itineraryDays.destinationId }).from(schema.itineraryDays).where(and(eq(schema.itineraryDays.id, dayId), eq(schema.itineraryDays.tripId, tripId)));
+  return d?.destinationId ?? fallback;
 }
 
 /** Recomputes times & legs for a day after any edit, then writes positions/times back. */
@@ -406,8 +615,9 @@ export async function addStop(
   dayId: string,
   input: { placeId?: string; custom?: { title: string; lat: number | null; lng: number | null; durationMin: number; address?: string | null } },
 ) {
-  const { prefs, destinationId } = await assertOwner(tripId, userId);
+  const { prefs, destinationId: tripDestination } = await assertOwner(tripId, userId);
   const { day, stops } = await loadDayStops(dayId, tripId);
+  const destinationId = day.destinationId ?? tripDestination;
   let newStop: PlannedStop | null = null;
   if (input.placeId) {
     const db = await getDb();
@@ -431,7 +641,7 @@ export async function replaceStop(userId: string, tripId: string, stopId: string
   const db = await getDb();
   const [stop] = await db.select().from(schema.itineraryStops).where(and(eq(schema.itineraryStops.id, stopId), eq(schema.itineraryStops.tripId, tripId)));
   if (!stop || stop.locked) return { replaced: false };
-  const places = await getCandidatePlaces(destinationId);
+  const places = await getCandidatePlaces(await dayDestination(stop.dayId, tripId, destinationId));
   const usedRows = await db.select({ placeId: schema.itineraryStops.placeId }).from(schema.itineraryStops).where(eq(schema.itineraryStops.tripId, tripId));
   const used = new Set(usedRows.map((r) => r.placeId).filter(Boolean));
   const unused = places.filter((p) => !used.has(p.id));
@@ -453,9 +663,10 @@ export async function replaceStop(userId: string, tripId: string, stopId: string
 
 /** Regenerates one day. Locked stops are kept; places used on other days are excluded. */
 export async function regenerateDay(userId: string, tripId: string, dayId: string) {
-  const { prefs, destinationId } = await assertOwner(tripId, userId);
+  const { prefs, destinationId: tripDestination } = await assertOwner(tripId, userId);
   const db = await getDb();
   const { day, stops } = await loadDayStops(dayId, tripId);
+  const destinationId = day.destinationId ?? tripDestination;
   const places = await getCandidatePlaces(destinationId);
   const otherRows = await db
     .select({ placeId: schema.itineraryStops.placeId })
@@ -466,20 +677,30 @@ export async function regenerateDay(userId: string, tripId: string, dayId: strin
   // Prefer places not shown on this day before, so "regenerate" actually changes something.
   const fresh = places.filter((p) => !usedElsewhere.has(p.id) && !previousIds.has(p.id));
   const pool = fresh.length >= 2 ? fresh : places.filter((p) => !usedElsewhere.has(p.id));
-  const scores = new Map(places.map((p, i) => [p.id, scorePlace(p, prefs, (places.length - i) / places.length)]));
-  const locked = stops.filter((s) => s.locked).map(rowToPlanned);
-  const { day: planned } = buildDay({
-    dayIndex: day.dayIndex,
-    date: day.date,
-    prefs,
-    pool,
-    scores,
-    lockedStops: locked,
-    start: prefs.accommodation?.lat != null && prefs.accommodation?.lng != null ? { lat: prefs.accommodation.lat, lng: prefs.accommodation.lng } : null,
-  });
+  // Intercity journeys are rebuilt from the trip plan, so they are never kept as "locked" duplicates.
+  const locked = stops.filter((s) => s.locked && s.kind !== "transport").map(rowToPlanned);
+
+  let planned: PlannedDay;
+  const slot = isMultiCity(prefs) ? layoutDays(prefs.segments!, tripDates(prefs).length)[day.dayIndex] : undefined;
+  if (slot && slot.segment.destinationId === destinationId) {
+    planned = buildPlan({ prefs, slots: [{ ...slot, index: 0 }], dates: [day.date ?? ""], places: { [slot.segment.slug]: pool }, locked: { 0: locked } })[0];
+  } else {
+    const scores = new Map(places.map((p, i) => [p.id, scorePlace(p, prefs, (places.length - i) / places.length)]));
+    planned = buildDay({
+      dayIndex: day.dayIndex,
+      date: day.date,
+      prefs,
+      pool,
+      scores,
+      lockedStops: locked,
+      start: prefs.accommodation?.lat != null && prefs.accommodation?.lng != null ? { lat: prefs.accommodation.lat, lng: prefs.accommodation.lng } : null,
+    }).day;
+  }
   const refined = scheduleDay(await refineLegs(planned.stops), day.startTime || dayStartTime(prefs), prefs.transport);
   await db.transaction(async (tx) => {
-    await tx.delete(schema.itineraryStops).where(and(eq(schema.itineraryStops.dayId, dayId), eq(schema.itineraryStops.locked, false)));
+    await tx
+      .delete(schema.itineraryStops)
+      .where(and(eq(schema.itineraryStops.dayId, dayId), sql`(${schema.itineraryStops.locked} = false or ${schema.itineraryStops.kind} = 'transport')`));
     // Locked rows keep their ids; update their position/time, insert everything else.
     for (let i = 0; i < refined.length; i++) {
       const s = refined[i];
@@ -507,6 +728,92 @@ export async function regenerateTrip(userId: string, tripId: string, locale: str
   // With locked items, regenerate each day individually so nothing locked is touched.
   await db.update(schema.itineraryStops).set({ placeId: sql`case when ${schema.itineraryStops.locked} then ${schema.itineraryStops.placeId} else null end` }).where(eq(schema.itineraryStops.tripId, tripId));
   for (const d of dayRows) await regenerateDay(userId, tripId, d.id);
+}
+
+/**
+ * Rebuilds the trip after its structure changed (cities accepted/removed, accommodation set).
+ * Locked stops are carried over to a day in the same destination — the same day when possible.
+ * Locked stops in a destination that is no longer part of the trip are the only ones dropped.
+ */
+async function restructureTrip(tripId: string, tripDestination: string | null, newPrefs: TripPreferences, locale: string) {
+  const db = await getDb();
+  const oldDays = await db.select().from(schema.itineraryDays).where(eq(schema.itineraryDays.tripId, tripId)).orderBy(asc(schema.itineraryDays.dayIndex));
+  const lockedRows = await db.select().from(schema.itineraryStops).where(and(eq(schema.itineraryStops.tripId, tripId), eq(schema.itineraryStops.locked, true), ne(schema.itineraryStops.kind, "transport")));
+  const dates = tripDates(newPrefs);
+  const slots = isMultiCity(newPrefs) ? layoutDays(newPrefs.segments!, dates.length) : dates.map((_, i) => ({ index: i, segment: { destinationId: tripDestination }, kind: "normal" as const }));
+  const locked: Record<number, PlannedStop[]> = {};
+  for (const row of lockedRows) {
+    const old = oldDays.find((d) => d.id === row.dayId);
+    const dest = old?.destinationId ?? tripDestination;
+    const fits = (i: number) => slots[i]?.segment.destinationId === dest && slots[i].kind === "normal";
+    const target = old && fits(old.dayIndex) ? old.dayIndex : slots.findIndex((_, i) => fits(i));
+    if (target < 0) continue;
+    (locked[target] ??= []).push({ ...rowToPlanned(row), id: undefined });
+  }
+  const { days, source } = isMultiCity(newPrefs)
+    ? await generateDays(newPrefs, tripDestination, locale, locked)
+    : await generateSingleWithLocked(newPrefs, tripDestination, locale, locked);
+  await db.update(schema.trips).set({ preferences: newPrefs as unknown as Record<string, unknown> }).where(eq(schema.trips.id, tripId));
+  await persistDays(tripId, days);
+  await db.update(schema.trips).set({ status: "planned", generationSource: source }).where(eq(schema.trips.id, tripId));
+}
+
+/** Single-destination generation that keeps locked stops on their days. */
+async function generateSingleWithLocked(prefs: TripPreferences, destinationId: string | null, locale: string, locked: Record<number, PlannedStop[]>) {
+  if (!Object.keys(locked).length) return generateDays(prefs, destinationId, locale);
+  const places = await getCandidatePlaces(destinationId);
+  const lockedIds = new Set(Object.values(locked).flat().map((s) => s.placeId).filter(Boolean));
+  const dates = tripDates(prefs);
+  const scores = new Map(places.map((p, i) => [p.id, scorePlace(p, prefs, (places.length - i) / places.length)]));
+  const start = prefs.accommodation?.lat != null && prefs.accommodation?.lng != null ? { lat: prefs.accommodation.lat, lng: prefs.accommodation.lng } : null;
+  let remaining = places.filter((p) => !lockedIds.has(p.id));
+  const days: PlannedDay[] = [];
+  for (let i = 0; i < dates.length; i++) {
+    const { day, used } = buildDay({ dayIndex: i, date: dates[i], prefs, pool: remaining, scores, lockedStops: locked[i] ?? [], start, isArrivalDay: i === 0 && dates.length > 1 && Boolean(prefs.departureTime), isDepartureDay: i === dates.length - 1 && dates.length > 1 && Boolean(prefs.returnTime) });
+    remaining = remaining.filter((p) => !used.includes(p.id));
+    days.push({ ...day, stops: scheduleDay(await refineLegs(day.stops), day.startTime, prefs.transport) });
+  }
+  return { days, source: "rules" as const };
+}
+
+export type SplitChoice = { optionId: string } | { slug: string; type: "stay" | "day_trip" };
+
+/** Accepts a suggested (or self-picked) nearby destination and rebuilds the itinerary around it. */
+export async function acceptSplit(userId: string, tripId: string, choice: SplitChoice, locale: string) {
+  const { prefs, destinationId } = await assertOwner(tripId, userId);
+  const ctx = await getPlanningContext(destinationId, locale);
+  if (!ctx) throw new Error("not_found");
+  const total = tripDates(prefs).length;
+  let option: SplitOption | null | undefined;
+  if ("optionId" in choice) {
+    // Re-validated server-side: only an option the engine itself would suggest right now.
+    option = suggestSplit(ctx.base, total, prefs.pace, ctx.nearby, 10)?.options.find((o) => o.id === choice.optionId);
+  } else {
+    const n = ctx.nearby.find((x) => x.slug === choice.slug);
+    option = n ? customOption(ctx.base, total, n, choice.type) : null;
+  }
+  if (!option) throw new Error("invalid_option");
+  await restructureTrip(tripId, destinationId, { ...prefs, segments: segmentsFor(ctx.base, option), splitDecision: "accepted" }, locale);
+}
+
+/** "Keep my plan": hides the suggestion without changing anything. */
+export async function declineSplit(userId: string, tripId: string) {
+  const { prefs } = await assertOwner(tripId, userId);
+  const db = await getDb();
+  await db.update(schema.trips).set({ preferences: { ...prefs, splitDecision: "declined" } as unknown as Record<string, unknown>, updatedAt: new Date() }).where(eq(schema.trips.id, tripId));
+}
+
+/** Goes back to spending the whole trip at the main destination (the suggestion can be shown again). */
+export async function resetSplit(userId: string, tripId: string, locale: string) {
+  const { prefs, destinationId } = await assertOwner(tripId, userId);
+  if (!isMultiCity(prefs)) return;
+  await restructureTrip(tripId, destinationId, { ...prefs, segments: undefined, splitDecision: null }, locale);
+}
+
+/** Saves (or clears) the booked accommodation and re-plans days around it. */
+export async function setAccommodation(userId: string, tripId: string, acc: TripPreferences["accommodation"], locale: string) {
+  const { prefs, destinationId } = await assertOwner(tripId, userId);
+  await restructureTrip(tripId, destinationId, { ...prefs, accommodation: { ...prefs.accommodation, ...acc } }, locale);
 }
 
 export async function duplicateTrip(userId: string, tripId: string, copyLabel: string) {
@@ -537,7 +844,15 @@ export async function duplicateTrip(userId: string, tripId: string, copyLabel: s
     .returning({ id: schema.trips.id });
   await persistDays(
     copy.id,
-    src.days.map((d) => ({ dayIndex: d.dayIndex, date: d.date, title: d.title, startTime: d.startTime, stops: d.stops.map((s) => ({ ...s, id: undefined })) })),
+    src.days.map((d) => ({
+      dayIndex: d.dayIndex,
+      date: d.date,
+      title: d.title,
+      startTime: d.startTime,
+      destinationId: d.destinationId === src.destinationId ? null : d.destinationId,
+      kind: d.kind,
+      stops: d.stops.map(({ intercity, ...s }) => ({ ...s, id: undefined, details: intercity ? { intercity } : null })),
+    })),
   );
   return copy.id;
 }

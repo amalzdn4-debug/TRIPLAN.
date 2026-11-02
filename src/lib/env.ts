@@ -7,7 +7,16 @@ export const features = {
   googleAuth: () => Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
   email: () => Boolean(process.env.RESEND_API_KEY),
   googleRoutes: () => Boolean(process.env.GOOGLE_MAPS_API_KEY),
+  /** Photo uploads (Vercel Blob). Set automatically when a Blob store is connected to the project. */
+  uploads: () => Boolean(process.env.BLOB_READ_WRITE_TOKEN),
 };
+
+/** "test" when Stripe test keys are configured: test payments are labelled and never counted as revenue. */
+export function stripeMode(): "test" | "live" | null {
+  const key = process.env.STRIPE_SECRET_KEY ?? "";
+  if (!features.stripe()) return null;
+  return key.startsWith("sk_live_") || key.startsWith("rk_live_") ? "live" : "test";
+}
 
 export const isProd = process.env.NODE_ENV === "production";
 

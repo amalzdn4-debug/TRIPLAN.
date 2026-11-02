@@ -16,6 +16,7 @@ export async function refineLegs(stops: PlannedStop[]): Promise<PlannedStop[]> {
       const next = out[i + 1];
       if (!next || !s.travelMode || s.lat == null || s.lng == null || next.lat == null || next.lng == null) return;
       if (s.travelMeters != null && s.travelMeters < 60) return; // same spot
+      if (s.kind === "transport" || next.kind === "transport") return; // station transfers are fixed estimates
       try {
         const res = await fetch("https://routes.googleapis.com/directions/v2:computeRoutes", {
           method: "POST",

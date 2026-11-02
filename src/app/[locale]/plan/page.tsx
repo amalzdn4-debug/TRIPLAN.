@@ -41,7 +41,7 @@ export default async function PlanPage({ params }: { params: Promise<{ locale: s
           <p className="lead">{t("lead")}</p>
           <QuickStart destinations={dests} />
           {!user ? <p className="small muted" style={{ marginBlockStart: 12 }}>{t("accountNote")}</p> : null}
-          {usage && !usage.subscription && usage.freeRemaining === 0 && usage.credits === 0 ? (
+          {usage && usage.subscriptionTripsLeft === 0 && usage.freeRemaining === 0 && usage.credits === 0 ? (
             <p className="small" style={{ marginBlockStart: 12 }}>
               {t("limitReached")} <Link href="/pricing">{t("seePricing")}</Link>
             </p>

@@ -17,10 +17,13 @@ export interface DestValues {
   contentStatus?: string;
   featured?: boolean;
   published?: boolean;
+  kind?: string;
+  wikiTitle?: string | null;
 }
 
 export async function DestinationFields({ v = {} }: { v?: DestValues }) {
   const t = await getTranslations("admin");
+  const te = await getTranslations("explore");
   return (
     <>
       {v.id ? <input type="hidden" name="id" value={v.id} /> : null}
@@ -30,11 +33,18 @@ export async function DestinationFields({ v = {} }: { v?: DestValues }) {
         <div className="field"><label>{t("dest.slug")}</label><input name="slug" className="input ltr" defaultValue={v.slug} required /></div>
         <div className="field"><label>{t("dest.continent")}</label>
           <select name="continent" className="select" defaultValue={v.continent ?? "europe"}>
-            {["europe", "mena", "asia", "north_america", "south_america", "africa", "oceania"].map((c) => <option key={c} value={c}>{c}</option>)}
+            {["europe", "mena", "asia", "north_america", "south_america", "africa", "oceania"].map((c) => <option key={c} value={c}>{te(`continents.${c}`)}</option>)}
           </select>
         </div>
       </div>
       <div className="form-row">
+        <div className="field">
+          <label>{t("dest.kind")}</label>
+          <select name="kind" className="select" defaultValue={v.kind ?? "city"}>
+            {(["city", "coastal", "island", "nature"] as const).map((k) => <option key={k} value={k}>{t(`dest.kinds.${k}`)}</option>)}
+          </select>
+        </div>
+        <div className="field"><label>{t("dest.wikiTitle")}</label><input name="wikiTitle" className="input" defaultValue={v.wikiTitle ?? ""} placeholder="e.g. Porto" /></div>
         <div className="field"><label>{t("dest.lat")}</label><input name="lat" className="input ltr" defaultValue={v.lat} required /></div>
         <div className="field"><label>{t("dest.lng")}</label><input name="lng" className="input ltr" defaultValue={v.lng} required /></div>
         <div className="field"><label>{t("dest.daysMin")}</label><input name="daysMin" type="number" className="input" defaultValue={v.daysMin ?? 2} /></div>
@@ -46,12 +56,12 @@ export async function DestinationFields({ v = {} }: { v?: DestValues }) {
         <div className="field"><label>{t("dest.bestTime")}</label><input name="bestTime" className="input" defaultValue={v.bestTime ?? ""} /></div>
         <div className="field"><label>{t("dest.budget")}</label>
           <select name="budgetLevel" className="select" defaultValue={v.budgetLevel ?? "mid"}>
-            {["budget", "mid", "premium"].map((b) => <option key={b} value={b}>{b}</option>)}
+            {["budget", "mid", "premium"].map((b) => <option key={b} value={b}>{t(`budgets.${b}`)}</option>)}
           </select>
         </div>
         <div className="field"><label>{t("dest.contentStatus")}</label>
           <select name="contentStatus" className="select" defaultValue={v.contentStatus ?? "sample"}>
-            <option value="sample">sample</option><option value="verified">verified</option>
+            <option value="sample">{t("verificationStates.sample")}</option><option value="verified">{t("verificationStates.verified")}</option>
           </select>
         </div>
       </div>

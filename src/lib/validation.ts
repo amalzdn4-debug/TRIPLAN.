@@ -16,6 +16,7 @@ export const E = {
   dateOrder: "dateOrder",
   tripTooLong: "tripTooLong",
   terms: "terms",
+  tooMany: "tooMany",
 } as const;
 
 const text = (max: number) => z.string().trim().max(max, E.tooLong);
@@ -102,12 +103,34 @@ export const contactSchema = z.object({
   website: z.string().max(0).optional(), // honeypot
 });
 
+const uuid = z.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, E.invalid);
+
 export const postSchema = z.object({
   destinationSlug: required(80),
   type: z.enum(["recommendation", "hidden_gem", "review", "restaurant", "tip"]),
   title: required(140),
   body: required(4000).pipe(z.string().min(20, E.required)),
   rating: z.preprocess((v) => (v === "" || v == null ? null : Number(v)), z.number().int().min(1).max(5).nullable()),
+  /** Optional location within the destination. */
+  placeName: text(140).optional().default(""),
+  lat: optionalCoord(-90, 90).optional().default(null),
+  lng: optionalCoord(-180, 180).optional().default(null),
+  /** Uploaded photos in display order, as JSON: [{ id, alt }]. Ownership is checked on the server. */
+  photos: z.preprocess(
+    (v) => {
+      if (typeof v !== "string" || !v) return [];
+      try {
+        return JSON.parse(v);
+      } catch {
+        return null;
+      }
+    },
+    z.array(z.object({ id: uuid, alt: text(200).optional().default("") })).max(6, E.tooMany).default([]),
+  ),
+});
+
+export const commentSchema = z.object({
+  body: required(2000),
 });
 
 export const reviewSchema = z.object({

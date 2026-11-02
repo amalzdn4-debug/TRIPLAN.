@@ -20,7 +20,24 @@ export interface MapStop {
  * marker selects the stop and vice-versa. Lines connect stops in visiting order — they are not
  * turn-by-turn routes, which is stated in the on-map note and handed off to Google Maps.
  */
-export function TripMap({ stops, selectedId, onSelect, home, center, active = true }: { stops: MapStop[]; selectedId: string | null; onSelect: (id: string) => void; home?: { lat: number; lng: number; label: string } | null; center: { lat: number; lng: number }; active?: boolean }) {
+export function TripMap({
+  stops,
+  selectedId,
+  onSelect,
+  home,
+  area,
+  center,
+  active = true,
+}: {
+  stops: MapStop[];
+  selectedId: string | null;
+  onSelect: (id: string) => void;
+  home?: { lat: number; lng: number; label: string } | null;
+  /** A recommended area to stay in (drawn as a soft circle). */
+  area?: { lat: number; lng: number; label: string } | null;
+  center: { lat: number; lng: number };
+  active?: boolean;
+}) {
   const t = useTranslations("map");
   const el = useRef<HTMLDivElement>(null);
   const mapRef = useRef<import("leaflet").Map | null>(null);
@@ -82,9 +99,13 @@ export function TripMap({ stops, selectedId, onSelect, home, center, active = tr
       L.marker([home.lat, home.lng], { icon, title: home.label, keyboard: true }).bindTooltip(home.label).addTo(layer);
       pts.push([home.lat, home.lng]);
     }
+    if (area) {
+      L.circle([area.lat, area.lng], { radius: 700, color: "#C6A66B", weight: 2, fillColor: "#C6A66B", fillOpacity: 0.15, dashArray: "4 6" }).bindTooltip(area.label).addTo(layer);
+      pts.push([area.lat, area.lng]);
+    }
     const path: [number, number][] = home ? [[home.lat, home.lng]] : [];
     for (const s of stops) {
-      const cls = s.kind === "meal" ? "tp-marker--meal" : s.kind === "break" ? "tp-marker--break" : "";
+      const cls = s.kind === "meal" ? "tp-marker--meal" : s.kind === "break" ? "tp-marker--break" : s.kind === "transport" ? "tp-marker--transport" : "";
       const anchor = fan(s.lat, s.lng);
       const icon = L.divIcon({ className: "", html: `<div class="tp-marker ${cls}" data-id="${s.id}"><span>${s.n}</span></div>`, iconSize: [30, 30], iconAnchor: anchor });
       const m = L.marker([s.lat, s.lng], { icon, title: `${s.n}. ${s.title}`, keyboard: true, riseOnHover: true, alt: `${s.n}. ${s.title}` });
@@ -97,10 +118,12 @@ export function TripMap({ stops, selectedId, onSelect, home, center, active = tr
       const last = path[path.length - 1];
       if (!last || last[0] !== s.lat || last[1] !== s.lng) path.push([s.lat, s.lng]);
     }
+    // The day ends back at the accommodation.
+    if (home && path.length > 1) path.push([home.lat, home.lng]);
     if (path.length > 1) L.polyline(path, { color: "#173B67", weight: 3, opacity: 0.6, dashArray: "6 8" }).addTo(layer);
     if (pts.length) map.fitBounds(L.latLngBounds(pts).pad(0.2), { maxZoom: 15, animate: false });
     else map.setView([center.lat, center.lng], 12);
-  }, [stops, home, ready, center.lat, center.lng]);
+  }, [stops, home, area, ready, center.lat, center.lng]);
 
   // Highlight selection.
   useEffect(() => {

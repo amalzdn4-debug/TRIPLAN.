@@ -1,11 +1,11 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { getDb, schema } from "@/db";
 import { requireAdmin } from "@/lib/auth/guards";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { CommandButton } from "@/components/admin/AdminForms";
-import { features } from "@/lib/env";
-import { formatDate } from "@/lib/format";
+import { features, stripeMode } from "@/lib/env";
+import { formatCents, formatDate } from "@/lib/format";
 
 export default async function AdminDashboard({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -22,9 +22,18 @@ export default async function AdminDashboard({ params }: { params: Promise<{ loc
     { label: t("stats.places"), value: await c(db.select({ n }).from(schema.places)) },
     { label: t("stats.posts"), value: await c(db.select({ n }).from(schema.communityPosts)) },
     { label: t("stats.openReports"), value: await c(db.select({ n }).from(schema.reports).where(eq(schema.reports.status, "open"))) },
-    { label: t("stats.activeSubs"), value: await c(db.select({ n }).from(schema.subscriptions).where(eq(schema.subscriptions.status, "active"))) },
-    { label: t("stats.payments"), value: await c(db.select({ n }).from(schema.payments).where(eq(schema.payments.status, "paid"))) },
+    // Real (live-mode) figures only: Stripe test-mode activity is shown separately and never counted.
+    { label: t("stats.activeSubs"), value: await c(db.select({ n }).from(schema.subscriptions).where(and(eq(schema.subscriptions.status, "active"), eq(schema.subscriptions.livemode, true)))) },
+    { label: t("stats.payments"), value: await c(db.select({ n }).from(schema.payments).where(and(eq(schema.payments.status, "paid"), eq(schema.payments.livemode, true)))) },
+    { label: t("stats.affiliateClicks30"), value: await c(db.select({ n }).from(schema.affiliateClicks).where(sql`${schema.affiliateClicks.createdAt} > now() - interval '30 days'`)) },
   ];
+  const revenue = await db
+    .select({ currency: schema.payments.currency, cents: sql<number>`sum(${schema.payments.amountCents})::int` })
+    .from(schema.payments)
+    .where(and(eq(schema.payments.status, "paid"), eq(schema.payments.livemode, true)))
+    .groupBy(schema.payments.currency);
+  const testPayments = await c(db.select({ n }).from(schema.payments).where(eq(schema.payments.livemode, false)));
+  const mode = stripeMode();
   const messages = await db.select().from(schema.contactMessages).where(eq(schema.contactMessages.handled, false)).orderBy(desc(schema.contactMessages.createdAt)).limit(20);
   const integrations = [
     { name: "AI (Anthropic)", on: features.ai() },
@@ -32,6 +41,8 @@ export default async function AdminDashboard({ params }: { params: Promise<{ loc
     { name: "Email (Resend)", on: features.email() },
     { name: "Google sign-in", on: features.googleAuth() },
     { name: "Google Routes", on: features.googleRoutes() },
+    { name: t("integrationNames.uploads"), on: features.uploads() },
+    { name: t("integrationNames.cron"), on: Boolean(process.env.CRON_SECRET) },
   ];
   return (
     <AdminShell current="/admin" title={t("sections.dashboard")}>
@@ -39,6 +50,12 @@ export default async function AdminDashboard({ params }: { params: Promise<{ loc
         {stats.map((s) => (
           <div key={s.label} className="card"><p className="small muted">{s.label}</p><p className="plan__price" style={{ fontSize: "var(--fs-2xl)" }}>{s.value}</p></div>
         ))}
+      </div>
+      <div className="card">
+        <h2 style={{ fontSize: "var(--fs-lg)" }}>{t("revenue")}</h2>
+        <p style={{ margin: 0 }}>{revenue.length ? revenue.map((r) => formatCents(r.cents, r.currency, locale)).join(" · ") : formatCents(0, "EUR", locale)}</p>
+        <p className="small muted" style={{ margin: 0 }}>{t("revenueNote")}{testPayments ? ` ${t("testPaymentsExcluded", { n: testPayments })}` : ""}</p>
+        {mode === "test" ? <p className="small" style={{ margin: 0 }}><span className="badge badge--alert">{t("stripeTestMode")}</span></p> : null}
       </div>
       <div className="card">
         <h2 style={{ fontSize: "var(--fs-lg)" }}>{t("integrations")}</h2>

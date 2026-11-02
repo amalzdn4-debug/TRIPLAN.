@@ -1,9 +1,9 @@
-import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Icon } from "@/components/ui/Icon";
 import { countryName } from "@/lib/format";
 import type { DestinationCardData } from "@/lib/destinations";
+import { SafeImage } from "@/components/media/SafeImage";
 
 export function DestinationCard({ d, priority = false }: { d: DestinationCardData; priority?: boolean }) {
   const t = useTranslations("destination");
@@ -12,16 +12,7 @@ export function DestinationCard({ d, priority = false }: { d: DestinationCardDat
   return (
     <article className="dest-card">
       <div className="dest-card__media">
-        {d.image ? (
-          <Image src={d.image.url} alt={d.image.alt} fill sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 25vw" priority={priority} style={{ objectFit: "cover" }} />
-        ) : (
-          <div className="dest-card__placeholder" aria-hidden>
-            <div>
-              <span>{d.city}</span>
-              <small>{country}</small>
-            </div>
-          </div>
-        )}
+        <SafeImage src={d.image?.url} alt={d.image?.alt ?? ""} slot="card" title={d.city} subtitle={country} priority={priority} />
       </div>
       <div className="dest-card__body">
         <h3 className="dest-card__title">

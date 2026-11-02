@@ -12,10 +12,16 @@ export interface HeroSlideData {
   imageUrl: string;
   alt: string;
   city: string;
+  /** Localized city names by language, when known. */
+  cityNames?: Record<string, string>;
   countryCode: string;
   destinationSlug?: string | null;
   creditName?: string | null;
   creditUrl?: string | null;
+  /** Wikimedia photos carry their licence, shown in the credit line. */
+  license?: string | null;
+  licenseUrl?: string | null;
+  source?: "unsplash" | "wikimedia" | "upload" | null;
 }
 
 const u = (id: string) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=2400&q=75`;

@@ -53,7 +53,10 @@ export default async function TripsPage({ params, searchParams }: { params: Prom
           ) : null}
           <div className="cluster small muted">
             {usage.subscription ? (
-              <span className="badge badge--navy">{t("annualActive")}</span>
+              <>
+                <span className="badge badge--navy">{t("planActive", { plan: t(`planNames.${usage.subscription.planId}`) })}</span>
+                {usage.subscription.tripsIncluded != null ? <span className="badge">{t("periodLeft", { n: Math.max(0, usage.subscription.tripsIncluded - usage.subscription.tripsUsedInPeriod) })}</span> : null}
+              </>
             ) : (
               <>
                 <span className="badge">{t("freeLeft", { n: usage.freeRemaining })}</span>

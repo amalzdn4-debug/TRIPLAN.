@@ -1,12 +1,14 @@
 /**
- * Outbound links to booking & information partners. These are plain search/landing links —
- * Triplan does not display third-party prices or availability unless an official API is
- * integrated. Affiliate/partner ids are appended when configured.
+ * Outbound search links to booking & information sites. These are plain links — no affiliate
+ * ids, no prices, no availability. Affiliate links come only from partners an admin has marked
+ * as approved (see src/lib/affiliates.ts); those are flagged `partner: true` and labelled.
  */
 export interface OutboundLink {
   provider: string;
   url: string;
   category: "accommodation" | "flights" | "activities" | "luggage" | "transport" | "restaurants";
+  /** An approved affiliate partner (shown with a "Partner" label and the disclosure). */
+  partner?: boolean;
 }
 
 const q = encodeURIComponent;
@@ -17,7 +19,6 @@ export function accommodationLinks(city: string, checkIn?: string | null, checkO
   if (checkIn) booking.searchParams.set("checkin", checkIn);
   if (checkOut) booking.searchParams.set("checkout", checkOut);
   booking.searchParams.set("group_adults", String(Math.max(1, adults)));
-  if (process.env.BOOKING_AFFILIATE_ID) booking.searchParams.set("aid", process.env.BOOKING_AFFILIATE_ID);
 
   const airbnb = new URL(`https://www.airbnb.com/s/${q(city)}/homes`);
   if (checkIn) airbnb.searchParams.set("checkin", checkIn);
@@ -53,10 +54,8 @@ export function flightLinks(to: string, from?: string | null, date?: string | nu
 export function activityLinks(city: string): OutboundLink[] {
   const gyg = new URL("https://www.getyourguide.com/s/");
   gyg.searchParams.set("q", city);
-  if (process.env.GETYOURGUIDE_PARTNER_ID) gyg.searchParams.set("partner_id", process.env.GETYOURGUIDE_PARTNER_ID);
   const viator = new URL("https://www.viator.com/searchResults/all");
   viator.searchParams.set("text", city);
-  if (process.env.VIATOR_PARTNER_ID) viator.searchParams.set("pid", process.env.VIATOR_PARTNER_ID);
   return [
     { provider: "GetYourGuide", url: gyg.toString(), category: "activities" },
     { provider: "Viator", url: viator.toString(), category: "activities" },

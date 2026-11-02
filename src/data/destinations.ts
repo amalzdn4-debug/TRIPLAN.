@@ -10,11 +10,16 @@
  *    (the seed is idempotent and keyed by slug) — no application code changes are needed.
  */
 import { DEFAULT_HERO_SLIDES } from "./hero";
+import { COUNTRY_INFO } from "./world/define";
+import { EUROPE } from "./world/europe";
+import { MENA_AFRICA } from "./world/mena-africa";
+import { ASIA } from "./world/asia";
+import { AMERICAS_OCEANIA } from "./world/americas-oceania";
 
 export type Continent = "europe" | "mena" | "asia" | "north_america" | "south_america" | "africa" | "oceania";
 export type TravelStyle = "city_break" | "culture" | "beach" | "nature" | "food" | "romantic" | "family" | "adventure" | "luxury" | "budget";
 export type Experience = "museums" | "architecture" | "history" | "nightlife" | "shopping" | "beaches" | "hiking" | "food" | "markets" | "photography" | "relaxation" | "local";
-export type Climate = "temperate" | "mediterranean" | "tropical" | "desert" | "continental" | "subtropical" | "oceanic";
+export type Climate = "temperate" | "mediterranean" | "tropical" | "desert" | "continental" | "subtropical" | "oceanic" | "alpine" | "subarctic";
 
 export interface SeedPlace {
   name: string;
@@ -46,30 +51,18 @@ export interface SeedDestination {
   featured?: boolean;
   neighborhoods?: string[];
   places?: SeedPlace[];
+  /** city | coastal | island | nature — used for stay planning and slideshow variety. */
+  kind?: "city" | "coastal" | "island" | "nature";
+  /** English Wikipedia article title for the content importer (defaults to the city name). */
+  wiki?: string;
 }
 
 const A = (name: string, lat: number, lng: number, tags: string[], durationMin = 90, neighborhood?: string): SeedPlace => ({ name, lat, lng, tags, durationMin, neighborhood, kind: "attraction" });
 const X = (name: string, lat: number, lng: number, tags: string[], durationMin = 90, neighborhood?: string): SeedPlace => ({ name, lat, lng, tags, durationMin, neighborhood, kind: "activity" });
 
-export const COUNTRY_CONTINENT: Record<string, { continent: Continent; currency: string }> = {
-  FR: { continent: "europe", currency: "EUR" }, IT: { continent: "europe", currency: "EUR" }, PT: { continent: "europe", currency: "EUR" },
-  ES: { continent: "europe", currency: "EUR" }, GB: { continent: "europe", currency: "GBP" }, NL: { continent: "europe", currency: "EUR" },
-  DE: { continent: "europe", currency: "EUR" }, AT: { continent: "europe", currency: "EUR" }, GR: { continent: "europe", currency: "EUR" },
-  CZ: { continent: "europe", currency: "CZK" }, TR: { continent: "europe", currency: "TRY" },
-  AE: { continent: "mena", currency: "AED" }, LB: { continent: "mena", currency: "LBP" }, JO: { continent: "mena", currency: "JOD" },
-  EG: { continent: "mena", currency: "EGP" }, MA: { continent: "mena", currency: "MAD" }, QA: { continent: "mena", currency: "QAR" },
-  SA: { continent: "mena", currency: "SAR" }, OM: { continent: "mena", currency: "OMR" }, TN: { continent: "mena", currency: "TND" },
-  JP: { continent: "asia", currency: "JPY" }, KR: { continent: "asia", currency: "KRW" }, TH: { continent: "asia", currency: "THB" },
-  SG: { continent: "asia", currency: "SGD" }, MY: { continent: "asia", currency: "MYR" }, ID: { continent: "asia", currency: "IDR" },
-  HK: { continent: "asia", currency: "HKD" },
-  US: { continent: "north_america", currency: "USD" }, CA: { continent: "north_america", currency: "CAD" },
-  BR: { continent: "south_america", currency: "BRL" }, AR: { continent: "south_america", currency: "ARS" }, PE: { continent: "south_america", currency: "PEN" },
-  CL: { continent: "south_america", currency: "CLP" },
-  ZA: { continent: "africa", currency: "ZAR" }, KE: { continent: "africa", currency: "KES" }, TZ: { continent: "africa", currency: "TZS" },
-  AU: { continent: "oceania", currency: "AUD" }, NZ: { continent: "oceania", currency: "NZD" },
-};
+export const COUNTRY_CONTINENT = COUNTRY_INFO;
 
-export const SEED_DESTINATIONS: SeedDestination[] = [
+const CORE_DESTINATIONS: SeedDestination[] = [
   /* ───────────── Europe ───────────── */
   {
     slug: "paris", city: "Paris", country: "FR", continent: "europe", lat: 48.8566, lng: 2.3522, tz: "Europe/Paris",
@@ -609,6 +602,32 @@ export const SEED_DESTINATIONS: SeedDestination[] = [
     bestTime: "December–April", bestMonths: [12, 1, 2, 3, 4], days: [2, 4], budget: "mid", climate: "oceanic",
     styles: ["nature", "adventure", "beach"], experiences: ["hiking", "beaches", "food"], popularity: 64,
   },
+];
+
+/** Wikipedia titles and kinds for the original 56 where they differ from the defaults. */
+const CORE_META: Record<string, Pick<SeedDestination, "wiki" | "kind">> = {
+  "amalfi-coast": { kind: "coastal", wiki: "Amalfi Coast" },
+  santorini: { kind: "island", wiki: "Santorini" },
+  bali: { kind: "island", wiki: "Bali" },
+  zanzibar: { kind: "island", wiki: "Zanzibar" },
+  "new-york": { wiki: "New York City" },
+  "hong-kong": { wiki: "Hong Kong" },
+  singapore: { wiki: "Singapore" },
+  santiago: { wiki: "Santiago" },
+  "sao-paulo": { wiki: "São Paulo" },
+  lima: { wiki: "Lima" },
+  doha: { wiki: "Doha" },
+  vancouver: { wiki: "Vancouver" },
+  "cape-town": { wiki: "Cape Town" },
+};
+
+/** The full catalogue: the original 56 plus the world collection (351 destinations). */
+export const SEED_DESTINATIONS: SeedDestination[] = [
+  ...CORE_DESTINATIONS.map((d) => ({ kind: "city" as const, wiki: d.city, ...d, ...CORE_META[d.slug] })),
+  ...EUROPE,
+  ...MENA_AFRICA,
+  ...ASIA,
+  ...AMERICAS_OCEANIA,
 ];
 
 /** Hero slide image doubles as the destination card image when available. */

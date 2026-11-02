@@ -1,5 +1,5 @@
 import type Stripe from "stripe";
-import { eq, sql } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { getDb, schema } from "@/db";
 import { getStripe } from "@/lib/stripe";
 
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
         if (s.mode === "payment" && s.payment_status === "paid") {
           const inserted = await db
             .insert(schema.payments)
-            .values({ userId, planId, stripeSessionId: s.id, amountCents: s.amount_total ?? 0, currency: (s.currency ?? "eur").toUpperCase(), status: "paid" })
+            .values({ userId, planId, stripeSessionId: s.id, amountCents: s.amount_total ?? 0, currency: (s.currency ?? "eur").toUpperCase(), status: "paid", livemode: event.livemode })
             .onConflictDoNothing()
             .returning({ id: schema.payments.id });
           if (inserted.length) {
@@ -47,29 +47,41 @@ export async function POST(req: Request) {
         }
         if (s.mode === "subscription" && s.subscription) {
           const sub = await stripe.subscriptions.retrieve(typeof s.subscription === "string" ? s.subscription : s.subscription.id);
-          await upsertSubscription(sub, userId, planId);
+          await upsertSubscription(sub, userId, planId, event.livemode);
         }
         break;
       }
       case "customer.subscription.created":
       case "customer.subscription.updated":
       case "customer.subscription.deleted": {
-        const sub = event.data.object as Stripe.Subscription;
-        await upsertSubscription(sub, sub.metadata?.userId, sub.metadata?.planId);
+        const evSub = event.data.object as Stripe.Subscription;
+        // Events can arrive out of order: use the subscription's current state from Stripe.
+        const sub = event.type === "customer.subscription.deleted" ? evSub : ((await stripe.subscriptions.retrieve(evSub.id).catch(() => null)) ?? evSub);
+        await upsertSubscription(sub, sub.metadata?.userId, sub.metadata?.planId, event.livemode);
         break;
       }
       case "invoice.paid":
       case "invoice.payment_failed": {
-        const inv = event.data.object as Stripe.Invoice & { subscription?: string | { id: string } | null };
+        const inv = event.data.object as Stripe.Invoice & {
+          subscription?: string | { id: string } | null;
+          parent?: { subscription_details?: { subscription?: string | { id: string } | null } | null } | null;
+        };
         const customer = typeof inv.customer === "string" ? inv.customer : inv.customer?.id;
         if (!customer) break;
         const [u] = await db.select({ id: schema.users.id }).from(schema.users).where(eq(schema.users.stripeCustomerId, customer));
         if (!u) break;
+        // The subscription id moved under invoice.parent in newer API versions; support both.
+        const subRef = inv.subscription ?? inv.parent?.subscription_details?.subscription ?? null;
+        const subId = typeof subRef === "string" ? subRef : subRef?.id;
+        const [known] = subId ? await db.select({ planId: schema.subscriptions.planId }).from(schema.subscriptions).where(eq(schema.subscriptions.stripeSubscriptionId, subId)) : [];
+        const [latest] = known ? [known] : await db.select({ planId: schema.subscriptions.planId }).from(schema.subscriptions).where(eq(schema.subscriptions.userId, u.id)).orderBy(desc(schema.subscriptions.createdAt)).limit(1);
+        if (!latest) break;
         await db
           .insert(schema.payments)
           .values({
             userId: u.id,
-            planId: "annual",
+            planId: latest.planId,
+            livemode: event.livemode,
             stripeInvoiceId: inv.id,
             amountCents: event.type === "invoice.paid" ? inv.amount_paid : inv.amount_due,
             currency: (inv.currency ?? "eur").toUpperCase(),
@@ -88,7 +100,7 @@ export async function POST(req: Request) {
   return Response.json({ received: true });
 }
 
-async function upsertSubscription(sub: Stripe.Subscription, userId?: string | null, planId?: string | null) {
+async function upsertSubscription(sub: Stripe.Subscription, userId: string | null | undefined, planId: string | null | undefined, livemode: boolean) {
   const db = await getDb();
   let uid = userId ?? null;
   if (!uid) {
@@ -97,20 +109,49 @@ async function upsertSubscription(sub: Stripe.Subscription, userId?: string | nu
     uid = u?.id ?? null;
   }
   if (!uid) return;
-  // current_period_end moved onto subscription items in newer API versions; support both.
-  const periodEndUnix =
-    (sub as unknown as { current_period_end?: number }).current_period_end ?? sub.items?.data?.[0]?.current_period_end ?? null;
+  // The billing period moved onto subscription items in newer API versions; support both.
+  const legacy = sub as unknown as { current_period_start?: number; current_period_end?: number };
+  const item = sub.items?.data?.[0] as unknown as { current_period_start?: number; current_period_end?: number } | undefined;
+  const startUnix = legacy.current_period_start ?? item?.current_period_start ?? null;
+  const endUnix = legacy.current_period_end ?? item?.current_period_end ?? null;
+  const start = startUnix ? new Date(startUnix * 1000) : null;
+  const end = endUnix ? new Date(endUnix * 1000) : null;
   const values = {
     userId: uid,
-    planId: planId || "annual",
+    planId: planId || (await planForPrice(sub)) || "annual",
     stripeSubscriptionId: sub.id,
     status: sub.status,
-    currentPeriodEnd: periodEndUnix ? new Date(periodEndUnix * 1000) : null,
+    currentPeriodStart: start,
+    currentPeriodEnd: end,
     cancelAtPeriodEnd: sub.cancel_at_period_end,
+    canceledAt: sub.canceled_at ? new Date(sub.canceled_at * 1000) : null,
+    livemode,
     updatedAt: new Date(),
   };
+  const t = schema.subscriptions;
+  const newer = start ? sql`(${t.currentPeriodStart} is null or ${start.toISOString()}::timestamptz > ${t.currentPeriodStart})` : sql`false`;
   await db
-    .insert(schema.subscriptions)
+    .insert(t)
     .values(values)
-    .onConflictDoUpdate({ target: schema.subscriptions.stripeSubscriptionId, set: { status: values.status, currentPeriodEnd: values.currentPeriodEnd, cancelAtPeriodEnd: values.cancelAtPeriodEnd, updatedAt: values.updatedAt } });
+    .onConflictDoUpdate({
+      target: t.stripeSubscriptionId,
+      set: {
+        status: values.status,
+        cancelAtPeriodEnd: values.cancelAtPeriodEnd,
+        canceledAt: values.canceledAt,
+        updatedAt: values.updatedAt,
+        // A renewal starts a new billing period: the monthly trip counter resets. Periods never move backwards.
+        tripsUsedInPeriod: sql`case when ${newer} then 0 else ${t.tripsUsedInPeriod} end`,
+        currentPeriodStart: sql`case when ${newer} then ${start ? start.toISOString() : null}::timestamptz else ${t.currentPeriodStart} end`,
+        currentPeriodEnd: sql`case when ${newer} or ${t.currentPeriodEnd} is null then ${end ? end.toISOString() : null}::timestamptz else greatest(${t.currentPeriodEnd}, ${end ? end.toISOString() : null}::timestamptz) end`,
+      },
+    });
+}
+
+/** Subscriptions created outside Checkout (e.g. in the Stripe dashboard) have no plan metadata. */
+async function planForPrice(sub: Stripe.Subscription): Promise<string | null> {
+  const interval = sub.items?.data?.[0]?.price?.recurring?.interval;
+  if (interval === "month") return "monthly";
+  if (interval === "year") return "annual";
+  return null;
 }

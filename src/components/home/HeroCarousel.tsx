@@ -1,6 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import { isWikimedia, sizedUrl } from "@/lib/images";
+import { PhotoCredit } from "@/components/media/PhotoCredit";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
@@ -63,7 +65,8 @@ export function HeroCarousel({ slides, children }: { slides: HeroSlideData[]; ch
   };
 
   const current = slides[index];
-  const place = `${current.city}, ${countryName(current.countryCode, locale)}`;
+  const cityOf = (s: { city: string; cityNames?: Record<string, string> }) => s.cityNames?.[locale] ?? s.city;
+  const place = `${cityOf(current)}, ${countryName(current.countryCode, locale)}`;
 
   return (
     <section
@@ -81,7 +84,7 @@ export function HeroCarousel({ slides, children }: { slides: HeroSlideData[]; ch
         {slides.map((s, i) => (
           <div key={s.id} className={`hero__slide ${i === index ? "is-active" : ""}`} aria-hidden={i !== index} role="group" aria-roledescription="slide" aria-label={t("slideOf", { n: i + 1, total: count })}>
             {loaded.has(i) ? (
-              <Image src={s.imageUrl} alt={i === index ? s.alt : ""} fill sizes="100vw" priority={i === 0} quality={72} style={{ objectFit: "cover" }} />
+              <Image src={sizedUrl(s.imageUrl, "hero")} alt={i === index ? s.alt : ""} fill sizes="100vw" priority={i === 0} quality={72} unoptimized={isWikimedia(s.imageUrl)} style={{ objectFit: "cover" }} />
             ) : null}
           </div>
         ))}
@@ -104,11 +107,7 @@ export function HeroCarousel({ slides, children }: { slides: HeroSlideData[]; ch
               </div>
               {current.creditName ? (
                 <div className="hero__credit">
-                  {t("photoBy")}{" "}
-                  <a href={current.creditUrl ?? "https://unsplash.com"} target="_blank" rel="noopener noreferrer">
-                    {current.creditName}
-                  </a>{" "}
-                  / Unsplash
+                  <PhotoCredit image={{ url: current.imageUrl, alt: current.alt, creditName: current.creditName, creditUrl: current.creditUrl ?? null, license: current.license, licenseUrl: current.licenseUrl, source: current.source ?? "unsplash" }} />
                 </div>
               ) : null}
             </div>
@@ -117,7 +116,7 @@ export function HeroCarousel({ slides, children }: { slides: HeroSlideData[]; ch
             <div className="hero__controls">
               <div className="hero__dots" role="group" aria-label={t("chooseSlide")}>
                 {slides.map((s, i) => (
-                  <button key={s.id} type="button" className="hero__dot" aria-label={t("goTo", { place: s.city })} aria-current={i === index ? "true" : undefined} onClick={() => go(i)} />
+                  <button key={s.id} type="button" className="hero__dot" aria-label={t("goTo", { place: cityOf(s) })} aria-current={i === index ? "true" : undefined} onClick={() => go(i)} />
                 ))}
               </div>
               <button type="button" className="hero__arrow" aria-label={t("previous")} onClick={() => go(index - 1)}>

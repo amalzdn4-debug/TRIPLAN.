@@ -96,7 +96,7 @@ export async function createTripAction(mode: "fast" | "detailed", _prev: ActionS
     });
   } catch (err) {
     if (err instanceof trips.NeedsPaymentError) {
-      redirect({ href: { pathname: "/pricing", query: { reason: "limit" } }, locale });
+      redirect({ href: { pathname: "/pricing", query: { reason: err.reason } }, locale });
     }
     console.error(err);
     return { ok: false, message: "genericError" };
@@ -218,4 +218,55 @@ export async function deleteTripAction(tripId: string) {
   await withUser((uid) => trips.deleteTrip(uid, tripId));
   revalidatePath(`/${locale}/trips`);
   redirect({ href: "/trips", locale });
+}
+
+/* ───────────── Multi-city & accommodation ───────────── */
+
+async function freshWithPlanning(userId: string, tripId: string, locale: string) {
+  const trip = await trips.getTrip(tripId, userId);
+  return { trip, planning: trip ? await trips.getTripPlanning(trip, locale) : null };
+}
+
+export async function acceptSplitAction(tripId: string, choice: trips.SplitChoice) {
+  const locale = await getLocale();
+  // Validate the shape strictly; the option itself is re-checked against the engine server-side.
+  const safe: trips.SplitChoice =
+    "optionId" in choice
+      ? { optionId: String(choice.optionId).slice(0, 200) }
+      : { slug: String(choice.slug).slice(0, 80), type: choice.type === "day_trip" ? "day_trip" : "stay" };
+  return withUser(async (uid) => {
+    await trips.acceptSplit(uid, tripId, safe, locale);
+    return freshWithPlanning(uid, tripId, locale);
+  });
+}
+
+export async function declineSplitAction(tripId: string) {
+  const locale = await getLocale();
+  return withUser(async (uid) => {
+    await trips.declineSplit(uid, tripId);
+    return freshWithPlanning(uid, tripId, locale);
+  });
+}
+
+export async function resetSplitAction(tripId: string) {
+  const locale = await getLocale();
+  return withUser(async (uid) => {
+    await trips.resetSplit(uid, tripId, locale);
+    return freshWithPlanning(uid, tripId, locale);
+  });
+}
+
+export async function setAccommodationAction(tripId: string, input: { status: "booked" | "recommend"; name?: string | null; address?: string | null; lat?: number | null; lng?: number | null }) {
+  const locale = await getLocale();
+  const status: "booked" | "recommend" = input.status === "booked" ? "booked" : "recommend";
+  const name = String(input.name ?? "").trim().slice(0, 140) || null;
+  const address = String(input.address ?? "").trim().slice(0, 240) || null;
+  const lat = input.lat != null && Number.isFinite(+input.lat) && Math.abs(+input.lat) <= 90 ? +input.lat : null;
+  const lng = input.lng != null && Number.isFinite(+input.lng) && Math.abs(+input.lng) <= 180 ? +input.lng : null;
+  if (status === "booked" && !name) throw new Error("invalid");
+  const acc = status === "booked" ? { status, name, address, lat: lat != null && lng != null ? lat : null, lng: lat != null && lng != null ? lng : null } : { status, name: null, address: null, lat: null, lng: null };
+  return withUser(async (uid) => {
+    await trips.setAccommodation(uid, tripId, acc, locale);
+    return freshWithPlanning(uid, tripId, locale);
+  });
 }

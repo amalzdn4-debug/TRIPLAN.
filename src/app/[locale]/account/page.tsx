@@ -1,3 +1,4 @@
+import { Link } from "@/i18n/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { eq } from "drizzle-orm";
 import { requireUser } from "@/lib/auth/guards";
@@ -31,6 +32,7 @@ export default async function AccountPage({ params }: { params: Promise<{ locale
           <div>
             <h1 style={{ fontSize: "var(--fs-2xl)" }}>{t("title")}</h1>
             <p className="muted"><span className="ltr">{user.email}</span> · {user.emailVerified ? t("verified") : t("unverified")}</p>
+            <p className="small" style={{ margin: 0 }}><Link href={`/community/members/${user.id}`}>{t("viewPublicProfile")}</Link> · <span className="muted">{t("publicProfileNote")}</span></p>
           </div>
           {!user.emailVerified ? <Notice tone="warning">{t("verifyPrompt")} <ResendVerification /></Notice> : null}
           <ProfileForm profile={{ displayName: profile?.displayName ?? user.displayName, homeCity: profile?.homeCity ?? "", bio: profile?.bio ?? "" }} />

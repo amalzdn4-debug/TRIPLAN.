@@ -4,7 +4,10 @@ import { getDb, schema } from "@/db";
 import { Link } from "@/i18n/navigation";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { DestinationFields } from "./fields";
-import { AdminForm } from "@/components/admin/AdminForms";
+import { AdminForm, CommandButton, EnrichPanel } from "@/components/admin/AdminForms";
+
+// The content-import button runs for up to ~40 s.
+export const maxDuration = 60;
 
 export default async function AdminDestinations({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -12,13 +15,15 @@ export default async function AdminDestinations({ params }: { params: Promise<{ 
   const t = await getTranslations("admin");
   const db = await getDb();
   const rows = await db
-    .select({ id: schema.destinations.id, slug: schema.destinations.slug, city: schema.cities.name, country: schema.cities.countryCode, featured: schema.destinations.featured, published: schema.destinations.published, status: schema.destinations.contentStatus, places: sql<number>`(select count(*)::int from places p where p.destination_id = ${schema.destinations.id})` })
+    .select({ id: schema.destinations.id, slug: schema.destinations.slug, city: schema.cities.name, country: schema.cities.countryCode, featured: schema.destinations.featured, published: schema.destinations.published, status: schema.destinations.contentStatus, enrichment: schema.destinations.enrichmentStatus, enrichmentError: schema.destinations.enrichmentError, places: sql<number>`(select count(*)::int from places p where p.destination_id = ${schema.destinations.id})` })
     .from(schema.destinations)
     .innerJoin(schema.cities, eq(schema.cities.id, schema.destinations.cityId))
     .orderBy(asc(schema.cities.name));
+  const count = (s: string) => rows.filter((r) => r.enrichment === s).length;
   return (
     <AdminShell current="/admin/destinations" title={t("sections.destinations")}>
-      <div className="table-wrap"><table className="table"><thead><tr><th>{t("dest.city")}</th><th>{t("dest.slug")}</th><th>{t("dest.places")}</th><th>{t("status")}</th><th /></tr></thead><tbody>
+      <EnrichPanel pending={count("pending")} done={count("done")} partial={count("partial")} failed={count("failed")} />
+      <div className="table-wrap"><table className="table"><thead><tr><th>{t("dest.city")}</th><th>{t("dest.slug")}</th><th>{t("dest.places")}</th><th>{t("status")}</th><th>{t("enrich.column")}</th><th /></tr></thead><tbody>
         {rows.map((r) => (
           <tr key={r.id}>
             <td><strong>{r.city}</strong> ({r.country})</td>
@@ -29,7 +34,14 @@ export default async function AdminDestinations({ params }: { params: Promise<{ 
               {r.featured ? <span className="badge badge--gold">{t("dest.featured")}</span> : null}
               {!r.published ? <span className="badge badge--alert">{t("dest.hidden")}</span> : null}
             </td>
-            <td><Link href={`/admin/destinations/${r.id}`} className="btn btn--sm">{t("edit")}</Link></td>
+            <td>
+              <span className={`badge ${r.enrichment === "done" ? "badge--blue" : r.enrichment === "failed" ? "badge--alert" : "badge--outline"}`} title={r.enrichmentError ?? undefined}>{t(`enrich.status.${r.enrichment}`)}</span>
+              {r.enrichmentError ? <p className="small muted" style={{ maxInlineSize: 280 }}>{r.enrichmentError.slice(0, 140)}</p> : null}
+            </td>
+            <td className="cluster" style={{ gap: 4 }}>
+              <Link href={`/admin/destinations/${r.id}`} className="btn btn--sm">{t("edit")}</Link>
+              <CommandButton cmd={{ type: "enrich", id: r.slug, command: "reimport" }} label={t("enrich.reimport")} />
+            </td>
           </tr>
         ))}
       </tbody></table></div>

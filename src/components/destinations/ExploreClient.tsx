@@ -35,7 +35,7 @@ export function ExploreClient({ destinations, initial }: { destinations: Destina
   const results = useMemo(() => {
     const q = f.q.trim().toLocaleLowerCase(locale);
     const list = destinations.filter((d) => {
-      if (q && !`${d.city} ${countryName(d.countryCode, locale)} ${d.countryCode}`.toLocaleLowerCase(locale).includes(q)) return false;
+      if (q && !`${d.city} ${d.cityEn ?? ""} ${countryName(d.countryCode, locale)} ${d.countryCode}`.toLocaleLowerCase(locale).includes(q)) return false;
       if (f.continent && d.continent !== f.continent) return false;
       if (f.country && d.countryCode !== f.country) return false;
       if (f.style && !d.travelStyles.includes(f.style)) return false;

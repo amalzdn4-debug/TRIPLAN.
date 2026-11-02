@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { and, eq } from "drizzle-orm";
 import { Link } from "@/i18n/navigation";
 import { getDb, schema } from "@/db";
-import { getDestinationCards, getDestinationDetail } from "@/lib/destinations";
+import { getDestinationCards, getDestinationDetail, getNearby } from "@/lib/destinations";
 import { getPosts } from "@/lib/community";
 import { getCurrentUser } from "@/lib/auth/session";
 import { countryName, monthName } from "@/lib/format";
-import { accommodationLinks, activityLinks, flightLinks, luggageLinks, restaurantSearchUrl, transportLinks, type OutboundLink } from "@/lib/links";
+import { accommodationLinks, activityLinks, flightLinks, luggageLinks, restaurantSearchUrl, transportLinks } from "@/lib/links";
+import { withPartners } from "@/lib/affiliates";
+import { OutboundLinks as Links, PartnerDisclosure } from "@/components/ui/OutboundLinks";
 import { googleMapsPlaceUrl } from "@/lib/geo";
 import { pageMetadata } from "@/lib/seo";
 import { siteUrl } from "@/config/site";
@@ -19,6 +20,11 @@ import { Reveal } from "@/components/ui/Reveal";
 import { DestinationCard } from "@/components/destinations/DestinationCard";
 import { SaveButton } from "@/components/destinations/SaveButton";
 import { PostCard } from "@/components/community/PostCard";
+import { SafeImage } from "@/components/media/SafeImage";
+import { PhotoCredit } from "@/components/media/PhotoCredit";
+import { NearbyList } from "@/components/destinations/NearbyList";
+import { formatDuration } from "@/lib/format";
+import type { CreditedImage } from "@/lib/images";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }): Promise<Metadata> {
   const { locale, slug } = await params;
@@ -28,23 +34,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return pageMetadata({
     locale,
     path: `/destinations/${slug}`,
-    title: t("metaTitle", { city: d.city.name, country: countryName(d.city.countryCode, locale) }),
+    title: t("metaTitle", { city: d.displayName, country: countryName(d.city.countryCode, locale) }),
     description: d.summary,
     image: d.images[0]?.url,
   });
-}
-
-function Links({ links }: { links: OutboundLink[] }) {
-  return (
-    <div className="link-list">
-      {links.map((l) => (
-        <a key={l.provider} className="ext-link" href={l.url} target="_blank" rel="noopener noreferrer nofollow">
-          {l.provider}
-          <Icon name="external" className="flip-rtl" />
-        </a>
-      ))}
-    </div>
-  );
 }
 
 export default async function DestinationPage({ params }: { params: Promise<{ locale: string; slug: string }> }) {
@@ -56,16 +49,30 @@ export default async function DestinationPage({ params }: { params: Promise<{ lo
   const te = await getTranslations("explore");
   const tc = await getTranslations("common");
   const user = await getCurrentUser();
-  const [posts, cards] = await Promise.all([getPosts({ destinationSlug: slug, limit: 6 }), getDestinationCards(locale)]);
+  const [posts, cards, nearby] = await Promise.all([getPosts({ destinationSlug: slug, limit: 6 }), getDestinationCards(locale), getNearby(slug, locale, 8)]);
   let saved = false;
   if (user) {
     const db = await getDb();
     saved = (await db.select({ id: schema.savedItems.id }).from(schema.savedItems).where(and(eq(schema.savedItems.userId, user.id), eq(schema.savedItems.destinationId, d.id)))).length > 0;
   }
-  const city = d.city.name;
+  // Shown in the visitor's language; external searches use the English name, which every site understands.
+  const city = d.displayName;
+  const cityEn = d.city.name;
   const country = countryName(d.city.countryCode, locale);
-  const image = d.images[0];
+  const go = { source: "destination", destination: slug, city: cityEn, country: d.city.countryCode, locale, lat: d.city.lat, lng: d.city.lng };
+  const [stayLinks, flyLinks, moveLinks, bagLinks, doLinks] = await Promise.all([
+    withPartners(accommodationLinks(cityEn), go),
+    withPartners(flightLinks(cityEn), go),
+    withPartners(transportLinks(cityEn), go),
+    withPartners(luggageLinks(cityEn), go),
+    withPartners(activityLinks(cityEn), go),
+  ]);
+  const images: CreditedImage[] = d.images.map((i) => ({ url: i.url, alt: i.alt, creditName: i.creditName, creditUrl: i.creditUrl, license: i.license, licenseUrl: i.licenseUrl, source: i.source }));
+  const image = images[0];
+  const gallery = images.slice(1, 6);
+  const localName = (p: { name: string; details: unknown }) => ((p.details as { names?: Record<string, string> })?.names?.[locale] ?? p.name);
   const attractions = d.places.filter((p) => p.kind === "attraction" || p.kind === "activity");
+  const hubs = d.places.filter((p) => p.kind === "transport_hub");
   const restaurants = d.places.filter((p) => p.kind === "restaurant");
   const luggage = d.places.filter((p) => p.kind === "luggage_storage");
   const related = cards.filter((c) => c.continent === d.continent && c.slug !== d.slug).slice(0, 4);
@@ -83,13 +90,13 @@ export default async function DestinationPage({ params }: { params: Promise<{ lo
     includesAttraction: attractions.slice(0, 10).map((a) => ({ "@type": "TouristAttraction", name: a.name, geo: { "@type": "GeoCoordinates", latitude: a.lat, longitude: a.lng } })),
   };
 
-  const SECTIONS = ["overview", "attractions", "neighborhoods", "food", "stay", "transport", "luggage", "activities", "community"] as const;
+  const SECTIONS = ["overview", "attractions", "nearby", "neighborhoods", "food", "stay", "transport", "luggage", "activities", "community"] as const;
 
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       <section className="dest-hero">
-        {image ? <Image src={image.url} alt={image.alt} fill priority sizes="100vw" style={{ objectFit: "cover" }} /> : null}
+        <SafeImage src={image?.url} alt={image?.alt ?? city} slot="hero" title="" priority />
         <div className="container dest-hero__content">
           <ol className="breadcrumbs">
             <li><Link href="/">{t("home")}</Link></li>
@@ -106,9 +113,9 @@ export default async function DestinationPage({ params }: { params: Promise<{ lo
             </Link>
             <SaveButton id={d.id} kind="destination" initial={saved} signedIn={!!user} onDark />
           </div>
-          {image?.creditName ? (
+          {image ? (
             <p className="hero__credit" style={{ marginBlockStart: 16 }}>
-              {t("photoBy")} <a href={image.creditUrl ?? "#"} target="_blank" rel="noopener noreferrer">{image.creditName}</a> / Unsplash
+              <PhotoCredit image={image} />
             </p>
           ) : null}
         </div>
@@ -130,7 +137,28 @@ export default async function DestinationPage({ params }: { params: Promise<{ lo
             <h2><Icon name="compass" />{t("nav.overview")}</h2>
             {d.contentStatus === "sample" ? <Notice tone="warning">{t("sampleNotice")}</Notice> : <span className="badge badge--blue"><Icon name="verified" />{t("verified")}</span>}
             {!d.translatedContent ? <p className="small muted" style={{ marginBlockStart: 12 }}>{t("englishOnly")}</p> : null}
-            {d.description ? <p style={{ marginBlockStart: 16 }}>{d.description}</p> : null}
+            {d.description ? (
+              <div className="prose" style={{ marginBlockStart: 16 }}>
+                {d.description.split(/\n{2,}/).map((para, i) => <p key={i}>{para}</p>)}
+              </div>
+            ) : null}
+            {d.wikiUrl ? (
+              <p className="small muted">
+                {t("wikiSource")} <a href={d.wikiUrl} target="_blank" rel="noopener noreferrer">Wikipedia</a> (<a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer license">CC BY-SA 4.0</a>)
+              </p>
+            ) : null}
+            {gallery.length ? (
+              <ul className="gallery" aria-label={t("gallery")}>
+                {gallery.map((g) => (
+                  <li key={g.url}>
+                    <figure>
+                      <div className="gallery__img"><SafeImage src={g.url} alt={g.alt} slot="thumb" title={city} /></div>
+                      <figcaption>{g.alt}<br /><PhotoCredit image={g} /></figcaption>
+                    </figure>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
             <div className="facts" style={{ marginBlockStart: 20 }}>
               <div className="fact"><span>{t("bestTime")}</span><strong>{months.length ? months.map((m) => monthName(m, locale)).join(", ") : d.bestTime}</strong></div>
               <div className="fact"><span>{t("duration")}</span><strong>{d.suggestedDaysMin ? t("daysRange", { min: d.suggestedDaysMin, max: d.suggestedDaysMax ?? d.suggestedDaysMin }) : "—"}</strong></div>
@@ -144,18 +172,25 @@ export default async function DestinationPage({ params }: { params: Promise<{ lo
             <h2><Icon name="ticket" />{t("nav.attractions")}</h2>
             {attractions.length ? (
               <ul className="place-list">
-                {attractions.map((p, i) => (
+                {attractions.slice(0, 16).map((p, i) => (
                   <Reveal as="li" key={p.id} index={i % 4} className="place-item">
-                    <div className="icon-tile" style={{ inlineSize: 44, blockSize: 44 }}><Icon name={p.kind === "activity" ? "sparkles" : "pin"} /></div>
+                    {p.imageUrl ? (
+                      <div className="place-item__thumb"><SafeImage src={p.imageUrl} alt={localName(p)} slot="thumb" title="" /></div>
+                    ) : (
+                      <div className="icon-tile" style={{ inlineSize: 44, blockSize: 44 }}><Icon name={p.kind === "activity" ? "sparkles" : "pin"} /></div>
+                    )}
                     <div style={{ flex: 1 }}>
-                      <h3>{p.name}</h3>
-                      {p.neighborhood ? <p>{p.neighborhood}</p> : null}
+                      <h3>{localName(p)}</h3>
+                      {p.neighborhood || p.durationMin ? (
+                        <p>{[p.neighborhood, p.durationMin ? t("visitLength", { time: formatDuration(p.durationMin, locale) }) : null].filter(Boolean).join(" · ")}</p>
+                      ) : null}
                       <div className="cluster">
                         {p.tags.filter((tag) => tag !== "landmark").slice(0, 3).map((tag) => (
                           <span key={tag} className="badge">{te.has(`experiences.${tag}`) ? te(`experiences.${tag}`) : tag.replace(/_/g, " ")}</span>
                         ))}
                         <span className={`badge ${p.verification === "verified" ? "badge--blue" : "badge--outline"}`}>{p.verification === "verified" ? t("verified") : t("sample")}</span>
                         <a className="small" href={googleMapsPlaceUrl(p.name, city)} target="_blank" rel="noopener noreferrer">{t("openMap")}</a>
+                        {p.imageUrl && p.imageCredit ? <span className="small muted">{t("photoBy")} {p.imageCredit}, {p.imageLicense}</span> : null}
                       </div>
                     </div>
                     <SaveButton id={p.id} kind="place" initial={false} signedIn={!!user} />
@@ -165,6 +200,12 @@ export default async function DestinationPage({ params }: { params: Promise<{ lo
             ) : (
               <p className="muted">{t("noAttractions")}</p>
             )}
+          </section>
+
+          <section className="dest-section" id="nearby">
+            <h2><Icon name="compass" />{t("nav.nearby")}</h2>
+            <p className="muted">{t("nearbyLead", { city })}</p>
+            {nearby.length ? <NearbyList from={city} items={nearby} /> : <p className="muted">{t("noNearby")}</p>}
           </section>
 
           <section className="dest-section" id="neighborhoods">
@@ -201,7 +242,7 @@ export default async function DestinationPage({ params }: { params: Promise<{ lo
             <p className="small" style={{ fontWeight: 600 }}>{t("searchFood")}</p>
             <div className="link-list">
               {(["local", "halal", "vegetarian", "vegan", "seafood", "fine_dining", "budget"] as const).map((f) => (
-                <a key={f} className="ext-link" href={restaurantSearchUrl({ foodPrefs: [f], city })} target="_blank" rel="noopener noreferrer">
+                <a key={f} className="ext-link" href={restaurantSearchUrl({ foodPrefs: [f], city: cityEn })} target="_blank" rel="noopener noreferrer">
                   {t(`foodSearch.${f}`)}
                   <Icon name="external" className="flip-rtl" />
                 </a>
@@ -213,10 +254,10 @@ export default async function DestinationPage({ params }: { params: Promise<{ lo
           <section className="dest-section" id="stay">
             <h2><Icon name="bed" />{t("nav.stay")}</h2>
             <p className="muted">{t("stayIntro")}</p>
-            <Links links={accommodationLinks(city)} />
+            <Links links={stayLinks} />
             <h3 style={{ marginBlockStart: 24 }}>{t("flights")}</h3>
-            <Links links={flightLinks(city)} />
-            <p className="small muted" style={{ marginBlockStart: 12 }}>{t("externalNote")} {tc("affiliateDisclosure")}</p>
+            <Links links={flyLinks} />
+            <p className="small muted" style={{ marginBlockStart: 12 }}>{t("externalNote")} <PartnerDisclosure links={[...stayLinks, ...flyLinks]} /></p>
           </section>
 
           <section className="dest-section" id="transport">
@@ -236,7 +277,24 @@ export default async function DestinationPage({ params }: { params: Promise<{ lo
             ) : (
               <p className="muted">{t("transportIntro")}</p>
             )}
-            <Links links={transportLinks(city)} />
+            {hubs.length ? (
+              <ul className="place-list" style={{ marginBlockEnd: 16 }}>
+                {hubs.map((h) => {
+                  const hub = (h.details as { hub?: "airport" | "rail" | "bus" })?.hub ?? "rail";
+                  return (
+                    <li key={h.id} className="place-item">
+                      <div className="icon-tile" style={{ inlineSize: 44, blockSize: 44 }}><Icon name={hub === "airport" ? "plane" : hub === "bus" ? "bus" : "train"} /></div>
+                      <div style={{ flex: 1 }}>
+                        <h3>{localName(h)}</h3>
+                        <p>{t(`hubs.${hub}`)}</p>
+                        <a className="small" href={googleMapsPlaceUrl(h.name, city)} target="_blank" rel="noopener noreferrer">{t("openMap")}</a>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : null}
+            <Links links={moveLinks} />
           </section>
 
           <section className="dest-section" id="luggage">
@@ -255,14 +313,14 @@ export default async function DestinationPage({ params }: { params: Promise<{ lo
                 ))}
               </ul>
             ) : null}
-            <Links links={luggageLinks(city)} />
-            <p className="small muted" style={{ marginBlockStart: 12 }}>{t("availabilityNote")} {tc("affiliateDisclosure")}</p>
+            <Links links={bagLinks} />
+            <p className="small muted" style={{ marginBlockStart: 12 }}>{t("availabilityNote")} <PartnerDisclosure links={[...moveLinks, ...bagLinks, ...doLinks]} /></p>
           </section>
 
           <section className="dest-section" id="activities">
             <h2><Icon name="sparkles" />{t("nav.activities")}</h2>
             <p className="muted">{t("activitiesIntro")}</p>
-            <Links links={activityLinks(city)} />
+            <Links links={doLinks} />
           </section>
 
           <section className="dest-section" id="community">

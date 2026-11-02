@@ -19,12 +19,17 @@ export async function GET() {
   const trips = await db.select().from(schema.trips).where(eq(schema.trips.userId, id));
   const stops = await db.select().from(schema.itineraryStops).innerJoin(schema.trips, eq(schema.trips.id, schema.itineraryStops.tripId)).where(eq(schema.trips.userId, id));
   const posts = await db.select().from(schema.communityPosts).where(eq(schema.communityPosts.userId, id));
+  const comments = await db.select().from(schema.postComments).where(eq(schema.postComments.userId, id));
+  const photos = await db
+    .select({ url: schema.mediaUploads.url, postId: schema.mediaUploads.postId, alt: schema.mediaUploads.alt, createdAt: schema.mediaUploads.createdAt })
+    .from(schema.mediaUploads)
+    .where(eq(schema.mediaUploads.userId, id));
   const reviews = await db.select().from(schema.platformReviews).where(eq(schema.platformReviews.userId, id));
   const saved = await db.select().from(schema.savedItems).where(eq(schema.savedItems.userId, id));
   const payments = await db.select().from(schema.payments).where(eq(schema.payments.userId, id));
   const subscriptions = await db.select().from(schema.subscriptions).where(eq(schema.subscriptions.userId, id));
   const body = JSON.stringify(
-    { exportedAt: new Date().toISOString(), account, profile, preferences, trips, itineraryStops: stops.map((s) => s.itinerary_stops), posts, reviews, saved, payments, subscriptions },
+    { exportedAt: new Date().toISOString(), account, profile, preferences, trips, itineraryStops: stops.map((s) => s.itinerary_stops), posts, comments, photos, reviews, saved, payments, subscriptions },
     null,
     2,
   );

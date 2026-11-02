@@ -22,7 +22,7 @@ export async function Footer({ signedIn }: { signedIn: boolean }) {
       <div className="container">
         <div className="footer-grid">
           <div className="footer-brand">
-            <Logo variant="white" />
+            <Logo kind="stacked" variant="white" height={72} className="footer-logo" />
             <p>{t("about")}</p>
           </div>
           <div>

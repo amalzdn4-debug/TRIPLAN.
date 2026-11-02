@@ -147,7 +147,7 @@ export const destinations = pgTable(
     suggestedDaysMin: integer("suggested_days_min"),
     suggestedDaysMax: integer("suggested_days_max"),
     budgetLevel: text("budget_level", { enum: ["budget", "mid", "premium"] }),
-    climate: text("climate", { enum: ["temperate", "mediterranean", "tropical", "desert", "continental", "subtropical", "oceanic"] }),
+    climate: text("climate", { enum: ["temperate", "mediterranean", "tropical", "desert", "continental", "subtropical", "oceanic", "alpine", "subarctic"] }),
     travelStyles: text("travel_styles").array().notNull().default(sql`'{}'::text[]`),
     experiences: text("experiences").array().notNull().default(sql`'{}'::text[]`),
     bestMonths: integer("best_months").array().notNull().default(sql`'{}'::int[]`),
@@ -157,7 +157,16 @@ export const destinations = pgTable(
     published: boolean("published").notNull().default(true),
     /** "sample" = seeded editorial content awaiting verification; "verified" = checked by an editor. */
     contentStatus: text("content_status", { enum: ["sample", "verified"] }).notNull().default("sample"),
-    translations: jsonb("translations").$type<Record<string, { summary?: string; description?: string; bestTime?: string }>>().notNull().default({}),
+    /** Per-language text; `name` is the city's name in that language (from Wikipedia titles or an editor). */
+    translations: jsonb("translations").$type<Record<string, { summary?: string; description?: string; bestTime?: string; name?: string }>>().notNull().default({}),
+    kind: text("kind", { enum: ["city", "coastal", "island", "nature"] }).notNull().default("city"),
+    /** Wikipedia import (0003): article title, its URL and plain-text introduction. */
+    wikiTitle: text("wiki_title"),
+    wikipediaUrl: text("wikipedia_url"),
+    wikiExtract: text("wiki_extract"),
+    enrichmentStatus: text("enrichment_status", { enum: ["pending", "done", "partial", "failed", "skipped"] }).notNull().default("pending"),
+    enrichmentError: text("enrichment_error"),
+    enrichedAt: timestamp("enriched_at", { withTimezone: true }),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },
@@ -175,6 +184,12 @@ export const destinationImages = pgTable(
     creditUrl: text("credit_url"),
     license: text("license").notNull().default("Unsplash License"),
     sortOrder: integer("sort_order").notNull().default(0),
+    source: text("source", { enum: ["unsplash", "wikimedia", "upload"] }).notNull().default("unsplash"),
+    licenseUrl: text("license_url"),
+    filePageUrl: text("file_page_url"),
+    width: integer("width"),
+    height: integer("height"),
+    heroEligible: boolean("hero_eligible").notNull().default(false),
   },
   (t) => [index("destination_images_dest_idx").on(t.destinationId)],
 );
@@ -210,10 +225,34 @@ export const places = pgTable(
     verification: text("verification", { enum: ["sample", "verified", "community"] }).notNull().default("sample"),
     source: text("source"),
     details: jsonb("details").$type<Record<string, unknown>>().notNull().default({}),
+    wikidataId: text("wikidata_id"),
+    imageUrl: text("image_url"),
+    imageCredit: text("image_credit"),
+    imageLicense: text("image_license"),
+    popularity: integer("popularity").notNull().default(0),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },
   (t) => [index("places_dest_kind_idx").on(t.destinationId, t.kind)],
+);
+
+/** Curated intercity connections with typical journey times (0003). Never live timetables. */
+export const destinationConnections = pgTable(
+  "destination_connections",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    fromDestinationId: uuid("from_destination_id").notNull().references(() => destinations.id, { onDelete: "cascade" }),
+    toDestinationId: uuid("to_destination_id").notNull().references(() => destinations.id, { onDelete: "cascade" }),
+    mode: text("mode", { enum: ["train", "bus", "ferry", "flight", "car"] }).notNull(),
+    typicalMinutes: integer("typical_minutes").notNull(),
+    direct: boolean("direct").notNull().default(true),
+    note: text("note"),
+    source: text("source", { enum: ["curated", "admin"] }).notNull().default("curated"),
+    verified: boolean("verified").notNull().default(false),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [uniqueIndex("destination_connections_pair_uq").on(t.fromDestinationId, t.toDestinationId, t.mode), index("destination_connections_to_idx").on(t.toDestinationId)],
 );
 
 export const transportOptions = pgTable("transport_options", {
@@ -248,6 +287,8 @@ export const trips = pgTable(
     preferences: jsonb("preferences").$type<Record<string, unknown>>().notNull().default({}),
     generationSource: text("generation_source", { enum: ["rules", "ai"] }),
     entitlement: text("entitlement", { enum: ["free", "credit", "subscription"] }).notNull().default("free"),
+    /** The subscription that paid for this trip, if any (for per-period counting). */
+    subscriptionId: uuid("subscription_id"),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },
@@ -272,8 +313,11 @@ export const itineraryDays = pgTable(
     title: text("title").notNull(),
     startTime: text("start_time").notNull().default("09:00"),
     notes: text("notes"),
+    /** Multi-city trips: where this day is spent (null = the trip's main destination). */
+    destinationId: uuid("destination_id").references(() => destinations.id, { onDelete: "set null" }),
+    kind: text("kind", { enum: ["normal", "travel", "day_trip"] }).notNull().default("normal"),
   },
-  (t) => [uniqueIndex("itinerary_days_trip_day_idx").on(t.tripId, t.dayIndex)],
+  (t) => [uniqueIndex("itinerary_days_trip_day_idx").on(t.tripId, t.dayIndex), index("itinerary_days_destination_idx").on(t.destinationId)],
 );
 
 export const itineraryStops = pgTable(
@@ -305,6 +349,7 @@ export const itineraryStops = pgTable(
     travelMinutes: integer("travel_minutes"),
     travelMeters: integer("travel_meters"),
     travelSource: text("travel_source", { enum: ["provider", "estimate"] }),
+    details: jsonb("details").$type<{ intercity?: import("@/lib/itinerary/types").IntercityDetails } | null>(),
   },
   (t) => [index("itinerary_stops_day_pos_idx").on(t.dayId, t.position), index("itinerary_stops_trip_idx").on(t.tripId)],
 );
@@ -341,10 +386,57 @@ export const communityPosts = pgTable(
     likeCount: integer("like_count").notNull().default(0),
     reportCount: integer("report_count").notNull().default(0),
     photoUrl: text("photo_url"),
+    /** Optional, user-entered location within the destination (name and/or map pin). */
+    placeName: text("place_name"),
+    lat: doublePrecision("lat"),
+    lng: doublePrecision("lng"),
+    editedAt: timestamp("edited_at", { withTimezone: true }),
+    commentCount: integer("comment_count").notNull().default(0),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },
-  (t) => [index("community_posts_dest_idx").on(t.destinationId, t.status, t.createdAt), index("community_posts_status_idx").on(t.status)],
+  (t) => [
+    index("community_posts_dest_idx").on(t.destinationId, t.status, t.createdAt),
+    index("community_posts_status_idx").on(t.status),
+    index("community_posts_user_idx").on(t.userId, t.createdAt),
+  ],
+);
+
+/** Uploaded images (Vercel Blob): pending until attached to a post. */
+export const mediaUploads = pgTable(
+  "media_uploads",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    postId: uuid("post_id").references(() => communityPosts.id, { onDelete: "set null" }),
+    kind: text("kind", { enum: ["post_photo", "avatar"] }).notNull().default("post_photo"),
+    url: text("url").notNull().unique(),
+    pathname: text("pathname").notNull(),
+    contentType: text("content_type", { enum: ["image/jpeg", "image/webp"] }).notNull(),
+    bytes: integer("bytes").notNull(),
+    width: integer("width"),
+    height: integer("height"),
+    position: integer("position").notNull().default(0),
+    alt: text("alt"),
+    status: text("status", { enum: ["pending", "attached"] }).notNull().default("pending"),
+    createdAt: createdAt(),
+  },
+  (t) => [index("media_uploads_post_idx").on(t.postId, t.position), index("media_uploads_user_status_idx").on(t.userId, t.status, t.createdAt)],
+);
+
+export const postComments = pgTable(
+  "post_comments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    postId: uuid("post_id").notNull().references(() => communityPosts.id, { onDelete: "cascade" }),
+    userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    body: text("body").notNull(),
+    status: text("status", { enum: ["published", "hidden", "removed"] }).notNull().default("published"),
+    reportCount: integer("report_count").notNull().default(0),
+    createdAt: createdAt(),
+    editedAt: timestamp("edited_at", { withTimezone: true }),
+  },
+  (t) => [index("post_comments_post_idx").on(t.postId, t.createdAt), index("post_comments_status_idx").on(t.status)],
 );
 
 export const postLikes = pgTable(
@@ -383,7 +475,8 @@ export const reports = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     reporterId: uuid("reporter_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-    postId: uuid("post_id").notNull().references(() => communityPosts.id, { onDelete: "cascade" }),
+    postId: uuid("post_id").references(() => communityPosts.id, { onDelete: "cascade" }),
+    commentId: uuid("comment_id").references(() => postComments.id, { onDelete: "cascade" }),
     reason: text("reason", { enum: ["spam", "offensive", "misleading", "unsafe", "other"] }).notNull(),
     details: text("details"),
     status: text("status", { enum: ["open", "resolved", "dismissed"] }).notNull().default("open"),
@@ -400,7 +493,7 @@ export const subscriptionPlans = pgTable("subscription_plans", {
   name: text("name").notNull(),
   priceCents: integer("price_cents").notNull().default(0),
   currency: char("currency", { length: 3 }).notNull().default("EUR"),
-  billing: text("billing", { enum: ["free", "one_time", "yearly"] }).notNull(),
+  billing: text("billing", { enum: ["free", "one_time", "monthly", "yearly"] }).notNull(),
   tripsIncluded: integer("trips_included"), // null = unlimited (fair use)
   active: boolean("active").notNull().default(true),
   sortOrder: integer("sort_order").notNull().default(0),
@@ -415,8 +508,14 @@ export const subscriptions = pgTable(
     planId: text("plan_id").notNull().references(() => subscriptionPlans.id),
     stripeSubscriptionId: text("stripe_subscription_id").notNull(),
     status: text("status").notNull(), // mirrors Stripe: active, trialing, past_due, canceled, unpaid, incomplete…
+    currentPeriodStart: timestamp("current_period_start", { withTimezone: true }),
     currentPeriodEnd: timestamp("current_period_end", { withTimezone: true }),
     cancelAtPeriodEnd: boolean("cancel_at_period_end").notNull().default(false),
+    canceledAt: timestamp("canceled_at", { withTimezone: true }),
+    /** Trips created in the current billing period (reset when Stripe reports a new period). */
+    tripsUsedInPeriod: integer("trips_used_in_period").notNull().default(0),
+    /** false = Stripe test mode. Test subscriptions/payments are never counted as real. */
+    livemode: boolean("livemode").notNull().default(true),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },
@@ -434,6 +533,7 @@ export const payments = pgTable(
     amountCents: integer("amount_cents").notNull(),
     currency: char("currency", { length: 3 }).notNull(),
     status: text("status", { enum: ["paid", "failed", "refunded"] }).notNull(),
+    livemode: boolean("livemode").notNull().default(true),
     createdAt: createdAt(),
   },
   (t) => [
@@ -441,6 +541,45 @@ export const payments = pgTable(
     uniqueIndex("payments_invoice_idx").on(t.stripeInvoiceId),
     index("payments_user_idx").on(t.userId),
   ],
+);
+
+/* ───────────── Affiliates ───────────── */
+
+export const AFFILIATE_CATEGORIES = ["accommodation", "flights", "activities", "transport", "car_rental", "luggage", "insurance", "esim", "other"] as const;
+
+export const affiliatePartners = pgTable(
+  "affiliate_partners",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    slug: text("slug").notNull().unique(),
+    name: text("name").notNull(),
+    category: text("category", { enum: AFFILIATE_CATEGORIES }).notNull(),
+    /** Only "approved" partners are shown to visitors. */
+    status: text("status", { enum: ["pending", "approved", "paused", "rejected"] }).notNull().default("pending"),
+    linkTemplate: text("link_template").notNull(),
+    websiteUrl: text("website_url"),
+    approvedAt: timestamp("approved_at", { withTimezone: true }),
+    notes: text("notes"),
+    sortOrder: integer("sort_order").notNull().default(0),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [index("affiliate_partners_status_idx").on(t.status, t.category, t.sortOrder)],
+);
+
+export const affiliateClicks = pgTable(
+  "affiliate_clicks",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    partnerId: uuid("partner_id").notNull().references(() => affiliatePartners.id, { onDelete: "cascade" }),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+    visitorHash: text("visitor_hash"),
+    source: text("source"),
+    destinationSlug: text("destination_slug"),
+    locale: text("locale"),
+    createdAt: createdAt(),
+  },
+  (t) => [index("affiliate_clicks_partner_idx").on(t.partnerId, t.createdAt)],
 );
 
 /** Processed Stripe event ids, for webhook idempotency. */
