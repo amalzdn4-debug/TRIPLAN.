@@ -7,7 +7,8 @@ const dir = path.join(process.cwd(), "messages");
 const load = (l: string) => JSON.parse(fs.readFileSync(path.join(dir, `${l}.json`), "utf8"));
 const flat = (o: Record<string, unknown>, p = ""): Record<string, string> =>
   Object.entries(o).reduce((acc, [k, v]) => (typeof v === "string" ? { ...acc, [p + k]: v } : { ...acc, ...flat(v as Record<string, unknown>, `${p + k}.`) }), {} as Record<string, string>);
-const placeholders = (s: string) => Array.from(new Set((s.match(/\{(\w+)[,}]/g) ?? []).map((m) => m.slice(1, -1)))).sort();
+// Text right after a plural/select selector ("=0 {Comments}", "one {…}") is a branch, not a placeholder.
+const placeholders = (s: string) => Array.from(new Set(Array.from(s.matchAll(/(?<!(?:=\d+|zero|one|two|few|many|other)\s*)\{(\w+)[,}]/g)).map((m) => m[1]))).sort();
 const ENGLISH_ONLY = ["admin."];
 
 describe("translations", () => {

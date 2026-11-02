@@ -12,8 +12,8 @@ import path from "node:path";
 
 const root = process.cwd();
 const LOCALES = ["en", "ar", "fr", "es", "it", "zh", "ru", "pt"];
-/** Internal back-office text: English for all locales (runtime falls back to English). */
-const ENGLISH_ONLY_NAMESPACES = ["admin"];
+/** Namespaces allowed to stay English-only. Empty: every namespace, admin included, is translated. */
+const ENGLISH_ONLY_NAMESPACES: string[] = [];
 type Tree = { [k: string]: string | Tree };
 
 function flatten(obj: Tree, prefix = ""): Record<string, string> {
@@ -60,7 +60,9 @@ for (const file of walk(path.join(root, "src"))) {
   }
 }
 
-const placeholders = (s: string) => Array.from(s.matchAll(/\{(\w+)[,}]/g)).map((m) => m[1]).sort().join(",");
+// Compared as sets: plural branches repeat placeholders a different number of times per language.
+// Text right after a plural/select selector ("=0 {No posts}", "one {…}") is a branch, not a placeholder.
+const placeholders = (s: string) => [...new Set(Array.from(s.matchAll(/(?<!(?:=\d+|zero|one|two|few|many|other)\s*)\{(\w+)[,}]/g)).map((m) => m[1]))].sort().join(",");
 for (const l of LOCALES.filter((x) => x !== "en")) {
   const m = messages[l];
   for (const k of Object.keys(en)) {

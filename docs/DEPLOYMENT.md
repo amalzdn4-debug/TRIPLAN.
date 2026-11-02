@@ -8,6 +8,22 @@
 
 ---
 
+## Already live? Updating to the improvements release
+
+Your site is already running (triplan-plum-five.vercel.app). This release adds database tables and columns, so take these steps **in this order**:
+
+1. **Back up the database first (2 minutes).** Neon console (Vercel → Storage → your Neon database → *Open in Neon*) → **Branches → Create branch** → name it `backup-before-improvements`, parent `main`, *Current data* → **Create**. This is a full copy you can restore from (branches count toward your Neon plan's limits). Delete it after a few weeks once you're happy.
+2. **Add the new settings** in Vercel → **Settings → Environment Variables** (Production, and Preview if you use it):
+   - `CRON_SECRET` — any long random string (same generator as `AUTH_SECRET`). Turns on the daily job that imports destination content and removes abandoned photo uploads.
+   - Optional now, recommended before inviting users: the **Blob store** for member photos (section *Member photo uploads* below).
+3. **Put the new code on GitHub** (see `GITHUB_UPLOAD.md`). Vercel builds and deploys it automatically.
+4. **What the deploy does by itself:** applies migrations `0003`–`0006` (each once, additive only: no table, row or column is deleted), adds the 295 new destinations, intercity connections and the **Monthly** plan, then imports Wikipedia/Wikimedia content for about 4 minutes. The daily job (and the **Import next batch** button in /admin/destinations) continues until all 351 destinations are done.
+5. **Check:** the home page photo rotation, a destination page (e.g. `/en/destinations/porto` shows *Nearby*), `/en/pricing` (four plans), and `/en/admin` (Integrations shows what's switched on).
+
+Your existing accounts, trips, posts and any prices you edited are kept. If anything looks wrong, use **Deployments → (previous one) → ⋯ → Promote to Production** to roll back the code instantly; the database changes are additive, so the old code keeps working with them.
+
+---
+
 ## How the database works (summary)
 
 | Question | Answer |
@@ -62,10 +78,10 @@ Never reuse it elsewhere and never put it in a file in the project.
    - ✅ **Preview** — test deployments made from other Git branches. Recommended, **together with** the option to **create a database branch for each Preview deployment** if the dialog offers it. That gives every test deployment its own copy of the data, so tests and their migrations never touch your live database.
      *If no branching option is shown, untick Preview to keep test deployments away from live data.* They'll then fail with "DATABASE_URL is not set", which is harmless.
    - ☐ **Development** — only needed if you later run the site on your own computer with `vercel env pull`. Optional.
-   - **Custom prefix:** leave it **empty**. The app needs the variable to be called exactly `DATABASE_URL`.
+   - **Custom prefix:** type **`DATABASE`** (the box may suggest `STORAGE`). The app needs the variable to be called exactly `DATABASE_URL`, and this prefix produces `DATABASE_URL` and `DATABASE_URL_UNPOOLED`.
 5. Click **Connect**.
 6. Check it worked: **Settings → Environment Variables** now lists **`DATABASE_URL`** and **`DATABASE_URL_UNPOOLED`** (plus some `PG…` variables the app ignores), marked for the environments you chose. Values are hidden; you don't need to look at them.
-7. Go to **Deployments**, open the failed deployment's **⋯** menu → **Redeploy**. This time the build log shows the migrations, then `Seed complete: 56 destinations…`, then the Next.js build. When it says **Ready**, the site is live.
+7. Go to **Deployments**, open the failed deployment's **⋯** menu → **Redeploy**. This time the build log shows the migrations, then `Seed complete: 351 destinations…`, then the destination content import (`Content import: …`), then the Next.js build. When it says **Ready**, the site is live.
 
 ## Step 4 — Set the site address
 1. Vercel gives you a free address like **`https://triplan-yourname.vercel.app`** (see **Domains** on the project page).
@@ -102,22 +118,47 @@ Add each variable in **Vercel → Settings → Environment Variables** (Producti
 | Feature | What you need | Variables |
 |---|---|---|
 | Real emails (verification, password reset, contact form) | Free **Resend** account + your own domain verified in Resend | `RESEND_API_KEY`, `EMAIL_FROM` (e.g. `TRIPLAN <hello@yourdomain.com>`), `CONTACT_INBOX` |
-| Payments (€2.99 trip, €29.99/year) | **Stripe** account (verified business), **Vercel Pro** | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, see below |
+| Payments (€2.99 trip, €6.99/month for 4 trips, €29.99/year) | **Stripe** account (verified business), **Vercel Pro** | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, see below |
+| Member photo uploads (community) | A **Vercel Blob** store connected to the project | `BLOB_READ_WRITE_TOKEN` (set automatically, see below) |
+| Daily job (content import + cleanup) | Nothing extra | `CRON_SECRET` (any long random string) |
+| Contact for Wikimedia's API policy | An email address that you read | `WIKIMEDIA_CONTACT` (falls back to `CONTACT_INBOX`) |
 | "Continue with Google" | Google Cloud project with an OAuth client | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` |
 | AI-assisted itineraries | Anthropic API key | `ANTHROPIC_API_KEY` (optional `AI_MODEL`) |
 | Real travel times on legs | Google Maps Platform key with **Routes API** enabled and restricted to it | `GOOGLE_MAPS_API_KEY` |
 | Map tiles for real traffic | A tile provider (e.g. MapTiler, Stadia Maps). OpenStreetMap's free tiles are for light use only | `NEXT_PUBLIC_MAP_TILE_URL`, `NEXT_PUBLIC_MAP_TILE_ATTRIBUTION` |
-| Affiliate commissions | Approval from each programme (Booking.com, GetYourGuide, Viator…) | `BOOKING_AFFILIATE_ID`, `GETYOURGUIDE_PARTNER_ID`, `VIATOR_PARTNER_ID` |
+| Affiliate commissions | Acceptance into each programme (Booking.com, GetYourGuide, Viator…) | None. Managed in **/admin/affiliates** (see below). The old `*_AFFILIATE_ID` variables are no longer used; delete them if you added any. |
 | Footer social links | Real accounts only | `NEXT_PUBLIC_SOCIAL_INSTAGRAM`, `…_YOUTUBE`, `…_LINKEDIN`, `…_X` |
 
-### Stripe setup
-1. Start in **test mode**: set `STRIPE_SECRET_KEY` to your `sk_test_…` key.
+### Member photo uploads (Vercel Blob)
+1. Vercel → your project → **Storage → Create Database → Blob** → name it `triplan-photos` → **Create**.
+2. **Connect** it to the `triplan` project for **Production** (and **Preview** if you use previews). Vercel adds `BLOB_READ_WRITE_TOKEN` automatically. It's a server-only secret that is never sent to browsers.
+3. **Redeploy.** The community "Share" form now shows **Add photos**. Before that, it honestly says photo uploads aren't enabled.
+4. What happens to a photo: it's resized in the member's browser (longest side 2048 px), then the server checks it's a real JPEG/WebP of a sensible size, removes metadata such as GPS location, and stores it. Up to 6 photos per post, 4 MB each. Photos of deleted posts or accounts are deleted from storage; uploads never attached to a post are removed by the daily job after 24 hours.
+5. Cost: Blob storage and transfer are billed by Vercel beyond the included allowance. Check **Usage** occasionally.
+
+### Stripe setup (test mode first)
+1. Start in **test mode**: set `STRIPE_SECRET_KEY` to your `sk_test_…` key. While a test key is set, the pricing and billing pages show a *test mode* notice, test payments are labelled **Test**, and the admin revenue figure excludes them.
 2. Stripe Dashboard → **Developers → Webhooks → Add endpoint**: `https://YOUR-ADDRESS/api/stripe/webhook`. Events: `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.paid`, `invoice.payment_failed`.
 3. Copy the endpoint's **signing secret** (`whsec_…`) into `STRIPE_WEBHOOK_SECRET`, then **Redeploy**.
-4. Stripe → **Settings → Billing → Customer portal** → activate it (lets customers cancel and update cards).
-5. Test with card `4242 4242 4242 4242`, any future date and any CVC. Paid access is granted only after Stripe's verified webhook arrives.
-6. Prices come from the database and are editable in `/admin/pricing`, so there's no need to create Products in Stripe.
-7. When ready: switch to live keys, create a live webhook, upgrade Vercel to Pro.
+4. Stripe → **Settings → Billing → Customer portal** → activate it, allowing customers to **update payment methods**, **view invoices** and **cancel subscriptions** (at the end of the period). Members can also cancel or resume directly on their TRIPLAN billing page.
+5. Test with card `4242 4242 4242 4242`, any future date and any CVC: buy a single trip, then the Monthly plan, create 4 trips and check that a 5th asks for payment, then cancel and resume. Access is granted only after Stripe's verified webhook arrives.
+6. Prices come from the database and are editable in **/admin/pricing** (price, and trips per month for Monthly), so you don't create Products in Stripe. A price change applies to new purchases; existing subscriptions keep the price they were bought at.
+
+### Stripe live mode: what's required before taking real payments
+1. **Activate your Stripe account:** business type and details, a public business name and support contact, the bank account for payouts, and the identity verification Stripe asks for. Live keys only appear once this is complete.
+2. **Vercel Pro**: Hobby doesn't allow commercial use.
+3. **Legal pages complete and reviewed**: company details in `src/content/legal.ts`, the Subscription & Payment Policy (now including Monthly), refund/withdrawal wording for EU/UK consumers. Have a lawyer check them.
+4. **Taxes:** decide with your accountant whether prices include VAT (the pricing page currently says they do) and whether to use **Stripe Tax**. Register for VAT/OSS where required.
+5. In **live mode** in Stripe: create the **same webhook** (same URL and events) and copy its live `whsec_…`; activate the **Customer portal** again (live and test settings are separate); set your **statement descriptor**, brand colour and logo (Settings → Branding) and turn on **email receipts**.
+6. In Vercel, replace `STRIPE_SECRET_KEY` with the **live** `sk_live_…` key (Sensitive) and `STRIPE_WEBHOOK_SECRET` with the live signing secret → **Redeploy**. The test-mode notices disappear.
+7. Make **one real low-value purchase** (the €2.99 trip) with your own card, check it appears as *Paid* (not *Test*) on your billing page and in the admin revenue, then refund it from the Stripe dashboard.
+
+### Affiliate partners (/admin/affiliates)
+1. Apply to the programmes you want (e.g. Booking.com, GetYourGuide, Viator, a luggage-storage or eSIM provider). TRIPLAN doesn't apply for you and doesn't assume you're accepted.
+2. When a programme accepts you, copy the **tracking link** it gives you (with your partner ID). In **/admin/affiliates → Add a partner**, paste it, adding placeholders where useful, e.g. `https://www.example-partner.com/search?aid=YOUR_ID&city={city}&checkin={checkin}&checkout={checkout}&adults={adults}`. Allowed placeholders: `{city} {country} {checkin} {checkout} {adults} {lat} {lng} {locale}`.
+3. New partners start as **Pending**: nothing is shown to visitors. Click **Mark approved** only once the programme has actually accepted you. Approved partners appear first in the matching link groups (stays, flights, activities, transport, luggage) with a **Partner** label and the disclosure.
+4. Clicks go through `/api/go/<name>` and are counted in the admin table (7 and 30 days, unique visitors). No IP addresses are stored. Commissions and payouts are only visible in each programme's own dashboard.
+5. **Pause** hides a partner instantly; **Delete** removes it with its click history.
 
 ### Google sign-in setup
 Google Cloud Console → **APIs & Services → Credentials → Create credentials → OAuth client ID** (type *Web application*). Authorised redirect URI: `https://YOUR-ADDRESS/api/auth/google/callback`. Configure and publish the OAuth consent screen.
@@ -129,7 +170,9 @@ Google Cloud Console → **APIs & Services → Credentials → Create credential
 - [ ] Verify or edit the sample destination texts in `/admin/destinations` (they show an "Unverified" notice until then).
 - [ ] Set up Resend so users receive verification and password-reset emails.
 - [ ] Use a production map-tile provider.
-- [ ] Upgrade Vercel to **Pro** before taking payments or affiliate commissions; switch Stripe to live mode.
+- [ ] Upgrade Vercel to **Pro** before taking payments or affiliate commissions; switch Stripe to live mode (section above).
+- [ ] Set `CRON_SECRET`, connect the Blob store, and check **/admin → Integrations**.
+- [ ] Review the community guidelines and moderation queue (**/admin/moderation**) at least weekly.
 - [ ] Submit `https://YOUR-DOMAIN/sitemap.xml` in Google Search Console.
 
 ## Running the site on your own computer (optional, for developers)

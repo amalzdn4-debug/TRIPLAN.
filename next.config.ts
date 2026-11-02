@@ -17,7 +17,10 @@ const nextConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
-      // Admin-added images can be served from your own storage bucket; add its host here.
+      // Freely licensed photos imported from Wikimedia Commons (served unoptimised at a fitting size).
+      { protocol: "https", hostname: "upload.wikimedia.org" },
+      // Member photos stored in Vercel Blob.
+      { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
     ],
   },
   experimental: {

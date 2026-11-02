@@ -5,6 +5,7 @@
 import { loadEnv } from "./load-env";
 import { connect } from "./db-client";
 import { SEED_DESTINATIONS, COUNTRY_CONTINENT, seedImageFor } from "../src/data/destinations";
+import { SEED_CONNECTIONS } from "../src/data/connections";
 import { DEFAULT_HERO_SLIDES } from "../src/data/hero";
 import { LOCALES, LOCALE_META } from "../src/config/locales";
 
@@ -43,16 +44,19 @@ async function main() {
     const neighborhoods = JSON.stringify((d.neighborhoods ?? []).map((name) => ({ name })));
     const destRows = await db.query<{ id: string }>(
       `INSERT INTO destinations (slug, city_id, summary, best_time, suggested_days_min, suggested_days_max, budget_level, climate,
-         travel_styles, experiences, best_months, neighborhoods, popularity, featured, content_status)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12::jsonb,$13,$14,'sample')
+         travel_styles, experiences, best_months, neighborhoods, popularity, featured, content_status, kind, wiki_title)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12::jsonb,$13,$14,'sample',$15,$16)
        ON CONFLICT (slug) DO UPDATE SET
          -- Refresh seed text only while nobody has touched the destination (never edited in /admin, still "sample").
          -- updated_at is deliberately left alone, so an admin edit is never overwritten by a later deploy.
          summary = CASE WHEN destinations.content_status = 'sample' AND destinations.updated_at = destinations.created_at THEN EXCLUDED.summary ELSE destinations.summary END,
          best_time = CASE WHEN destinations.content_status = 'sample' AND destinations.updated_at = destinations.created_at THEN EXCLUDED.best_time ELSE destinations.best_time END,
-         neighborhoods = CASE WHEN destinations.content_status = 'sample' AND destinations.updated_at = destinations.created_at THEN EXCLUDED.neighborhoods ELSE destinations.neighborhoods END
+         neighborhoods = CASE WHEN destinations.content_status = 'sample' AND destinations.updated_at = destinations.created_at THEN EXCLUDED.neighborhoods ELSE destinations.neighborhoods END,
+         -- Technical fields added in 0003: filled in once, never overwriting an admin's choice.
+         kind = CASE WHEN destinations.updated_at = destinations.created_at THEN EXCLUDED.kind ELSE destinations.kind END,
+         wiki_title = COALESCE(destinations.wiki_title, EXCLUDED.wiki_title)
        RETURNING id`,
-      [d.slug, cityId, d.summary, d.bestTime, d.days[0], d.days[1], d.budget, d.climate, d.styles, d.experiences, d.bestMonths, neighborhoods, d.popularity, !!d.featured],
+      [d.slug, cityId, d.summary, d.bestTime, d.days[0], d.days[1], d.budget, d.climate, d.styles, d.experiences, d.bestMonths, neighborhoods, d.popularity, !!d.featured, d.kind ?? "city", d.wiki ?? d.city],
     );
     const destinationId = destRows[0].id;
 
@@ -79,18 +83,36 @@ async function main() {
     }
   }
 
+  // Intercity connections — inserted once; admin edits and verifications are never overwritten.
+  const ids = new Map((await db.query<{ id: string; slug: string }>(`SELECT id, slug FROM destinations`)).map((r) => [r.slug, r.id]));
+  let connCount = 0;
+  for (const c of SEED_CONNECTIONS) {
+    const from = ids.get(c.from);
+    const to = ids.get(c.to);
+    if (!from || !to) throw new Error(`Connection ${c.from} → ${c.to} references an unknown destination`);
+    const rows = await db.query(
+      `INSERT INTO destination_connections (from_destination_id, to_destination_id, mode, typical_minutes, direct, note, source)
+       VALUES ($1,$2,$3,$4,$5,$6,'curated') ON CONFLICT (from_destination_id, to_destination_id, mode) DO NOTHING RETURNING id`,
+      [from, to, c.mode, c.minutes, c.direct, c.note ?? null],
+    );
+    connCount += rows.length;
+  }
+
   // Pricing — editable later in /admin/pricing. Only inserted if missing so admin changes persist.
   const plans: [string, string, number, string, number | null, number][] = [
     ["free", "Free", 0, "free", 1, 0],
     ["trip_pack", "Additional trip", 299, "one_time", 1, 1],
-    ["annual", "Annual", 2999, "yearly", null, 2],
+    ["monthly", "Monthly", 699, "monthly", 4, 2],
+    ["annual", "Annual", 2999, "yearly", null, 3],
   ];
   for (const [id, name, cents, billing, trips, order] of plans) {
-    await db.query(
+    const added = await db.query(
       `INSERT INTO subscription_plans (id, name, price_cents, currency, billing, trips_included, sort_order)
-       VALUES ($1,$2,$3,'EUR',$4,$5,$6) ON CONFLICT (id) DO NOTHING`,
+       VALUES ($1,$2,$3,'EUR',$4,$5,$6) ON CONFLICT (id) DO NOTHING RETURNING id`,
       [id, name, cents, billing, trips, order],
     );
+    // When Monthly is first added to an existing site, list it before Annual (only that once).
+    if (id === "monthly" && added.length) await db.query(`UPDATE subscription_plans SET sort_order = 3 WHERE id = 'annual' AND sort_order = 2`);
   }
 
   const heroCount = await db.query<{ n: number }>(`SELECT count(*)::int AS n FROM hero_slides`);
@@ -105,7 +127,7 @@ async function main() {
     }
   }
 
-  console.log(`Seed complete: ${SEED_DESTINATIONS.length} destinations, ${placeCount} new places.`);
+  console.log(`Seed complete: ${SEED_DESTINATIONS.length} destinations, ${placeCount} new places, ${connCount} new connections.`);
   await db.close();
 }
 

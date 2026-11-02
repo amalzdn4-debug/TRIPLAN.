@@ -11,9 +11,22 @@ This guide assumes you have a GitHub account but have never uploaded this projec
 
 > **What you received:**
 > - **`triplan.zip`** — the complete project (use this for Method B and as your master copy).
-> - **`triplan-github-web-upload.zip`** — the *same files*, pre-split into three batches of fewer than 100 files each, for Method A. GitHub's website accepts at most 100 files per upload, and this project has about 195.
+> - **`triplan-github-web-upload.zip`** — the *same files*, pre-split into three batches of fewer than 100 files each, for Method A. GitHub's website accepts at most 100 files per upload, and this project has about 250. (The split-ZIP below covers a first upload into an empty repository.)
 
 Nothing in either ZIP is secret. Real passwords and API keys are **never** stored in the project: you add them later in your hosting dashboard (see `DEPLOYMENT.md`).
+
+---
+
+## Already on GitHub? Updating the existing repository (improvements release)
+
+Use **`triplan-update-upload.zip`**. It contains only the 122 new or changed files, in 2 batches under GitHub's 100-file limit. No files were removed in this release, so nothing needs deleting.
+
+1. **Back up the database first:** `DEPLOYMENT.md` → *Already live?* → step 1.
+2. Unzip it and turn on hidden files (Mac: **Cmd+Shift+.** in Finder; Windows: **View → Show → Hidden items**). Batch 1 contains `.env.example`, which starts with a dot.
+3. github.com → your repository **TRIPLAN.** → **Add file → Upload files**.
+4. Open folder **`1-upload-batch-1-of-2`**, select **everything inside it**, and drag it onto the page. Wait until every file is listed. Commit message `Improvements — part 1 of 2` → **Commit changes**.
+5. Repeat with **`2-upload-batch-2-of-2`**. Folders such as `src/app/[locale]` merge with the existing ones, and files with the same name are replaced.
+6. Open the **Actions** tab and wait for the ✅ on the last commit. Vercel deploys automatically.
 
 ---
 

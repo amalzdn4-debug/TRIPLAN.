@@ -8,7 +8,9 @@
     "resendVerification": "重新发送验证邮件",
     "save": "保存",
     "saved": "已保存",
-    "affiliateDisclosure": "部分合作伙伴链接可能是联盟推广链接：如果您通过这些链接预订，TRIPLAN 可能会获得佣金，您无需支付任何额外费用。这绝不会影响我们展示的选项及其排序。"
+    "partner": "合作伙伴",
+    "partnerDisclosure": "标有“合作伙伴”的链接为联盟链接：若您通过它们预订，TRIPLAN 可能获得佣金，您无需额外付费。合作伙伴无法付费更改您的行程或我们的推荐。",
+    "loading": "加载中…"
   },
   "nav": {
     "home": "首页",
@@ -284,7 +286,9 @@
       "desert": "沙漠",
       "continental": "大陆性",
       "subtropical": "亚热带",
-      "oceanic": "海洋性"
+      "oceanic": "海洋性",
+      "alpine": "高山",
+      "subarctic": "亚寒带"
     }
   },
   "destinations": {
@@ -316,7 +320,8 @@
       "transport": "交通出行",
       "luggage": "行李寄存",
       "activities": "活动",
-      "community": "社区"
+      "community": "社区",
+      "nearby": "周边"
     },
     "sampleNotice": "这是尚未经编辑审核的示例内容。出行前请务必通过官方渠道确认开放时间和详细信息。",
     "verified": "已核实",
@@ -366,7 +371,17 @@
     "asideBody": "几分钟内获得包含餐饮、地图和交通时间的每日计划。",
     "fastCta": "快速旅行",
     "detailedCta": "详细旅行",
-    "related": "您可能还喜欢"
+    "related": "您可能还喜欢",
+    "nearbyLead": "值得与{city}一同游览的地方，以及交通方式。",
+    "noNearby": "目前还没有便于前往的周边目的地。",
+    "wikiSource": "简介来自",
+    "gallery": "图片集",
+    "visitLength": "游览约{time}",
+    "hubs": {
+      "airport": "机场",
+      "rail": "火车站",
+      "bus": "汽车站"
+    }
   },
   "planIntro": {
     "eyebrow": "规划",
@@ -522,7 +537,7 @@
     "coveredBySubscription": "此次旅行包含在您的年度方案中。",
     "coveredByFree": "此次旅行将使用您的免费旅行次数。",
     "coveredByCredit": "将使用您的 1 个旅行额度（共 {n} 个）。",
-    "needsPurchase": "您已用完免费旅行次数。可购买单次旅行或年度方案——未经您确认不会扣款。",
+    "needsPurchase": "您已用完免费行程。购买一次行程或选择套餐即可继续——未经您确认不会扣费。",
     "seePlans": "查看方案",
     "steps": "规划步骤",
     "stepOf": "第 {n} 步，共 {total} 步",
@@ -625,7 +640,9 @@
     "budget": "预算",
     "notSet": "未设置",
     "stay": "住宿",
-    "rhythm": "节奏"
+    "rhythm": "节奏",
+    "coveredByMonthly": "此行程包含在您的包月套餐中（本计费月还剩 {left}/{total} 次）。",
+    "periodUsedUp": "您本计费月已用完套餐的 {total} 次行程（{date} 起恢复）。可以单独购买一次行程——未经您确认不会扣费。"
   },
   "trips": {
     "title": "我的旅行",
@@ -659,7 +676,15 @@
     "emptyFiltered": "此分类下没有旅行",
     "emptyBody": "规划您的第一次旅行——只需几分钟。",
     "planFirst": "规划旅行",
-    "copySuffix": "副本"
+    "copySuffix": "副本",
+    "planActive": "{plan}套餐",
+    "periodLeft": "{n, plural, =0 {本月已无剩余行程} other {本月还剩 # 次行程}}",
+    "planNames": {
+      "annual": "包年",
+      "monthly": "包月",
+      "trip_pack": "单次行程",
+      "free": "免费"
+    }
   },
   "itinerary": {
     "backToTrips": "我的旅行",
@@ -752,7 +777,23 @@
     "accommodation": "您的住处",
     "notGenerated": "您的偏好已保存，但尚未生成行程。",
     "generateNow": "生成行程",
-    "generated": "行程已生成"
+    "generated": "行程已生成",
+    "reorganized": "行程已重新规划",
+    "journeyTo": "前往{place}",
+    "kinds": {
+      "travel": "交通日",
+      "day_trip": "{place}一日游"
+    },
+    "fromAccommodation": "从{place}出发",
+    "backToAccommodation": "返回{place}",
+    "transfer": {
+      "to_train": "前往火车站",
+      "to_bus": "前往汽车站",
+      "to_ferry": "前往码头",
+      "to_flight": "前往机场",
+      "to_car": "前往车辆",
+      "from": "前往{place}市中心"
+    }
   },
   "map": {
     "label": "行程地图",
@@ -792,7 +833,8 @@
     "status": {
       "reportReceived": "谢谢——版主将审核此帖子。",
       "signInRequired": "请先登录。",
-      "rateLimited": "举报过于频繁，请稍后再试。"
+      "rateLimited": "举报过于频繁，请稍后再试。",
+      "notAllowed": "此帖子无法执行该操作。"
     },
     "signInToInteract": "登录后可点赞、收藏或举报帖子。",
     "signIn": "登录",
@@ -819,7 +861,44 @@
     "guideline1": "只分享您的真实经历。",
     "guideline2": "保持尊重——禁止仇恨、骚扰或泄露个人信息。",
     "guideline3": "禁止广告和推广链接刷屏。",
-    "guideline4": "只上传您有权分享的照片。"
+    "guideline4": "只上传您有权分享的照片。",
+    "member": "Triplan 会员",
+    "deleted": "帖子已删除。",
+    "statusBanner": {
+      "pending": "此帖子正在等待审核，目前只有您能看到。",
+      "hidden": "此帖子已被管理员隐藏，只有您能看到。",
+      "removed": "此帖子已被管理员删除。"
+    },
+    "edited": "已编辑",
+    "pinnedLocation": "已标记的地点",
+    "openMap": "打开地图",
+    "photoAlt": "“{title}”的第 {n} 张照片",
+    "commentsN": "{n, plural, =0 {评论} other {# 条评论}}",
+    "edit": "编辑",
+    "delete": "删除",
+    "confirmDelete": "要删除此帖子及其照片和评论吗？此操作无法撤销。",
+    "editTitle": "编辑您的帖子",
+    "viewPost": "查看您的帖子",
+    "stars": "{n} 星",
+    "photosInvalid": "部分照片未能附加，请移除后重新添加。",
+    "placeName": "地点（可选）",
+    "placeHint": "例如咖啡馆、观景点或街道的名称。",
+    "pinSet": "已放置标记——点击地图可调整。",
+    "pinHint": "点击地图放置标记。",
+    "removePin": "移除标记",
+    "addPin": "在地图上添加标记（可选）",
+    "saveChanges": "保存更改",
+    "noComments": "暂无评论。",
+    "signInToComment": "登录后发表评论",
+    "verifyToComment": "请验证您的电子邮箱后再发表评论。",
+    "addComment": "添加评论",
+    "postComment": "发表评论",
+    "confirmDeleteComment": "要删除这条评论吗？",
+    "backToCommunity": "社区",
+    "memberSince": "{date}加入",
+    "postsN": "{n, plural, =0 {暂无帖子} other {# 篇帖子}}",
+    "editProfile": "编辑个人资料",
+    "memberNoPosts": "该会员尚未发布任何帖子。"
   },
   "reviews": {
     "eyebrow": "评价与反馈",
@@ -910,7 +989,9 @@
     "deleteTitle": "删除账户",
     "deleteBody": "将永久删除您的账户、旅行、帖子和收藏，并取消有效订阅。此操作无法撤销。",
     "deleteConfirm": "输入 {email} 以确认",
-    "deleteCta": "删除我的账户"
+    "deleteCta": "删除我的账户",
+    "viewPublicProfile": "查看您的公开资料",
+    "publicProfileNote": "显示您的名称、所在城市、简介和帖子，绝不显示您的电子邮箱。"
   },
   "saved": {
     "title": "收藏",
@@ -950,7 +1031,8 @@
     "items": {
       "free": "免费方案",
       "trip_pack": "额外旅行",
-      "annual": "年度方案"
+      "annual": "年度方案",
+      "monthly": "包月套餐"
     },
     "paymentStatus": {
       "paid": "已支付",
@@ -958,7 +1040,25 @@
       "refunded": "已退款"
     },
     "noPayments": "暂无付款记录。",
-    "cardNote": "付款由 Stripe 安全处理。Triplan 从不保存您的银行卡信息。"
+    "cardNote": "付款由 Stripe 安全处理。Triplan 从不保存您的银行卡信息。",
+    "planNames": {
+      "annual": "包年",
+      "monthly": "包月",
+      "trip_pack": "单次行程",
+      "free": "免费"
+    },
+    "test": "测试",
+    "alreadySubscribed": "您已有订阅。如需更换套餐，请在下方设置在当前周期结束时取消，到期后再选择新套餐。",
+    "testMode": "Stripe 处于测试模式：此处的付款为测试，并非真实交易。",
+    "thisPeriod": "本计费月行程",
+    "tripsUsedOf": "已用 {used}/{total}",
+    "resetsOn": "{date} 重置",
+    "periodEnds": "套餐于 {date} 结束",
+    "unlimited": "不限次数（合理使用）",
+    "resume": "保留订阅",
+    "cancel": "在周期结束时取消",
+    "confirmCancel": "要取消订阅吗？您可使用至 {date}，之后不再续订。",
+    "cancelFailed": "无法更新您的订阅，请重试或使用“管理订阅”。"
   },
   "pricing": {
     "eyebrow": "价格",
@@ -995,6 +1095,14 @@
         "f2": "全部规划功能",
         "f3": "可随时在账户中取消",
         "f4": "取消前每年自动续订"
+      },
+      "monthly": {
+        "name": "包月",
+        "desc": "适合经常出行、不想按年订阅的旅行者。",
+        "f1": "每个计费月 {n} 次行程规划",
+        "f2": "全部规划功能",
+        "f3": "可随时在账户中取消",
+        "f4": "未用完的次数不累积"
       }
     },
     "startPlanning": "开始规划",
@@ -1005,10 +1113,14 @@
     "transparencyTitle": "我们的承诺",
     "transparency1": "未经您在 Stripe 安全结账页面确认，不会产生任何扣款。",
     "transparency2": "只有在我们的服务器确认付款后，付费权益才会开通。",
-    "transparency3": "年度方案可随时取消——权益保留至已付费年度结束。",
+    "transparency3": "可随时取消包月或包年套餐——访问权限保留至已付费周期结束。",
     "transparency4": "除结账页面另有说明外，价格均含适用税费。",
     "transparency5": "即使订阅结束，已保存的旅行仍可访问。",
-    "policyLink": "订阅条款"
+    "policyLink": "订阅条款",
+    "perMonth": "/ 月",
+    "periodLimitReached": "您本计费月已用完套餐包含的 {n} 次行程。{date} 起可再次使用，也可以现在单独购买一次行程。",
+    "testMode": "付款处于 Stripe 测试模式：不会收取真实费用，测试购买并非真实交易。",
+    "currentPlan": "您当前的套餐"
   },
   "about": {
     "eyebrow": "关于 Triplan",
@@ -1186,7 +1298,8 @@
     "tripTooLong": "旅行最长 21 天。",
     "terms": "请同意条款后继续。",
     "unsupportedDestination": "请从列表中选择目的地。",
-    "confirmEmail": "请准确输入您的邮箱以确认。"
+    "confirmEmail": "请准确输入您的邮箱以确认。",
+    "tooMany": "项目过多。"
   },
   "status": {
     "genericError": "出了点问题，请重试。",
@@ -1204,7 +1317,11 @@
     "contactSent": "谢谢——留言已发送，我们会通过邮件回复。",
     "saved": "已保存。",
     "passwordChanged": "密码已更新。",
-    "oauthFailed": "Google 登录未完成，请重试。"
+    "oauthFailed": "Google 登录未完成，请重试。",
+    "postUpdated": "您的更改已保存。",
+    "commentAdded": "评论已发表。",
+    "commentPending": "谢谢！您的评论将在审核后显示。",
+    "notAllowed": "无法执行此操作。"
   },
   "email": {
     "footer": "您收到此邮件是因为您的 Triplan 账户有相关操作。",
@@ -1219,6 +1336,361 @@
       "heading": "重置密码",
       "body": "我们收到了重置您密码的请求。此链接一小时内有效。如果不是您本人操作，请忽略此邮件。",
       "cta": "设置新密码"
+    }
+  },
+  "media": {
+    "photoBy": "摄影：",
+    "unknownAuthor": "作者不详",
+    "viaCommons": "来自维基共享资源"
+  },
+  "nearby": {
+    "leg": "乘{mode}约{time}",
+    "legEstimate": "公路约{time}（估算）",
+    "direct": "直达",
+    "withChange": "需换乘",
+    "modes": {
+      "train": "火车",
+      "bus": "巴士",
+      "ferry": "渡轮",
+      "flight": "飞机",
+      "car": "汽车"
+    },
+    "suitability": {
+      "day_trip": "一日游",
+      "short_stay": "1–2晚",
+      "multi_day": "数日"
+    },
+    "distance": "相距{km}公里",
+    "plan": "规划",
+    "planWith": "规划{city}之旅",
+    "note": "从{city}出发的交通时间为一般情况下的大致时间。出行前请查看运营商时刻表。"
+  },
+  "split": {
+    "title": "充分利用多出来的天数",
+    "lead": "按您的节奏，{city}通常需要约 {capacity} 天，而您的行程共有 {total} 天。以下是利用多余时间的几种方式，您也可以全部留在{city}。",
+    "optionsLegend": "利用多余天数的方式",
+    "daysIn": "{city} {n} 天",
+    "dayTripTo": "{city}一日游",
+    "typicalNote": "所示为通常行程时间，并非时刻表。预订前请向运营商核实班次和价格。",
+    "accept": "采用此方案",
+    "other": "选择其他地点",
+    "keep": "全部天数留在{city}",
+    "pickLead": "从这里方便前往的地方：",
+    "asDayTrip": "添加为一日游",
+    "asStay": "住几晚",
+    "noneNearby": "该目的地附近暂时没有方便前往的地点。",
+    "back": "返回建议",
+    "routeTitle": "您的路线",
+    "then": "然后",
+    "nDays": "{n} 天",
+    "dayTripsFrom": "从{city}出发的一日游：{places}",
+    "reset": "整个行程都在{city}",
+    "confirmReset": "要把所有天数都安排在{city}并重新规划吗？其他地点中已锁定的项目将被移除。"
+  },
+  "stay": {
+    "title": "您的住宿",
+    "usedAsStart": "在此目的地的每一天都从这里出发并回到这里。",
+    "noPin": "在地图上添加标记，让每天从这里开始和结束。",
+    "change": "更改",
+    "clear": "移除",
+    "addBooked": "我已在{city}预订住宿",
+    "name": "住宿名称",
+    "address": "地址",
+    "pinHint": "点击地图标记您的住宿位置。",
+    "reorganizeNote": "保存后会围绕此地址重新规划每天行程，已锁定的项目保持不变。",
+    "save": "保存并重新规划",
+    "cancel": "取消",
+    "areaSuggestion": "在{city}，住在<b>{area}</b>附近，离您计划的 {n} 个景点较近。",
+    "cityCentre": "在{city}，住在市中心离您计划的 {n} 个景点较近。",
+    "dates": "{from} – {to}",
+    "showArea": "在地图上显示",
+    "areaNote": "此建议基于您计划景点的位置，并非对该区域的评价。价格和空房情况请查看预订网站。",
+    "cityOnly": "我们在{city}标注的景点还不够，暂时无法推荐具体区域——住在靠近公共交通的市中心是稳妥的选择。"
+  },
+  "journey": {
+    "title": {
+      "onward": "{from} → {to}（{mode}）",
+      "out": "{from} → {to}（{mode}）",
+      "back": "返回{to}（{mode}）"
+    },
+    "typical": "通常行程 {time}",
+    "estimate": "预计 {time}",
+    "checkNote": "并非实时时刻表——出行前请核实时间、票价和余票。",
+    "googleMaps": "在 Google 地图中查看路线",
+    "distance": "约 {km} 公里"
+  },
+  "upload": {
+    "label": "照片（可选）",
+    "disabled": "本网站尚未开启照片上传。您仍可以发布不含照片的帖子。",
+    "hint": "最多 {max} 张照片。上传前会在您的设备上调整尺寸并移除位置信息。",
+    "photoN": "第 {n} 张照片",
+    "moveEarlier": "前移",
+    "moveLater": "后移",
+    "remove": "移除第 {n} 张照片",
+    "altLabel": "第 {n} 张照片的描述",
+    "altPlaceholder": "描述这张照片（可选）",
+    "uploading": "正在上传…",
+    "addMore": "添加更多照片",
+    "add": "添加照片",
+    "max": "已达到 {max} 张照片的上限。",
+    "rights": "请只上传您自己拍摄或有权分享的照片。",
+    "problems": {
+      "unsupported": "此文件不是受支持的图片。",
+      "tooSmall": "照片太小（至少 200 像素）。",
+      "tooLarge": "照片文件太大。",
+      "tooBig": "照片尺寸过大。",
+      "empty": "文件为空。",
+      "uploadFailed": "上传失败，请重试。",
+      "storeFailed": "上传失败，请重试。",
+      "uploadsDisabled": "本网站尚未开启照片上传。",
+      "rateLimited": "上传次数过多，请稍后再试。",
+      "tooManyPending": "一次上传的照片太多，请先发布或移除部分照片。",
+      "signInRequired": "请先登录。",
+      "verifyEmailFirst": "请验证您的电子邮箱后再上传照片。",
+      "forbidden": "上传被拒绝。"
+    }
+  },
+  "admin": {
+    "nav": "管理导航",
+    "sections": {
+      "dashboard": "概览",
+      "hero": "首页横幅",
+      "destinations": "目的地",
+      "moderation": "内容审核",
+      "users": "用户",
+      "pricing": "价格",
+      "translations": "翻译",
+      "affiliates": "联盟合作"
+    },
+    "stats": {
+      "users": "用户",
+      "trips": "行程",
+      "destinations": "目的地",
+      "places": "地点",
+      "posts": "社区帖子",
+      "openReports": "待处理举报",
+      "activeSubs": "有效订阅",
+      "payments": "已收款",
+      "affiliateClicks30": "合作伙伴点击（30 天）"
+    },
+    "integrations": "集成",
+    "configured": "已配置",
+    "notConfigured": "未配置",
+    "inbox": "联系消息",
+    "inboxEmpty": "没有待处理的消息。",
+    "date": "日期",
+    "from": "发件人",
+    "topic": "主题",
+    "message": "消息",
+    "markHandled": "标记为已处理",
+    "status": "状态",
+    "actions": "操作",
+    "enabled": "已启用",
+    "disabled": "已停用",
+    "enable": "启用",
+    "disable": "停用",
+    "delete": "删除",
+    "edit": "编辑",
+    "save": "保存",
+    "confirm": "确定吗？",
+    "confirmDelete": "永久删除？",
+    "invalidFields": "请检查以下字段",
+    "hero": {
+      "help": "幻灯片按此顺序在首页轮播。请只使用已获授权的图片（如 Unsplash）并注明摄影师。",
+      "image": "图片",
+      "imageUrl": "图片网址（https）",
+      "alt": "替代文字（描述照片）",
+      "city": "说明——城市",
+      "country": "国家代码（ISO-2）",
+      "slug": "目的地标识（可选）",
+      "credit": "摄影师",
+      "creditUrl": "照片页面网址",
+      "add": "添加幻灯片"
+    },
+    "dest": {
+      "city": "城市",
+      "country": "国家代码",
+      "slug": "标识",
+      "continent": "地区",
+      "lat": "纬度",
+      "lng": "经度",
+      "daysMin": "最少天数",
+      "daysMax": "最多天数",
+      "summary": "简介",
+      "description": "描述",
+      "bestTime": "最佳时间（文字）",
+      "budget": "预算级别",
+      "contentStatus": "内容状态",
+      "imageUrl": "添加图片网址",
+      "imageAlt": "图片替代文字",
+      "imageCredit": "图片署名",
+      "featured": "推荐",
+      "published": "已发布",
+      "hidden": "已隐藏",
+      "places": "地点",
+      "add": "添加目的地",
+      "viewPublic": "查看公开页面",
+      "kind": "类型",
+      "wikiTitle": "维基百科条目标题（英文）",
+      "kinds": {
+        "city": "城市",
+        "coastal": "海岸",
+        "island": "海岛",
+        "nature": "自然区域"
+      }
+    },
+    "places": {
+      "title": "地点",
+      "name": "名称",
+      "kind": "类别",
+      "coords": "坐标",
+      "verify": "标记为已核实",
+      "unverify": "取消核实标记",
+      "add": "添加地点",
+      "help": "只添加已从可靠来源核实的餐厅、价格、饮食标签和营业时间。",
+      "verification": "核实",
+      "neighborhood": "街区",
+      "duration": "一般游览时长（分钟）",
+      "tags": "标签（逗号分隔）",
+      "cuisine": "菜系",
+      "dietary": "已核实的饮食标签",
+      "address": "地址",
+      "website": "网站",
+      "booking": "预订网址",
+      "source": "来源"
+    },
+    "moderationHelp": "被举报 3 次及以上的帖子和评论会自动隐藏，直到审核完成。",
+    "postsQueue": "待处理帖子",
+    "reviewsQueue": "待批准的评价",
+    "reports": "{n} 次举报",
+    "publish": "发布",
+    "hide": "隐藏",
+    "remove": "删除",
+    "queueEmpty": "没有需要审核的内容。",
+    "search": "搜索",
+    "searchEmail": "按电子邮箱搜索",
+    "user": "用户",
+    "role": "角色",
+    "trips": "行程",
+    "joined": "注册时间",
+    "suspended": "已停用",
+    "makeAdmin": "设为管理员",
+    "removeAdmin": "取消管理员",
+    "suspend": "停用账户",
+    "activate": "重新启用",
+    "you": "您",
+    "pricingHelp": "价格适用于新的购买和续订。已付费的周期不会改变。",
+    "planName": "内部名称",
+    "price": "价格",
+    "currency": "货币",
+    "active": "可购买",
+    "translationsHelp": "无需重新部署即可替换任何界面文字。将值留空即可删除替换。母语人士检查后，请将翻译标记为已审校。",
+    "locale": "语言",
+    "key": "键",
+    "value": "文字",
+    "reviewed": "已审校",
+    "noOverrides": "暂无替换——使用内置词典。",
+    "enrich": {
+      "title": "目的地内容导入",
+      "body": "介绍（8 种语言）、带署名的自由授权照片、主要景点和交通枢纽从维基百科、维基共享资源和维基数据导入。每次部署时以及每天都会自动运行。",
+      "done": "已导入 {n}",
+      "partial": "部分导入 {n}",
+      "failed": "失败 {n}",
+      "pending": "等待中 {n}",
+      "run": "导入下一批（约 40 秒）",
+      "running": "正在导入…",
+      "result": "已处理 {processed}：导入 {done}，失败 {failed}。仍有 {remaining} 等待中。",
+      "column": "内容导入",
+      "reimport": "重新导入",
+      "status": {
+        "pending": "等待中",
+        "done": "已导入",
+        "partial": "部分导入",
+        "failed": "失败",
+        "skipped": "已跳过"
+      }
+    },
+    "commentsQueue": "待审核评论",
+    "tripsPerMonth": "每个计费月的行程数",
+    "pricingExisting": "价格调整适用于新的购买和订阅。现有订阅保持在 Stripe 中购买时的价格；包月套餐的行程数会立即对所有人生效。",
+    "revenue": "收入（真实付款）",
+    "revenueNote": "仅统计正式模式下已收款的付款。",
+    "testPaymentsExcluded": "已排除 {n} 笔 Stripe 测试付款。",
+    "stripeTestMode": "Stripe 测试模式——无真实付款",
+    "aff": {
+      "help": "请在加入合作计划后再在此添加。合作伙伴在您标记为“已批准”之前对访客不可见——只有在该计划确实接受 TRIPLAN 后才能这样标记。佣金在合作伙伴自己的后台统计；TRIPLAN 只统计点击。",
+      "name": "名称",
+      "slug": "链接名称（/api/go/…）",
+      "category": "类别",
+      "status": "状态",
+      "template": "跟踪链接",
+      "templateHint": "粘贴合作计划提供的 https 链接（含您的合作伙伴 ID）。可选占位符由 TRIPLAN 填写：{list}",
+      "website": "合作伙伴网站（可选）",
+      "order": "排序",
+      "notes": "内部备注（不公开）",
+      "clicks7": "7 天点击",
+      "clicks30": "30 天点击",
+      "visitors30": "30 天访客",
+      "total": "全部点击",
+      "none": "暂无合作伙伴。网站上不会显示任何联盟内容。",
+      "approve": "标记为已批准",
+      "confirmApprove": "{name} 是否确实已接受 TRIPLAN 加入其计划？其链接将显示在网站上，并标注为合作伙伴链接。",
+      "pause": "暂停",
+      "reject": "标记为已拒绝",
+      "markPending": "标记为待定",
+      "delete": "删除",
+      "confirmDelete": "删除 {name} 及其点击记录？",
+      "add": "添加合作伙伴",
+      "addButton": "添加合作伙伴（待定）",
+      "statuses": {
+        "pending": "待定",
+        "approved": "已批准",
+        "paused": "已暂停",
+        "rejected": "已拒绝"
+      },
+      "categories": {
+        "accommodation": "住宿",
+        "flights": "机票",
+        "activities": "活动与游览",
+        "transport": "交通",
+        "car_rental": "租车",
+        "luggage": "行李寄存",
+        "insurance": "旅行保险",
+        "esim": "eSIM / 移动数据",
+        "other": "其他"
+      }
+    },
+    "integrationNames": {
+      "uploads": "照片上传（Vercel Blob）",
+      "cron": "每日任务（CRON_SECRET）"
+    },
+    "postStatus": {
+      "published": "已发布",
+      "pending": "等待审核",
+      "hidden": "已隐藏",
+      "removed": "已删除"
+    },
+    "roles": {
+      "user": "会员",
+      "admin": "管理员"
+    },
+    "placeKinds": {
+      "attraction": "景点",
+      "activity": "活动",
+      "restaurant": "餐厅",
+      "accommodation": "住宿",
+      "luggage_storage": "行李寄存",
+      "transport_hub": "交通枢纽"
+    },
+    "verificationStates": {
+      "sample": "示例（未核实）",
+      "verified": "已核实",
+      "community": "社区"
+    },
+    "budgets": {
+      "budget": "经济",
+      "mid": "中档",
+      "premium": "高端"
     }
   }
 }

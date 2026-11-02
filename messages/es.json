@@ -8,7 +8,9 @@
     "resendVerification": "Reenviar correo de verificación",
     "save": "Guardar",
     "saved": "Guardado",
-    "affiliateDisclosure": "Algunos enlaces de socios pueden ser enlaces de afiliado: si reservas a través de ellos, TRIPLAN puede recibir una comisión sin coste adicional para ti. Esto nunca cambia las opciones que mostramos ni su orden."
+    "partner": "Socio",
+    "partnerDisclosure": "Los enlaces marcados como «Socio» son enlaces de afiliado: si reservas a través de ellos, TRIPLAN puede recibir una comisión sin coste extra para ti. Los socios no pueden pagar para cambiar tu itinerario ni nuestras recomendaciones.",
+    "loading": "Cargando…"
   },
   "nav": {
     "home": "Inicio",
@@ -284,7 +286,9 @@
       "desert": "Desértico",
       "continental": "Continental",
       "subtropical": "Subtropical",
-      "oceanic": "Oceánico"
+      "oceanic": "Oceánico",
+      "alpine": "Alpino",
+      "subarctic": "Subártico"
     }
   },
   "destinations": {
@@ -316,7 +320,8 @@
       "transport": "Cómo moverse",
       "luggage": "Consigna de equipaje",
       "activities": "Actividades",
-      "community": "Comunidad"
+      "community": "Comunidad",
+      "nearby": "Cerca"
     },
     "sampleNotice": "Esta guía es contenido editorial de ejemplo que nuestros editores aún no han verificado. Comprueba siempre horarios y detalles en fuentes oficiales antes de viajar.",
     "verified": "Verificado",
@@ -366,7 +371,17 @@
     "asideBody": "Consigue en minutos un plan día a día con comidas, mapa y tiempos de traslado.",
     "fastCta": "Viaje rápido",
     "detailedCta": "Viaje detallado",
-    "related": "También te puede gustar"
+    "related": "También te puede gustar",
+    "nearbyLead": "Lugares que vale la pena combinar con {city} y cómo llegar.",
+    "noNearby": "Todavía no hay destinos cercanos de fácil acceso.",
+    "wikiSource": "Introducción de",
+    "gallery": "Galería de fotos",
+    "visitLength": "Visita de {time}",
+    "hubs": {
+      "airport": "Aeropuerto",
+      "rail": "Estación de tren",
+      "bus": "Estación de autobuses"
+    }
   },
   "planIntro": {
     "eyebrow": "Planificar viaje",
@@ -522,7 +537,7 @@
     "coveredBySubscription": "Este viaje está incluido en tu plan anual.",
     "coveredByFree": "Este viaje usa tu viaje gratuito.",
     "coveredByCredit": "Este viaje usará 1 de tus {n} créditos de viaje.",
-    "needsPurchase": "Ya has usado tu viaje gratuito. Compra otro viaje o el plan anual para continuar; no se te cobrará sin tu confirmación.",
+    "needsPurchase": "Has usado tu viaje gratuito. Consigue otro viaje o un plan para continuar; no se cobra nada sin tu confirmación.",
     "seePlans": "Ver planes",
     "steps": "Pasos de planificación",
     "stepOf": "Paso {n} de {total}",
@@ -625,7 +640,9 @@
     "budget": "Presupuesto",
     "notSet": "Sin definir",
     "stay": "Alojamiento",
-    "rhythm": "Ritmo diario"
+    "rhythm": "Ritmo diario",
+    "coveredByMonthly": "Este viaje está incluido en tu plan Mensual (te quedan {left} de {total} viajes este mes de facturación).",
+    "periodUsedUp": "Has usado los {total} viajes de tu plan este mes de facturación (más el {date}). Puedes comprar un viaje adicional; no se cobra nada sin tu confirmación."
   },
   "trips": {
     "title": "Mis viajes",
@@ -659,7 +676,15 @@
     "emptyFiltered": "No hay viajes en esta vista",
     "emptyBody": "Planifica tu primer viaje: solo te llevará un par de minutos.",
     "planFirst": "Planificar un viaje",
-    "copySuffix": "copia"
+    "copySuffix": "copia",
+    "planActive": "Plan {plan}",
+    "periodLeft": "{n, plural, =0 {Sin viajes este mes} one {Queda # viaje este mes} other {Quedan # viajes este mes}}",
+    "planNames": {
+      "annual": "Anual",
+      "monthly": "Mensual",
+      "trip_pack": "Viaje adicional",
+      "free": "Gratis"
+    }
   },
   "itinerary": {
     "backToTrips": "Mis viajes",
@@ -752,7 +777,23 @@
     "accommodation": "Tu alojamiento",
     "notGenerated": "Tus preferencias están guardadas, pero el itinerario aún no se ha generado.",
     "generateNow": "Generar itinerario",
-    "generated": "Itinerario listo"
+    "generated": "Itinerario listo",
+    "reorganized": "Itinerario replanificado",
+    "journeyTo": "Viaje a {place}",
+    "kinds": {
+      "travel": "Día de traslado",
+      "day_trip": "Excursión a {place}"
+    },
+    "fromAccommodation": "Desde {place}",
+    "backToAccommodation": "Regreso a {place}",
+    "transfer": {
+      "to_train": "A la estación",
+      "to_bus": "A la estación de autobuses",
+      "to_ferry": "Al puerto",
+      "to_flight": "Al aeropuerto",
+      "to_car": "Al coche",
+      "from": "Al centro de {place}"
+    }
   },
   "map": {
     "label": "Mapa del itinerario",
@@ -792,7 +833,8 @@
     "status": {
       "reportReceived": "Gracias. Nuestros moderadores revisarán esta publicación.",
       "signInRequired": "Inicia sesión primero.",
-      "rateLimited": "Demasiadas denuncias. Inténtalo más tarde."
+      "rateLimited": "Demasiadas denuncias. Inténtalo más tarde.",
+      "notAllowed": "Esta acción no está disponible para esta publicación."
     },
     "signInToInteract": "Inicia sesión para valorar, guardar o denunciar publicaciones.",
     "signIn": "Iniciar sesión",
@@ -819,7 +861,44 @@
     "guideline1": "Comparte solo tus propias experiencias reales.",
     "guideline2": "Sé respetuoso: nada de odio, acoso ni datos personales.",
     "guideline3": "Nada de publicidad ni spam de afiliados.",
-    "guideline4": "Sube solo fotos que tengas derecho a compartir."
+    "guideline4": "Sube solo fotos que tengas derecho a compartir.",
+    "member": "Miembro de Triplan",
+    "deleted": "Publicación eliminada.",
+    "statusBanner": {
+      "pending": "Solo tú ves esta publicación mientras espera revisión.",
+      "hidden": "Los moderadores han ocultado esta publicación. Solo tú puedes verla.",
+      "removed": "Los moderadores han retirado esta publicación."
+    },
+    "edited": "editado",
+    "pinnedLocation": "Ubicación marcada",
+    "openMap": "Abrir mapa",
+    "photoAlt": "Foto {n} de «{title}»",
+    "commentsN": "{n, plural, =0 {Comentarios} one {# comentario} other {# comentarios}}",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "confirmDelete": "¿Eliminar esta publicación, sus fotos y comentarios? No se puede deshacer.",
+    "editTitle": "Editar tu publicación",
+    "viewPost": "Ver tu publicación",
+    "stars": "{n, plural, one {# estrella} other {# estrellas}}",
+    "photosInvalid": "Algunas fotos no se pudieron adjuntar. Quítalas y vuelve a añadirlas.",
+    "placeName": "Lugar (opcional)",
+    "placeHint": "P. ej., el nombre de un café, un mirador o una calle.",
+    "pinSet": "Marcador colocado: toca el mapa para ajustarlo.",
+    "pinHint": "Toca el mapa para colocar un marcador.",
+    "removePin": "Quitar marcador",
+    "addPin": "Añadir un marcador en el mapa (opcional)",
+    "saveChanges": "Guardar cambios",
+    "noComments": "Aún no hay comentarios.",
+    "signInToComment": "Inicia sesión para comentar",
+    "verifyToComment": "Verifica tu correo electrónico para comentar.",
+    "addComment": "Añadir un comentario",
+    "postComment": "Publicar comentario",
+    "confirmDeleteComment": "¿Eliminar este comentario?",
+    "backToCommunity": "Comunidad",
+    "memberSince": "Miembro desde {date}",
+    "postsN": "{n, plural, =0 {Sin publicaciones} one {# publicación} other {# publicaciones}}",
+    "editProfile": "Editar perfil",
+    "memberNoPosts": "Este miembro aún no ha publicado nada."
   },
   "reviews": {
     "eyebrow": "Reseñas y opiniones",
@@ -910,7 +989,9 @@
     "deleteTitle": "Eliminar cuenta",
     "deleteBody": "Esto elimina para siempre tu cuenta, tus viajes, publicaciones y guardados, y cancela cualquier suscripción activa. No se puede deshacer.",
     "deleteConfirm": "Escribe {email} para confirmar",
-    "deleteCta": "Eliminar mi cuenta"
+    "deleteCta": "Eliminar mi cuenta",
+    "viewPublicProfile": "Ver tu perfil público",
+    "publicProfileNote": "Muestra tu nombre, tu ciudad, tu biografía y tus publicaciones, nunca tu correo."
   },
   "saved": {
     "title": "Guardados",
@@ -950,7 +1031,8 @@
     "items": {
       "free": "Plan gratuito",
       "trip_pack": "Viaje adicional",
-      "annual": "Plan anual"
+      "annual": "Plan anual",
+      "monthly": "Plan mensual"
     },
     "paymentStatus": {
       "paid": "Pagado",
@@ -958,7 +1040,25 @@
       "refunded": "Reembolsado"
     },
     "noPayments": "Aún no hay pagos.",
-    "cardNote": "Stripe procesa los pagos de forma segura. Triplan nunca guarda los datos de tu tarjeta."
+    "cardNote": "Stripe procesa los pagos de forma segura. Triplan nunca guarda los datos de tu tarjeta.",
+    "planNames": {
+      "annual": "Anual",
+      "monthly": "Mensual",
+      "trip_pack": "Viaje adicional",
+      "free": "Gratis"
+    },
+    "test": "Prueba",
+    "alreadySubscribed": "Ya tienes una suscripción. Para cambiar de plan, cancela la actual al final de su periodo aquí abajo y elige el nuevo plan cuando termine.",
+    "testMode": "Stripe está en modo de prueba: los pagos aquí son pruebas, no transacciones reales.",
+    "thisPeriod": "Viajes este mes de facturación",
+    "tripsUsedOf": "{used} de {total} usados",
+    "resetsOn": "Se renueva el {date}",
+    "periodEnds": "El plan termina el {date}",
+    "unlimited": "Viajes ilimitados (uso razonable)",
+    "resume": "Mantener mi suscripción",
+    "cancel": "Cancelar al final del periodo",
+    "confirmCancel": "¿Cancelar tu suscripción? Mantienes el acceso hasta el {date} y después no se renovará.",
+    "cancelFailed": "No pudimos actualizar tu suscripción. Inténtalo de nuevo o usa «Gestionar suscripción»."
   },
   "pricing": {
     "eyebrow": "Precios",
@@ -995,6 +1095,14 @@
         "f2": "Todas las funciones de planificación",
         "f3": "Cancela cuando quieras desde tu cuenta",
         "f4": "Se renueva cada año salvo cancelación"
+      },
+      "monthly": {
+        "name": "Mensual",
+        "desc": "Para viajar con frecuencia sin compromiso anual.",
+        "f1": "{n} planes de viaje cada mes de facturación",
+        "f2": "Todas las funciones de planificación",
+        "f3": "Cancela cuando quieras desde tu cuenta",
+        "f4": "Los viajes no usados no se acumulan"
       }
     },
     "startPlanning": "Empezar a planificar",
@@ -1005,10 +1113,14 @@
     "transparencyTitle": "Nuestro compromiso",
     "transparency1": "Nunca se te cobra sin confirmar en la página de pago segura de Stripe.",
     "transparency2": "El acceso de pago empieza solo cuando nuestros servidores confirman el pago.",
-    "transparency3": "Cancela el plan anual cuando quieras: el acceso continúa hasta el final del año pagado.",
+    "transparency3": "Cancela el plan Mensual o Anual cuando quieras: el acceso sigue hasta el final del periodo pagado.",
     "transparency4": "Los precios incluyen los impuestos aplicables salvo que se indique lo contrario al pagar.",
     "transparency5": "Tus viajes guardados siguen disponibles aunque termine una suscripción.",
-    "policyLink": "Leer la política de suscripción"
+    "policyLink": "Leer la política de suscripción",
+    "perMonth": "/ mes",
+    "periodLimitReached": "Has usado los {n} viajes incluidos en tu plan este mes de facturación. Tendrás más el {date}, o compra ahora un viaje adicional.",
+    "testMode": "Los pagos están en modo de prueba de Stripe: no se cobra dinero real y las compras de prueba no son transacciones reales.",
+    "currentPlan": "Tu plan actual"
   },
   "about": {
     "eyebrow": "Sobre Triplan",
@@ -1186,7 +1298,8 @@
     "tripTooLong": "Los viajes pueden durar hasta 21 días.",
     "terms": "Acepta los términos para continuar.",
     "unsupportedDestination": "Elige un destino de la lista.",
-    "confirmEmail": "Escribe tu correo exactamente para confirmar."
+    "confirmEmail": "Escribe tu correo exactamente para confirmar.",
+    "tooMany": "Demasiados elementos."
   },
   "status": {
     "genericError": "Algo ha fallado. Inténtalo de nuevo.",
@@ -1204,7 +1317,11 @@
     "contactSent": "Gracias, hemos recibido tu mensaje. Te responderemos por correo.",
     "saved": "Guardado.",
     "passwordChanged": "Tu contraseña se ha actualizado.",
-    "oauthFailed": "No se completó el inicio de sesión con Google. Inténtalo de nuevo."
+    "oauthFailed": "No se completó el inicio de sesión con Google. Inténtalo de nuevo.",
+    "postUpdated": "Tus cambios se han guardado.",
+    "commentAdded": "Comentario publicado.",
+    "commentPending": "Gracias: tu comentario aparecerá tras la revisión.",
+    "notAllowed": "Esta acción no está disponible."
   },
   "email": {
     "footer": "Recibes este correo por la actividad en tu cuenta de Triplan.",
@@ -1219,6 +1336,361 @@
       "heading": "Restablece tu contraseña",
       "body": "Hemos recibido una solicitud para restablecer tu contraseña. Este enlace es válido durante una hora. Si no la has solicitado, ignora este correo.",
       "cta": "Elegir nueva contraseña"
+    }
+  },
+  "media": {
+    "photoBy": "Foto:",
+    "unknownAuthor": "Autor desconocido",
+    "viaCommons": "vía Wikimedia Commons"
+  },
+  "nearby": {
+    "leg": "Unas {time} en {mode}",
+    "legEstimate": "Unas {time} por carretera (estimación)",
+    "direct": "Directo",
+    "withChange": "Con transbordo",
+    "modes": {
+      "train": "tren",
+      "bus": "autobús",
+      "ferry": "ferry",
+      "flight": "avión",
+      "car": "coche"
+    },
+    "suitability": {
+      "day_trip": "Excursión de un día",
+      "short_stay": "1–2 noches",
+      "multi_day": "Varios días"
+    },
+    "distance": "A {km} km",
+    "plan": "Planificar",
+    "planWith": "Planificar un viaje a {city}",
+    "note": "Los tiempos de viaje desde {city} son habituales y aproximados. Consulta el horario del operador antes de viajar."
+  },
+  "split": {
+    "title": "Aprovecha al máximo tus días extra",
+    "lead": "{city} suele llenar unos {capacity} días a tu ritmo, y tu viaje tiene {total}. Aquí tienes algunas formas de usar el tiempo extra, o quédate todos los días en {city}.",
+    "optionsLegend": "Formas de usar tus días extra",
+    "daysIn": "{n, plural, one {# día en {city}} other {# días en {city}}}",
+    "dayTripTo": "una excursión de un día a {city}",
+    "typicalNote": "Las duraciones son tiempos de viaje habituales, no horarios. Consulta horarios y precios con el operador antes de reservar.",
+    "accept": "Usar este plan",
+    "other": "Elegir otro lugar",
+    "keep": "Quedarme todos los días en {city}",
+    "pickLead": "Lugares fáciles de alcanzar desde aquí:",
+    "asDayTrip": "Añadir como excursión",
+    "asStay": "Pasar unas noches",
+    "noneNearby": "Aún no tenemos lugares cercanos prácticos para este destino.",
+    "back": "Volver a las sugerencias",
+    "routeTitle": "Tu ruta",
+    "then": "luego",
+    "nDays": "{n, plural, one {# día} other {# días}}",
+    "dayTripsFrom": "Excursiones desde {city}: {places}",
+    "reset": "Pasar todo el viaje en {city}",
+    "confirmReset": "¿Replanificar el viaje con todos los días en {city}? Se eliminarán los elementos bloqueados en otros lugares."
+  },
+  "stay": {
+    "title": "Dónde te alojas",
+    "usedAsStart": "Cada día en este destino empieza y termina aquí.",
+    "noPin": "Añade un punto en el mapa para empezar y terminar tus días aquí.",
+    "change": "Cambiar",
+    "clear": "Quitar",
+    "addBooked": "Ya he reservado alojamiento en {city}",
+    "name": "Nombre del alojamiento",
+    "address": "Dirección",
+    "pinHint": "Toca el mapa para marcar tu alojamiento.",
+    "reorganizeNote": "Al guardar, tus días se replanifican en torno a esta dirección. Los elementos bloqueados se mantienen.",
+    "save": "Guardar y replanificar",
+    "cancel": "Cancelar",
+    "areaSuggestion": "En {city}, alojarte cerca de <b>{area}</b> te deja cerca de {n, plural, one {# de tus visitas previstas} other {# de tus visitas previstas}}.",
+    "cityCentre": "En {city}, un alojamiento céntrico te deja cerca de tus {n, plural, one {# visita prevista} other {# visitas previstas}}.",
+    "dates": "{from} – {to}",
+    "showArea": "Ver en el mapa",
+    "areaNote": "Sugerencia basada en la ubicación de tus visitas previstas, no una valoración de la zona. Precios y disponibilidad en los sitios de reserva.",
+    "cityOnly": "Aún no tenemos suficientes lugares en el mapa de {city} para sugerir una zona; un alojamiento céntrico cerca del transporte público es una opción segura."
+  },
+  "journey": {
+    "title": {
+      "onward": "{from} → {to} en {mode}",
+      "out": "{from} → {to} en {mode}",
+      "back": "Regreso a {to} en {mode}"
+    },
+    "typical": "Trayecto habitual: {time}",
+    "estimate": "Estimado: {time}",
+    "checkNote": "No es un horario en tiempo real: comprueba horarios, tarifas y disponibilidad antes de viajar.",
+    "googleMaps": "Cómo llegar en Google Maps",
+    "distance": "unos {km} km"
+  },
+  "upload": {
+    "label": "Fotos (opcional)",
+    "disabled": "La subida de fotos aún no está activada en este sitio. Puedes publicar sin fotos.",
+    "hint": "Hasta {max} fotos. Se redimensionan en tu dispositivo y se eliminan los datos de ubicación antes de subirlas.",
+    "photoN": "Foto {n}",
+    "moveEarlier": "Mover antes",
+    "moveLater": "Mover después",
+    "remove": "Quitar la foto {n}",
+    "altLabel": "Descripción de la foto {n}",
+    "altPlaceholder": "Describe la foto (opcional)",
+    "uploading": "Subiendo…",
+    "addMore": "Añadir más fotos",
+    "add": "Añadir fotos",
+    "max": "Has añadido el máximo de {max} fotos.",
+    "rights": "Sube solo fotos que hayas hecho tú o que tengas permiso para compartir.",
+    "problems": {
+      "unsupported": "Este archivo no es una imagen compatible.",
+      "tooSmall": "Esta foto es demasiado pequeña (mínimo 200 px).",
+      "tooLarge": "Esta foto pesa demasiado.",
+      "tooBig": "Las dimensiones de esta foto son demasiado grandes.",
+      "empty": "El archivo está vacío.",
+      "uploadFailed": "Error al subir. Inténtalo de nuevo.",
+      "storeFailed": "Error al subir. Inténtalo de nuevo.",
+      "uploadsDisabled": "La subida de fotos aún no está activada en este sitio.",
+      "rateLimited": "Demasiadas subidas. Inténtalo más tarde.",
+      "tooManyPending": "Demasiadas fotos a la vez. Publica o quita algunas primero.",
+      "signInRequired": "Inicia sesión primero.",
+      "verifyEmailFirst": "Verifica tu correo para subir fotos.",
+      "forbidden": "Subida rechazada."
+    }
+  },
+  "admin": {
+    "nav": "Navegación de administración",
+    "sections": {
+      "dashboard": "Panel",
+      "hero": "Portada",
+      "destinations": "Destinos",
+      "moderation": "Moderación",
+      "users": "Usuarios",
+      "pricing": "Precios",
+      "translations": "Traducciones",
+      "affiliates": "Afiliados"
+    },
+    "stats": {
+      "users": "Usuarios",
+      "trips": "Viajes",
+      "destinations": "Destinos",
+      "places": "Lugares",
+      "posts": "Publicaciones de la comunidad",
+      "openReports": "Denuncias abiertas",
+      "activeSubs": "Suscripciones activas",
+      "payments": "Pagos cobrados",
+      "affiliateClicks30": "Clics a socios (30 días)"
+    },
+    "integrations": "Integraciones",
+    "configured": "configurado",
+    "notConfigured": "sin configurar",
+    "inbox": "Mensajes de contacto",
+    "inboxEmpty": "No hay mensajes pendientes.",
+    "date": "Fecha",
+    "from": "De",
+    "topic": "Tema",
+    "message": "Mensaje",
+    "markHandled": "Marcar como atendido",
+    "status": "Estado",
+    "actions": "Acciones",
+    "enabled": "Activado",
+    "disabled": "Desactivado",
+    "enable": "Activar",
+    "disable": "Desactivar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "save": "Guardar",
+    "confirm": "¿Seguro?",
+    "confirmDelete": "¿Eliminar definitivamente?",
+    "invalidFields": "Revisa estos campos",
+    "hero": {
+      "help": "Las diapositivas rotan en la portada en este orden. Usa solo imágenes con licencia (p. ej., Unsplash) y cita al fotógrafo.",
+      "image": "Imagen",
+      "imageUrl": "URL de la imagen (https)",
+      "alt": "Texto alternativo (describe la foto)",
+      "city": "Pie — ciudad",
+      "country": "Código de país (ISO-2)",
+      "slug": "Identificador del destino (opcional)",
+      "credit": "Fotógrafo",
+      "creditUrl": "URL de la página de la foto",
+      "add": "Añadir diapositiva"
+    },
+    "dest": {
+      "city": "Ciudad",
+      "country": "Código de país",
+      "slug": "Identificador",
+      "continent": "Región",
+      "lat": "Latitud",
+      "lng": "Longitud",
+      "daysMin": "Días mín.",
+      "daysMax": "Días máx.",
+      "summary": "Resumen",
+      "description": "Descripción",
+      "bestTime": "Mejor época (texto)",
+      "budget": "Nivel de presupuesto",
+      "contentStatus": "Estado del contenido",
+      "imageUrl": "Añadir URL de imagen",
+      "imageAlt": "Texto alternativo de la imagen",
+      "imageCredit": "Crédito de la imagen",
+      "featured": "Destacado",
+      "published": "Publicado",
+      "hidden": "Oculto",
+      "places": "Lugares",
+      "add": "Añadir destino",
+      "viewPublic": "Ver página pública",
+      "kind": "Tipo",
+      "wikiTitle": "Título del artículo de Wikipedia (en inglés)",
+      "kinds": {
+        "city": "Ciudad",
+        "coastal": "Costa",
+        "island": "Isla",
+        "nature": "Espacio natural"
+      }
+    },
+    "places": {
+      "title": "Lugares",
+      "name": "Nombre",
+      "kind": "Tipo",
+      "coords": "Coordenadas",
+      "verify": "Marcar como verificado",
+      "unverify": "Marcar como no verificado",
+      "add": "Añadir lugar",
+      "help": "Añade solo restaurantes, precios, etiquetas alimentarias y horarios que hayas verificado en una fuente fiable.",
+      "verification": "Verificación",
+      "neighborhood": "Barrio",
+      "duration": "Visita típica (min)",
+      "tags": "Etiquetas (separadas por comas)",
+      "cuisine": "Cocina",
+      "dietary": "Etiquetas alimentarias verificadas",
+      "address": "Dirección",
+      "website": "Sitio web",
+      "booking": "URL de reserva",
+      "source": "Fuente"
+    },
+    "moderationHelp": "Las publicaciones y comentarios con 3 o más denuncias se ocultan automáticamente hasta su revisión.",
+    "postsQueue": "Publicaciones que requieren atención",
+    "reviewsQueue": "Opiniones pendientes de aprobación",
+    "reports": "{n, plural, one {# denuncia} other {# denuncias}}",
+    "publish": "Publicar",
+    "hide": "Ocultar",
+    "remove": "Retirar",
+    "queueEmpty": "Nada que revisar.",
+    "search": "Buscar",
+    "searchEmail": "Buscar por correo",
+    "user": "Usuario",
+    "role": "Rol",
+    "trips": "Viajes",
+    "joined": "Alta",
+    "suspended": "Suspendido",
+    "makeAdmin": "Hacer administrador",
+    "removeAdmin": "Quitar administrador",
+    "suspend": "Suspender",
+    "activate": "Reactivar",
+    "you": "Tú",
+    "pricingHelp": "Los precios se aplican a nuevas compras y renovaciones. Los periodos ya pagados nunca cambian.",
+    "planName": "Nombre interno",
+    "price": "Precio",
+    "currency": "Moneda",
+    "active": "Disponible para la compra",
+    "translationsHelp": "Sustituye cualquier texto de la interfaz sin desplegar. Deja el valor vacío para quitar una sustitución. Marca las traducciones como revisadas cuando las haya comprobado un hablante nativo.",
+    "locale": "Idioma",
+    "key": "Clave",
+    "value": "Texto",
+    "reviewed": "Revisado",
+    "noOverrides": "Aún no hay sustituciones: se usan los diccionarios integrados.",
+    "enrich": {
+      "title": "Importación de contenido de destinos",
+      "body": "Las introducciones (8 idiomas), fotos con licencia libre y créditos, las principales atracciones y los nodos de transporte se importan de Wikipedia, Wikimedia Commons y Wikidata. También se ejecuta en cada despliegue y una vez al día.",
+      "done": "{n} importados",
+      "partial": "{n} importados en parte",
+      "failed": "{n} con error",
+      "pending": "{n} en espera",
+      "run": "Importar el siguiente lote (≈ 40 s)",
+      "running": "Importando…",
+      "result": "Procesados {processed}: {done} importados, {failed} con error. Quedan {remaining} en espera.",
+      "column": "Importación de contenido",
+      "reimport": "Reimportar",
+      "status": {
+        "pending": "En espera",
+        "done": "Importado",
+        "partial": "Importado en parte",
+        "failed": "Error",
+        "skipped": "Omitido"
+      }
+    },
+    "commentsQueue": "Comentarios para revisar",
+    "tripsPerMonth": "Viajes por mes de facturación",
+    "pricingExisting": "Los cambios de precio se aplican a nuevas compras y suscripciones. Las suscripciones existentes conservan el precio pagado en Stripe; el número de viajes del plan Mensual se aplica a todos de inmediato.",
+    "revenue": "Ingresos (pagos reales)",
+    "revenueNote": "Solo pagos cobrados en modo real.",
+    "testPaymentsExcluded": "Se excluyen {n} pagos en modo de prueba de Stripe.",
+    "stripeTestMode": "Stripe en modo de prueba: sin pagos reales",
+    "aff": {
+      "help": "Añade aquí un programa de socios solo después de unirte a él. Los socios permanecen ocultos para los visitantes hasta que los marques como Aprobados; hazlo solo cuando el programa haya aceptado de verdad a TRIPLAN. Las comisiones se siguen en el panel del socio; TRIPLAN solo cuenta clics.",
+      "name": "Nombre",
+      "slug": "Nombre del enlace (en /api/go/…)",
+      "category": "Categoría",
+      "status": "Estado",
+      "template": "Enlace de seguimiento",
+      "templateHint": "Pega el enlace https que te dio el programa (con tu ID de socio). Campos opcionales que rellena TRIPLAN: {list}",
+      "website": "Sitio del socio (opcional)",
+      "order": "Orden",
+      "notes": "Notas internas (nunca se muestran)",
+      "clicks7": "Clics 7 días",
+      "clicks30": "Clics 30 días",
+      "visitors30": "Visitantes 30 días",
+      "total": "Todos los clics",
+      "none": "Aún no hay socios. No se muestra nada de afiliación en el sitio.",
+      "approve": "Marcar como aprobado",
+      "confirmApprove": "¿Ha aceptado de verdad {name} a TRIPLAN en su programa? Sus enlaces aparecerán en el sitio, marcados como enlaces de socio.",
+      "pause": "Pausar",
+      "reject": "Marcar como rechazado",
+      "markPending": "Marcar como pendiente",
+      "delete": "Eliminar",
+      "confirmDelete": "¿Eliminar {name} y su historial de clics?",
+      "add": "Añadir un socio",
+      "addButton": "Añadir socio (pendiente)",
+      "statuses": {
+        "pending": "Pendiente",
+        "approved": "Aprobado",
+        "paused": "En pausa",
+        "rejected": "Rechazado"
+      },
+      "categories": {
+        "accommodation": "Alojamiento",
+        "flights": "Vuelos",
+        "activities": "Actividades y tours",
+        "transport": "Transporte",
+        "car_rental": "Alquiler de coches",
+        "luggage": "Consigna de equipaje",
+        "insurance": "Seguro de viaje",
+        "esim": "eSIM / datos móviles",
+        "other": "Otro"
+      }
+    },
+    "integrationNames": {
+      "uploads": "Subida de fotos (Vercel Blob)",
+      "cron": "Tarea diaria (CRON_SECRET)"
+    },
+    "postStatus": {
+      "published": "Publicado",
+      "pending": "Pendiente de revisión",
+      "hidden": "Oculto",
+      "removed": "Retirado"
+    },
+    "roles": {
+      "user": "Miembro",
+      "admin": "Administrador"
+    },
+    "placeKinds": {
+      "attraction": "Atracción",
+      "activity": "Actividad",
+      "restaurant": "Restaurante",
+      "accommodation": "Alojamiento",
+      "luggage_storage": "Consigna de equipaje",
+      "transport_hub": "Nodo de transporte"
+    },
+    "verificationStates": {
+      "sample": "Ejemplo (sin verificar)",
+      "verified": "Verificado",
+      "community": "Comunidad"
+    },
+    "budgets": {
+      "budget": "Económico",
+      "mid": "Intermedio",
+      "premium": "Premium"
     }
   }
 }

@@ -9,12 +9,13 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "vercel-build": "npm run db:setup && next build",
+    "vercel-build": "npm run db:setup && npm run enrich -- --budget=240 && next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "db:migrate": "tsx scripts/migrate.ts",
     "db:seed": "tsx scripts/seed.ts",
     "db:setup": "npm run db:migrate && npm run db:seed",
+    "enrich": "tsx scripts/enrich.ts",
     "make-admin": "tsx scripts/make-admin.ts",
     "i18n:check": "tsx scripts/check-i18n.ts",
     "test": "vitest run",
@@ -23,6 +24,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.60.0",
     "@electric-sql/pglite": "^0.3.0",
+    "@vercel/blob": "^2.0.0",
     "bcryptjs": "^3.0.2",
     "drizzle-orm": "^0.44.0",
     "leaflet": "^1.9.4",

@@ -1,186 +1,232 @@
-# TRIPLAN — Handover report
+# TRIPLAN — Handover report: improvements release
 
-*Prepared 1 November 2026. Project version 0.1.0.*
+Date: 2 November 2026. This release builds on the site already live at **triplan-plum-five.vercel.app**. The design, structure and existing features were kept, and only the parts listed below were changed.
 
----
-
-## A. Project status
-
-TRIPLAN is a complete website project in its final pre-launch stage:
-- **Public site:** every page from the brief, in 8 languages with full Arabic right-to-left support.
-- **Accounts and trip planner:** registration and login, Fast and Detailed trip planning, itinerary generation and editing on an interactive map.
-- **Partner links:** links to booking and travel partners, with an affiliate disclosure.
-- **Business features:** pricing and subscriptions, community and reviews with moderation, an admin area, GDPR tools.
-- **Brand:** a refined **blue identity** built around the approved logo files, which are unchanged.
-
-**What "ready" means here.** The code is finished and tested as far as this build environment allowed. The **one thing not yet done is a full Next.js production build**: this environment's network policy blocks the npm package registry, so the framework packages couldn't be installed here. The project therefore includes a GitHub Actions workflow. The first time you upload it to GitHub, GitHub installs everything and runs the type-check, tests and production build automatically. A green tick in your repository's **Actions** tab is the final confirmation; if it shows red, send the first error line.
-
-Nothing has been uploaded to GitHub, deployed, or connected to any external account. Those steps are yours (sections D and E).
+> **Status in one sentence:** everything below is built and tested on Claude's side, but **not yet on GitHub or Vercel**. GitHub isn't linked to Claude, so nothing could be pushed. You upload this version (section 11), and Vercel deploys it.
 
 ---
 
-## B. Functional features: implemented and tested
+## 1. What changed (summary)
 
-### How it was tested
-| Test layer | What runs | Result |
-|---|---|---|
-| **Backend integration tests** | The real server code (accounts, trips, itinerary, billing, community, admin, GDPR) against a real **PostgreSQL 16** database | **85 / 85 passed** |
-| **Browser interaction tests** | The real page components and styles, running in Chromium (desktop + mobile), clicking through every major feature | **98 / 98 passed** |
-| **Page sweep** | All 18 public page types × **8 languages** (144 page loads): console errors, broken internal links, missing images, untranslated text, unlabelled buttons, text direction, one main heading | **144 / 144 clean** |
-| **Unit tests** | Itinerary engine, maps maths, validation, redirects, partner links, formatting, translations | **55 / 55 passed** |
-| **Type-check** | Whole project against the real React, Drizzle and next-intl type definitions | **clean** |
-| **Translations** | 1,087 texts × 8 languages, placeholders and plural rules | **complete** |
-| **Database setup** | Migrations and seed on PostgreSQL 16, run twice to confirm it's safe to repeat; admin edits and prices survive a redeploy | **passed** |
-
-The browser and backend tests replace only the framework layer (Next.js routing and request plumbing) with small stand-ins. The application's own code, styles, translations and database logic are the real thing.
-
-### Features verified by those tests
-- **Homepage & navigation:**
-  - Hero carousel: 13 licensed photos, 7-second rotation, Next/Previous, pause/resume, dots, keyboard arrows. It stops for reduced-motion users and loads photos lazily; photographer credits are shown.
-  - Header and mobile drawer (mirrored in Arabic); mobile bottom navigation; "Skip to content" for keyboard users.
-- **Language selector:** all 8 languages, keeps you on the same page, remembers the choice; Arabic is fully right-to-left.
-- **Destination search (Explore):** text search, region/style/budget/climate/month filters, reset, empty state.
-- **Destination pages:**
-  - Overview, attractions, neighbourhoods, sample-content notice, structured data for Google.
-  - **Food searches for halal, vegetarian, vegan, seafood, local, fine dining and budget.** These are live Google Maps searches; restaurants are never invented.
-- **Accommodation, flights, transport, luggage storage and activities:** working links to Booking.com, Airbnb, Expedia, Hotels.com, Hostelworld, Google Flights, Skyscanner, Kiwi.com, Rome2Rio, Rentalcars, Bounce, Radical Storage, LuggageHero, GetYourGuide, Viator and Tiqets. All open safely in a new tab, with an **affiliate disclosure** next to them.
-- **Accounts:**
-  - Sign-up (with terms consent), login, logout, email verification, password reset.
-  - Sessions stored hashed; passwords hashed with bcrypt.
-  - Repeated failed logins are rate-limited; error messages never reveal which emails have accounts; redirect tricks are blocked.
-- **Trip planning:**
-  - Fast Trip, and the 7-step Detailed Trip with validation, an accommodation map picker and a review step.
-  - Answers survive a reload or a language switch; you must sign in before saving, and your choices are kept.
-- **Itinerary generation:** places grouped by area, realistic meal times (lunch 11:30–15:00, dinner from 19:00), free time, arrival and departure days, pace and walking preferences. Only real database places are used; no prices are invented; travel times are labelled as estimates.
-- **Saving & editing trips:**
-  - My Trips list; reorder (drag or buttons), lock, replace, remove, change duration, move to another day, add a place or a custom stop.
-  - Regenerate a day or the whole trip (locked stops are kept); rename, change status, duplicate, delete.
-  - Other users cannot see or edit your trips.
-- **Interactive map:** real Leaflet map, a numbered marker per stop that stays in sync with the list (click either one), route line, attribution, "Open in Google Maps" directions. Stops at the same spot are fanned out so none is hidden.
-- **Pricing & subscriptions:**
-  - Free plan (1 trip), €2.99 extra trip, €29.99/year.
-  - The free limit is enforced, and you're sent to pricing without being charged.
-  - Stripe checkout session creation and **signed webhook handling** were verified with simulated Stripe events: extra-trip credit, annual unlimited, cancellation, duplicate-event protection, rejection of forged events.
-- **Community & reviews:** posting requires a verified email, link-heavy posts are held for moderation, likes, reports; platform reviews are published only after moderation. No fake reviews.
-- **Contact & FAQ:** contact form with bot protection and no invented address or phone; FAQ with structured data.
-- **Account & GDPR:** preferences, password change, data export (never includes password or session data), account deletion; cookie consent (necessary-only by default, reopenable from the footer).
-- **Admin:** admin-only access; edit prices, hero slides, destinations and places, translations; moderation; users.
-
-### Implemented but only verifiable once deployed with real accounts
-Sending real emails (Resend), real Stripe payments, Google sign-in, AI itineraries (Anthropic), Google route durations, the sitemap/robots/metadata as served by Next.js, and the first full Next.js build (done by GitHub Actions on upload).
-
----
-
-## C. Outstanding requirements (need your action or decision)
-
-### Accounts and keys
-| Item | Needed for | Required? | Where it goes |
-|---|---|---|---|
-| **GitHub account** | Storing the code | Yes | You have it |
-| **Vercel account** (free Hobby to start) | Hosting | Yes | vercel.com |
-| **Neon database** via Vercel's Storage tab | Data | Yes | Vercel → Storage (creates `DATABASE_URL` automatically) |
-| **`AUTH_SECRET`** | Account security | Yes | Vercel → Environment Variables |
-| **`ADMIN_EMAILS`** | Your admin account | Yes | Vercel → Environment Variables |
-| **`NEXT_PUBLIC_SITE_URL`** | Correct links, emails, SEO | Yes, after first deploy | Vercel → Environment Variables |
-| **Resend account + your domain** | Verification, password-reset and contact emails | Before public launch | `RESEND_API_KEY`, `EMAIL_FROM`, `CONTACT_INBOX` |
-| **Stripe account** (business verification) | Payments | When charging | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` + webhook |
-| **Vercel Pro plan** | Hobby is non-commercial only | Before taking payments or affiliate income | Vercel billing |
-| **Google OAuth client** | "Continue with Google" | Optional | `GOOGLE_CLIENT_ID/SECRET` |
-| **Anthropic API key** | AI-assisted itineraries (rules engine works without) | Optional | `ANTHROPIC_API_KEY` |
-| **Google Maps Routes API key** | Real travel durations (estimates otherwise) | Optional | `GOOGLE_MAPS_API_KEY` |
-| **Map tile provider** (MapTiler, Stadia…) | Map tiles at real traffic levels | Recommended before launch | `NEXT_PUBLIC_MAP_TILE_URL/ATTRIBUTION` |
-| **Affiliate approvals** (Booking.com, GetYourGuide, Viator) | Earning commission | Optional | `BOOKING_AFFILIATE_ID`, `GETYOURGUIDE_PARTNER_ID`, `VIATOR_PARTNER_ID` |
-| **Domain name** | Your own address | Optional at first | Vercel → Domains |
-
-All links work without affiliate approval; they just don't earn commission. Airbnb, Expedia, Hotels.com, Hostelworld, Skyscanner, Kiwi.com, Tiqets and the luggage services are plain links. Adding their programmes later needs a small code change in `src/lib/links.ts`.
-
-### Content and legal (your decisions)
-- **Legal pages:** `src/content/legal.ts` has placeholders in square brackets (company name, address, contact email, governing law, affiliate programmes). Fill these in and have **a lawyer review** the privacy policy, terms, cookie and subscription policies before launch. No company details were invented.
-- **Destination texts:** the 56 destinations carry sample text marked "Unverified". Review and verify them in `/en/admin/destinations`.
-- **Logo colour:** your approved logo artwork is dark teal (`#123C43`) and has been kept exactly as supplied, as instructed. If you'd prefer the black or white versions (also supplied) in some places on the blue site, that's a one-line change.
-- **Prices:** confirm €2.99 / €29.99 (changeable any time in `/en/admin/pricing`).
-
-### Not implemented in this version
-- Photo uploads in community posts (needs file storage and image moderation).
-- Live partner prices and availability (requires official partner API agreements).
-- Collaborative trip editing with invited travellers.
-- Offline mode and mobile apps.
-- Admin screens in languages other than English.
-- A Content-Security-Policy header, and a shared rate limiter for multiple servers (Redis/Upstash). Other security headers are in place.
-
----
-
-## D. GitHub instructions
-
-Full beginner guide: **`docs/GITHUB_UPLOAD.md`**. In short:
-
-**Method A, website (no installs):**
-1. github.com → **+** → **New repository** → name `triplan`, **Private**, nothing else ticked → **Create repository**.
-2. Extract **`triplan-github-web-upload.zip`** and turn on hidden files.
-3. **Uploading an existing file** → drag the *contents* of `1-root-files` → **Commit changes**.
-4. **Add file → Upload files** → drag the `src` folder from `2-src-part-1` → commit.
-5. Repeat with the `src` folder from `3-src-part-2` → commit.
-6. Check the **Actions** tab for a green tick.
-
-**Method B, Git commands:**
-```bash
-cd ~/Downloads                     # Windows PowerShell: cd $HOME\Downloads
-unzip triplan.zip                  # Windows: Expand-Archive -Path .\triplan.zip -DestinationPath .
-cd triplan
-git init -b main
-git add .
-git commit -m "Initial version of TRIPLAN"
-git remote add origin https://github.com/YOUR-GITHUB-USERNAME/triplan.git
-git push -u origin main
-```
-
----
-
-## E. Deployment instructions
-
-Full guide: **`docs/DEPLOYMENT.md`**. In short:
-1. vercel.com → sign up with GitHub (Hobby).
-2. **Add New → Project** → import `triplan` → add `AUTH_SECRET` and `ADMIN_EMAILS` → **Deploy**. This first attempt stops with "DATABASE_URL is not set", which is expected.
-3. Project → **Storage** → **Neon** → Free plan, region near your users → connect to **Production** (and **Preview** with per-preview database branches) → **Redeploy**.
-   - The app reads **`DATABASE_URL`**.
-   - The integration also adds `DATABASE_URL_UNPOOLED`, which the migrations use.
-   - **No manual migration steps:** every deploy runs migrations → seed → build automatically.
-4. Add `NEXT_PUBLIC_SITE_URL` = your `https://….vercel.app` address → **Redeploy**.
-5. Test: sign up with your admin email (verification link is in Vercel **Logs** until email is set up), plan a trip, open `/en/admin`.
-6. Later: domain, Resend, Stripe (with Vercel Pro), optional services.
-
----
-
-## F. Future maintenance
-
-**Without touching code (admin area, `/en/admin`):**
-- Edit or verify destinations and their places, and add new ones.
-- Change the homepage hero photos: add, reorder, switch on and off.
-- Change prices.
-- Moderate community posts, reviews and reports; manage users.
-- Override any interface text in any language.
-
-**Code changes:** edit files → `git add . && git commit -m "…" && git push` (or upload changed files on github.com). Vercel rebuilds and publishes automatically in 2–4 minutes, including any database changes. If a release goes wrong, use Vercel → **Deployments** → previous version → **Promote to Production** to roll back instantly.
-
-**Good habits:**
-- Keep the CI tick green; it runs on every push.
-- Every few months, update dependencies (`npm outdated`, then `npm update`) and check that CI stays green. GitHub's free **Dependabot** can open these updates for you (repository → Settings → Code security).
-- Watch Vercel **Logs** after releases.
-- Back up the database: Neon keeps a short restore window (shorter on the free plan). For real safety, also export a backup regularly from the Neon console, or upgrade before launch.
-- Never commit secrets. Rotate any key you suspect was exposed.
-
----
-
-## G. Final files
-
-| File | Contents |
+| Brief section | Result |
 |---|---|
-| **`triplan.zip`** | The complete project: source code, styles, translations, logo assets, database migrations and seed data, tests, CI workflow, Vercel config, `.env.example`, `.gitignore`, README and these guides |
-| **`triplan-github-web-upload.zip`** | The same files pre-split into 3 batches under 100 files each, for GitHub's website uploader |
-| `docs/GITHUB_UPLOAD.md` | Step-by-step GitHub guide (both methods, plus how to update later) |
-| `docs/DEPLOYMENT.md` | Step-by-step Vercel + Neon launch guide, optional services, launch checklist |
-| `docs/HANDOVER.md` | This report |
-| `docs/screenshots/` | Desktop and mobile screenshots (photos shown as placeholders: the build environment cannot load Unsplash) |
+| 1 Smarter planning, nearby cities | ✅ Stay-length analysis plus nearby suggestions; accept / choose another / keep; the itinerary re-plans itself |
+| 2 Daily itineraries and distances | ✅ Balanced geographic days, best visiting order, meals and breaks; map follows the day |
+| 3 Homepage slideshow, 300+ destinations | ✅ 351 destinations (was 56); slideshow mixes continents and landscape types |
+| 4 Destination images and content | ✅ Wikipedia/Wikimedia/Wikidata import (8 languages, credited CC photos, attractions, hubs), nearby places, image fallbacks |
+| 5 Community posts | ✅ Create/edit/delete with up to 6 photos and a location, comments, likes, profiles, reports, moderation, honest empty state |
+| 6 Logo | ✅ Horizontal, **stacked (new)**, standalone TP and wordmark; header, footer, favicon, loading screen |
+| 7 Affiliates | ✅ Admin-managed partners (approved only), "Partner" labels, disclosure, click tracking |
+| 8 Monthly subscription | ✅ €6.99 / 4 trips per billing month (configurable), cancel/resume, test vs live mode |
+| 9 Accommodation | ✅ Booked: name, address, pin, used as day start/end. Not booked: suggested area plus search links; can be added later |
+| 10 Transport connections | ✅ Intercity journeys as itinerary stops, with station transfers. Typical times only, never invented timetables or prices |
+| 11 Languages | ✅ 1,370 texts × 8 languages, **admin included**; localized city names; Arabic RTL checked |
+| 12 Testing | ✅ See section 10; what couldn't be tested is listed there |
 
-**Fonts:** Manrope and Noto Sans Arabic (open-source, SIL Open Font Licence) are loaded through Next.js's font system at build time, so no font files are needed in the repository.
-**Photos:** loaded from Unsplash under the Unsplash License, with credits; no photos are stored in the project.
+## 2. Existing features improved
+
+- **Itinerary engine** (`src/lib/itinerary/engine.ts`):
+  - Places are first divided into **one compact area per day**, with balanced numbers of sights.
+  - Each day then uses the **shortest sensible order**: every order is tried up to 7 stops.
+  - No museum starts after 16:30.
+  - Well-known places rank higher.
+  - Locked stops are never touched.
+- **Map** (`TripMap.tsx`):
+  - shows only the selected day and centres on that day's city;
+  - draws the route back to your accommodation;
+  - journeys have their own marker colour;
+  - the "suggested area to stay" appears as a circle.
+- **Destination pages:**
+  - Wikipedia introduction in your language with a CC BY-SA source line;
+  - photo gallery with credits;
+  - attraction thumbnails and visit lengths;
+  - nearby places with transport, journey time, distance and day-trip/overnight suitability;
+  - transport hubs.
+- **Homepage slideshow:**
+  - up to 24 slides, mixing continents and landscape types (city, coast, island, nature);
+  - the existing 6–8 s rotation, controls and dots are kept.
+- **Pricing and billing:**
+  - four plans;
+  - the billing page shows trips used this month and the reset date, with a progress bar;
+  - payment history labels test payments.
+- **Outbound links:** plain search links no longer carry affiliate IDs. Partner links come only from approved partners and are labelled.
+- **Admin:**
+  - destinations show their content-import status;
+  - moderation now covers comments and shows post photos;
+  - the dashboard shows live revenue only, with test payments excluded, plus the status of every integration;
+  - the whole admin area is translated.
+- **Disclosure text:** the old wording promised partners never change the order of links. That would now be false, because partner links are listed first. The new wording says what is true: partner links are labelled, and partners can't pay to change itineraries or recommendations.
+
+## 3. New features
+
+1. **Nearby-city suggestions.** A 5-day Lisbon trip, for example, suggests 3 Lisbon + 2 Porto (train, typical 2 h 50, direct). Other options include Coimbra, or an Évora/Sintra day trip.
+   - The suggestion appears only when the trip is longer than the destination fills at the chosen pace.
+   - Options: **Use this plan**, **Choose another place** (any practical nearby place, as a day trip or a stay), or **Keep all days in Lisbon**. You can also go back to one city later.
+2. **Travel days and day trips.**
+   - A travel day runs: breakfast → transfer to the station (estimate) → the train as a stop (typical time, Google Maps and Rome2Rio links, "check before you travel") → a lighter afternoon in the new city.
+   - A day trip goes out and back, with dinner at the base.
+3. **Accommodation panel** in the trip:
+   - add your hotel or apartment (name, address, map pin) at any time, and the trip re-plans around it;
+   - "From/Back to accommodation" legs on each day;
+   - without a booking: the suggested area to stay, chosen as the neighbourhood closest to your planned sights, plus booking searches.
+4. **Community:**
+   - post page (`/community/posts/…`) and edit page;
+   - member profiles (`/community/members/…`);
+   - photo upload (resized in the browser; type, size and dimensions checked on the server; EXIF/GPS removed);
+   - comments, comment reports, deleting your own post or comment;
+   - posts under review are visible only to their author.
+5. **Monthly plan:**
+   - Stripe subscription; 4 trips per billing month, counted atomically and reset on renewal;
+   - a 5th trip shows a clear "period limit" message;
+   - cancel at the end of the period, or resume;
+   - one subscription at a time.
+6. **Affiliate admin** (`/admin/affiliates`):
+   - add a partner with its tracking link and placeholders; new partners start as Pending;
+   - approve, pause or reject;
+   - click statistics over 7 and 30 days, and unique visitors (no IPs stored);
+   - redirect `/api/go/<partner>`.
+7. **Daily job** (`/api/cron/enrich`, 04:17 UTC): continues the content import and deletes abandoned photo uploads.
+8. **Stacked logo** (`public/brand/triplan-stacked-*.svg`): built from the *unchanged* monogram and wordmark paths. **Loading screen** with the TP monogram.
+9. **Localized city names** (Lisbonne, Lissabon, لشبونة, 里斯本…), taken from the matching Wikipedia article titles. Search works in both the local language and English; brand names are never translated.
+
+## 4. Files and folders modified
+
+**New**
+- `db/migrations/0003_world_catalogue.sql`, `0004_multicity.sql`, `0005_community.sql`, `0006_monthly_affiliates.sql`
+- `src/data/world/` (295 destinations), `src/data/connections.ts` (≈280 journeys)
+- `src/lib/enrich/` (Wikipedia, Commons, Wikidata importer), `scripts/enrich.ts`, `src/app/api/cron/enrich/`
+- `src/lib/nearby.ts`, `src/lib/itinerary/split.ts`, `src/lib/hero.ts`, `src/lib/images.ts`
+- `src/lib/media.ts`, `src/lib/storage.ts`, `src/app/api/uploads/`
+- `src/lib/affiliates.ts`, `src/lib/affiliate-template.ts`, `src/app/api/go/`, `src/app/[locale]/admin/affiliates/`
+- `src/app/[locale]/community/posts/`, `src/app/[locale]/community/members/`, `src/app/[locale]/loading.tsx`
+- `src/components/itinerary/PlanPanels.tsx`
+- `src/components/community/` (`PhotoUploader`, `Comments`, `ReportForm`)
+- `src/components/destinations/NearbyList.tsx`
+- `src/components/media/`, `src/components/ui/OutboundLinks.tsx`, `src/components/account/SubscriptionControls.tsx`
+- `src/db/raw.ts`
+- `public/brand/triplan-stacked-{teal,white,black}.svg`
+- Tests: `tests/unit/{multicity,nearby,enrich,media,affiliate,destinations}.test.ts`
+
+**Changed:** `messages/*.json` (all 8), `src/db/schema.ts`, `scripts/seed.ts`, `scripts/check-i18n.ts`, `package.json` (adds `@vercel/blob`, `enrich` and `vercel-build` scripts), `vercel.json` (daily cron), `next.config.ts` (Wikimedia and Blob image hosts), `.env.example`, `README.md`, `docs/DEPLOYMENT.md`, this file, `src/content/legal.ts`. Also these files under `src/`:
+- actions: `trips`, `community`, `billing`, `admin`, `account`
+- lib: `trips`, `entitlements`, `destinations`, `community`, `links`, `validation`, `env`
+- itinerary: `engine`, `types`, `routing`
+- components: `TripWorkspace`, `TripMap`, `HeroCarousel`, `PostCard`, `PostForm`, `Footer`, `Logo`, `ExploreClient`, `DestinationCard`, `EntitlementBanner`, `Icon`
+- admin pages; the destination, community, trip, pricing, billing and account pages
+- `api/stripe/webhook`, `api/account/export`
+- `styles/components.css`
+
+Nothing was deleted except the three old affiliate-ID lines in `links.ts` and `.env.example`.
+
+## 5. Database changes
+
+All four migrations are **additive**: nothing is dropped, and existing rows aren't modified, apart from a one-time reorder that moves Annual after Monthly. They run automatically on deploy, once each, recorded in `_migrations`.
+
+| Migration | Adds |
+|---|---|
+| `0003_world_catalogue` | Destination type, Wikipedia fields and import status; image licence/source/size; place Wikidata id, popularity and image; new table `destination_connections` |
+| `0004_multicity` | `itinerary_days.destination_id` and `kind` (normal/travel/day_trip); `itinerary_stops.details` (journey info) |
+| `0005_community` | Post place/pin/edited/comment count; tables `media_uploads` and `post_comments`; reports can target comments |
+| `0006_monthly_affiliates` | `monthly` billing; subscription period start, trips used, test/live flag; payment test/live flag; `trips.subscription_id`; tables `affiliate_partners` and `affiliate_clicks` |
+
+Row-level security is switched on for every new table, matching the existing lock-down. Tested by upgrading a copy of the v1 database: all 6 migrations applied, existing users, trips and admin edits were kept, and the new seed data was added. **Backup:** create a Neon branch before deploying (`DEPLOYMENT.md` → *Already live?* step 1).
+
+## 6. Environment variables
+
+| Variable | Needed? | Where it comes from |
+|---|---|---|
+| `DATABASE_URL`, `DATABASE_URL_UNPOOLED` | Already set | Neon integration (prefix `DATABASE`) |
+| `AUTH_SECRET`, `ADMIN_EMAILS`, `NEXT_PUBLIC_SITE_URL` | Already set | You |
+| **`CRON_SECRET`** | **New, add now** | Any long random string. Turns on the daily job |
+| **`BLOB_READ_WRITE_TOKEN`** | New, for photo uploads | Set automatically when you connect a Vercel Blob store |
+| `WIKIMEDIA_CONTACT` | Optional | An email you read (Wikimedia asks API users for one) |
+| `TRIPLAN_SKIP_ENRICH` | Optional | `1` skips the import during a build |
+| `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | For payments | Stripe (test first, then live) |
+| `RESEND_API_KEY`, `EMAIL_FROM`, `CONTACT_INBOX` | Before launch | Resend |
+| ~~`BOOKING_AFFILIATE_ID`, `GETYOURGUIDE_PARTNER_ID`, `VIATOR_PARTNER_ID`~~ | **Removed** | Use /admin/affiliates instead. Delete them in Vercel if you added any |
+
+## 7. External accounts and keys still needed
+
+| What | Why | Cost |
+|---|---|---|
+| Vercel **Blob** store | Member photos | Included allowance, then usage-based |
+| **Stripe** account (activated for live) | Payments | Fees per transaction |
+| **Vercel Pro** | Commercial use (payments, affiliates) | About $20/month |
+| **Affiliate programmes** (Booking.com, Viator, GetYourGuide, Skyscanner, Airbnb where eligible, Bounce, Radical Storage, LuggageHero…) | Commissions | Free to apply; acceptance is the programme's decision |
+| **Resend** plus your domain | Verification and password-reset emails | Free tier |
+| Lawyer | Review the legal templates (now covering Monthly, photos, click tracking) | — |
+| Optional: Google Maps Routes key, a map-tile provider, Anthropic key | Real travel times, heavy map traffic, AI drafting | Usage-based |
+
+## 8. Fully functional, tested end to end
+
+- **Trip planning:** multi-city suggestions and re-planning, travel days, day trips, balanced days, accommodation start/end, area suggestion, regenerate/replace/add per city, duplicate.
+- **Accounts and trips:** sign-up, login, verification, password reset, and trip privacy (others can't read or edit).
+- **Community:** posts with photos, edit and delete, comments, likes, reports, auto-hide after 3 reports, admin moderation, profiles, account deletion removing photos, GDPR export including comments and photos.
+- **Monthly plan logic:** checkout request, webhook activation, 4-trip limit, renewal reset, out-of-order events, cancel/resume, test-mode flagging, invoices against the right plan.
+- **Affiliates:** pending partners hidden, approval, labelled links, redirect with filled-in details, click counting, injection attempts blocked, pause.
+- **Languages and content:** 8 languages including the admin area, Arabic right-to-left, localized city names, legal pages updated.
+
+## 9. Features that still need your action
+
+1. **Upload this version to GitHub** (section 11). Until then the live site is the old version.
+2. **`CRON_SECRET`** (2 min): Vercel → triplan → **Settings → Environment Variables → Add** → name `CRON_SECRET`, value from a password generator (40+ characters), Production → **Save** → **Redeploy**.
+3. **Photo uploads** (3 min): Vercel → triplan → **Storage → Create Database → Blob** → name `triplan-photos` → **Create** → **Connect** to `triplan`, Production → **Redeploy**. The community form then shows **Add photos**.
+4. **Stripe test mode** (20 min): `DEPLOYMENT.md` → *Stripe setup*. Then the **live-mode checklist** in the same file, which lists exactly the account settings, keys, webhook events and legal information required. Don't switch to live keys before completing it.
+5. **Affiliates:** apply to programmes. When one accepts you: **/en/admin/affiliates → Add a partner** → paste the tracking link → **Mark approved**. Steps are in `DEPLOYMENT.md` → *Affiliate partners*.
+6. **Legal:** fill the `[brackets]` in `src/content/legal.ts` and have it reviewed. The legal pages are in English in every language for now, on purpose: translating them before legal review would multiply the review work.
+7. **Content:** the import works in batches: about 4 minutes on every deploy, plus about 40 seconds every day. How many destinations fit depends on Wikipedia's response times. To speed it up, use **Import next batch** in **/en/admin/destinations** a few times. Check the status column there after a few days. "Failed" usually means the Wikipedia title needs correcting; edit **Wikipedia article title** and re-import.
+8. **Opening hours:** the database has a field, but no hours are filled in, and none are invented. The planner keeps museums out of the late afternoon as a safe default. Adding verified hours per place is future work.
+
+## 10. How it was tested, and how you can test it
+
+**Claude's tests (all pass):**
+
+| Suite | Result | What it covers |
+|---|---|---|
+| Unit tests | 101/101 | Planner, splits, routes, nearby, importer parsing, image checks, affiliate templates, translations |
+| Database integration (real PostgreSQL 16) | 183/183 | Every server action and webhook above, privacy, data safety |
+| Importer end-to-end (fixtures + PostgreSQL) | 18/18 | Introductions, localized names, photos, attractions, never overwriting editors |
+| Browser interactions (Chromium, desktop and mobile, en and ar) | 154/154 | Slideshow, search, planner, map sync, multi-city flow, accommodation, uploads, comments, pricing |
+| Page sweep | 168 loads (21 pages × 8 languages) | No errors, raw keys or broken links/images; one heading; correct direction |
+| Upgrade test | ✅ | Migrations 0003–0006 on a copy of the v1 database |
+
+**Not tested here, and why:**
+- **`npm install` / `next build`:** the package registry is blocked in Claude's environment. GitHub Actions CI runs both on your first push; wait for the ✅.
+- **Real Wikipedia, Stripe and Vercel Blob calls:** those networks are blocked here. They were tested with recorded responses and test doubles. The first real runs happen on your deploy.
+- **The live site itself:** Claude can't reach it from here.
+
+**Your 10-minute check after deploying:**
+
+1. `/en` — the photos rotate every few seconds; try ◀ ▶ and the dots.
+2. `/en/destinations/porto` — introduction, photos with credits, *Nearby* (Lisbon by train).
+3. `/en/plan/fast` → Lisbon, 5 days → open the trip. The suggestion card appears → **Use this plan** → day 4 is "Lisbon → Porto" with the train.
+4. In the trip → **Where you're staying → I've booked a place** → name plus map pin → **Save and re-plan**. Days now start "From …".
+5. `/en/community` → share a post with 2 photos (after Blob is connected) → open it → comment → edit → delete.
+6. `/en/pricing` shows four plans. With Stripe test keys, subscribe to Monthly using card 4242 4242 4242 4242; Billing shows "0 of 4 used" and *Test*.
+7. `/en/admin/affiliates` → add a test partner → leave it **Pending**. Nothing appears on the site. Then delete it.
+8. Switch to **العربية**: everything mirrors and nothing is left in English, admin included.
+
+## 11. Deploying this version through GitHub and Vercel
+
+GitHub isn't linked to Claude, so you upload it. You have two options.
+
+**Option A, the easiest for future updates: link GitHub once.** claude.ai → **Settings → Connectors → GitHub → Connect** → authorise `amalzdn4-debug`, including the repository **TRIPLAN.**. Then tell Claude "push it", and Claude can commit directly to `main`.
+
+**Option B, upload the ZIP on github.com:**
+1. **Back up the database first:** `DEPLOYMENT.md` → *Already live?* step 1 (Neon branch).
+2. Unzip **`triplan-github-web-upload.zip`** and turn on hidden files (Mac: Cmd+Shift+. — Windows: View → Show → Hidden items).
+3. github.com → your repository **TRIPLAN.** → **Add file → Upload files**. Drag in the **contents** of each numbered folder **in order**, one batch per commit (GitHub accepts at most 100 files per upload), with messages like `Improvements — part 1`. Files with the same name are replaced; nothing else is deleted.
+4. Open **Actions** and wait for the ✅ (about 3 minutes). If it's red, copy the first red error line and send it to Claude.
+5. Vercel deploys automatically after each commit. The last one (≈5–8 min including the import) is the one that counts. Check **Deployments** for **Ready**.
+6. Add `CRON_SECRET` and the Blob store (section 9), then **Redeploy**.
+7. Run the 10-minute check (section 10).
+
+**Rollback:** Vercel → **Deployments** → the previous *Ready* deployment → **⋯ → Promote to Production**. The database changes are additive, so the old code runs fine on them.
+
+---
+
+### Maintenance notes
+- The daily job keeps importing until every destination is done; after that it only refreshes failed ones and cleans up uploads.
+- Review **/admin/moderation** weekly. Posts and comments with 3 reports hide automatically until you decide.
+- Price changes in **/admin/pricing** apply to new purchases. Existing subscriptions keep their Stripe price; the Monthly trip allowance applies to everyone immediately.
+- Keep CI green; update dependencies every few months.

@@ -8,7 +8,9 @@
     "resendVerification": "Resend verification email",
     "save": "Save",
     "saved": "Saved",
-    "affiliateDisclosure": "Some partner links may be affiliate links: if you book through them, TRIPLAN may earn a commission at no extra cost to you. This never changes which options we show or their order."
+    "partner": "Partner",
+    "partnerDisclosure": "Links marked “Partner” are affiliate links: if you book through them, TRIPLAN may earn a commission at no extra cost to you. Partners can't pay to change your itinerary or our recommendations.",
+    "loading": "Loading…"
   },
   "nav": {
     "home": "Home",
@@ -284,7 +286,9 @@
       "desert": "Desert",
       "continental": "Continental",
       "subtropical": "Subtropical",
-      "oceanic": "Oceanic"
+      "oceanic": "Oceanic",
+      "alpine": "Alpine",
+      "subarctic": "Subarctic"
     }
   },
   "destinations": {
@@ -316,7 +320,8 @@
       "transport": "Getting around",
       "luggage": "Luggage storage",
       "activities": "Activities",
-      "community": "Community"
+      "community": "Community",
+      "nearby": "Nearby"
     },
     "sampleNotice": "This guide is sample editorial content that hasn't been verified by our editors yet. Always check opening hours and details with official sources before you travel.",
     "verified": "Verified",
@@ -366,7 +371,17 @@
     "asideBody": "Get a day-by-day plan with meals, map and travel times in minutes.",
     "fastCta": "Fast Trip",
     "detailedCta": "Detailed Trip",
-    "related": "You may also like"
+    "related": "You may also like",
+    "nearbyLead": "Places worth combining with {city}, and how to get there.",
+    "noNearby": "No nearby destinations are within easy reach yet.",
+    "wikiSource": "Introduction from",
+    "gallery": "Photo gallery",
+    "visitLength": "{time} visit",
+    "hubs": {
+      "airport": "Airport",
+      "rail": "Railway station",
+      "bus": "Bus station"
+    }
   },
   "planIntro": {
     "eyebrow": "Plan a trip",
@@ -522,7 +537,7 @@
     "coveredBySubscription": "This trip is included in your Annual plan.",
     "coveredByFree": "This trip uses your free trip plan.",
     "coveredByCredit": "This trip will use 1 of your {n} trip credits.",
-    "needsPurchase": "You've used your free trip. Get another trip or the Annual plan to continue — you won't be charged without confirming.",
+    "needsPurchase": "You've used your free trip. Get another trip or a plan to continue — you won't be charged without confirming.",
     "seePlans": "See plans",
     "steps": "Planning steps",
     "stepOf": "Step {n} of {total}",
@@ -625,7 +640,9 @@
     "budget": "Budget",
     "notSet": "Not set",
     "stay": "Accommodation",
-    "rhythm": "Daily rhythm"
+    "rhythm": "Daily rhythm",
+    "coveredByMonthly": "This trip is included in your Monthly plan ({left} of {total} trips left this billing month).",
+    "periodUsedUp": "You've used the {total} trips in your plan for this billing month (more on {date}). You can buy a single extra trip — you won't be charged without confirming."
   },
   "trips": {
     "title": "My Trips",
@@ -659,7 +676,15 @@
     "emptyFiltered": "No trips in this view",
     "emptyBody": "Plan your first journey — it only takes a couple of minutes.",
     "planFirst": "Plan a trip",
-    "copySuffix": "copy"
+    "copySuffix": "copy",
+    "planActive": "{plan} plan",
+    "periodLeft": "{n, plural, =0 {No trips left this month} one {# trip left this month} other {# trips left this month}}",
+    "planNames": {
+      "annual": "Annual",
+      "monthly": "Monthly",
+      "trip_pack": "Additional trip",
+      "free": "Free"
+    }
   },
   "itinerary": {
     "backToTrips": "My Trips",
@@ -752,7 +777,23 @@
     "accommodation": "Your accommodation",
     "notGenerated": "Your preferences are saved, but the itinerary hasn't been generated yet.",
     "generateNow": "Generate itinerary",
-    "generated": "Itinerary ready"
+    "generated": "Itinerary ready",
+    "reorganized": "Itinerary re-planned",
+    "journeyTo": "Travel to {place}",
+    "kinds": {
+      "travel": "Travel day",
+      "day_trip": "Day trip to {place}"
+    },
+    "fromAccommodation": "From {place}",
+    "backToAccommodation": "Back to {place}",
+    "transfer": {
+      "to_train": "To the station",
+      "to_bus": "To the bus station",
+      "to_ferry": "To the port",
+      "to_flight": "To the airport",
+      "to_car": "To the car",
+      "from": "Into {place}"
+    }
   },
   "map": {
     "label": "Itinerary map",
@@ -792,7 +833,8 @@
     "status": {
       "reportReceived": "Thanks — our moderators will review this post.",
       "signInRequired": "Please sign in first.",
-      "rateLimited": "Too many reports. Please try again later."
+      "rateLimited": "Too many reports. Please try again later.",
+      "notAllowed": "This action isn't available for this post."
     },
     "signInToInteract": "Sign in to like, save or report posts.",
     "signIn": "Sign in",
@@ -819,7 +861,44 @@
     "guideline1": "Share only your own real experiences.",
     "guideline2": "Be respectful — no hate, harassment or personal data.",
     "guideline3": "No advertising or affiliate spam.",
-    "guideline4": "Only upload photos you have the right to share."
+    "guideline4": "Only upload photos you have the right to share.",
+    "member": "Triplan member",
+    "deleted": "Post deleted.",
+    "statusBanner": {
+      "pending": "Only you can see this post while it's waiting for review.",
+      "hidden": "This post is hidden by moderators. Only you can see it.",
+      "removed": "This post was removed by moderators."
+    },
+    "edited": "edited",
+    "pinnedLocation": "Pinned location",
+    "openMap": "Open map",
+    "photoAlt": "Photo {n} for “{title}”",
+    "commentsN": "{n, plural, =0 {Comments} one {# comment} other {# comments}}",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirmDelete": "Delete this post, its photos and comments? This can't be undone.",
+    "editTitle": "Edit your post",
+    "viewPost": "View your post",
+    "stars": "{n, plural, one {# star} other {# stars}}",
+    "photosInvalid": "Some photos couldn't be attached. Please remove and add them again.",
+    "placeName": "Place (optional)",
+    "placeHint": "E.g. the name of a café, viewpoint or street.",
+    "pinSet": "Pin set — drag or tap to adjust.",
+    "pinHint": "Tap the map to drop a pin.",
+    "removePin": "Remove pin",
+    "addPin": "Add a map pin (optional)",
+    "saveChanges": "Save changes",
+    "noComments": "No comments yet.",
+    "signInToComment": "Sign in to comment",
+    "verifyToComment": "Verify your email address to comment.",
+    "addComment": "Add a comment",
+    "postComment": "Post comment",
+    "confirmDeleteComment": "Delete this comment?",
+    "backToCommunity": "Community",
+    "memberSince": "Member since {date}",
+    "postsN": "{n, plural, =0 {No posts} one {# post} other {# posts}}",
+    "editProfile": "Edit profile",
+    "memberNoPosts": "This member hasn't shared any posts yet."
   },
   "reviews": {
     "eyebrow": "Reviews & opinions",
@@ -910,7 +989,9 @@
     "deleteTitle": "Delete account",
     "deleteBody": "This permanently deletes your account, trips, posts and saved items, and cancels any active subscription. This can't be undone.",
     "deleteConfirm": "Type {email} to confirm",
-    "deleteCta": "Delete my account"
+    "deleteCta": "Delete my account",
+    "viewPublicProfile": "View your public profile",
+    "publicProfileNote": "Shows your display name, home city, bio and posts — never your email."
   },
   "saved": {
     "title": "Saved",
@@ -950,7 +1031,8 @@
     "items": {
       "free": "Free plan",
       "trip_pack": "Additional trip",
-      "annual": "Annual plan"
+      "annual": "Annual plan",
+      "monthly": "Monthly plan"
     },
     "paymentStatus": {
       "paid": "Paid",
@@ -958,7 +1040,25 @@
       "refunded": "Refunded"
     },
     "noPayments": "No payments yet.",
-    "cardNote": "Payments are processed securely by Stripe. Triplan never stores your card details."
+    "cardNote": "Payments are processed securely by Stripe. Triplan never stores your card details.",
+    "planNames": {
+      "annual": "Annual",
+      "monthly": "Monthly",
+      "trip_pack": "Additional trip",
+      "free": "Free"
+    },
+    "test": "Test",
+    "alreadySubscribed": "You already have a subscription. To change plan, cancel the current one at the end of its period below, then choose the new plan when it ends.",
+    "testMode": "Stripe is in test mode: payments here are tests, not real transactions.",
+    "thisPeriod": "Trips this billing month",
+    "tripsUsedOf": "{used} of {total} used",
+    "resetsOn": "Resets on {date}",
+    "periodEnds": "Plan ends on {date}",
+    "unlimited": "Unlimited trips (fair use)",
+    "resume": "Keep my subscription",
+    "cancel": "Cancel at end of period",
+    "confirmCancel": "Cancel your subscription? You keep access until {date}, then it won't renew.",
+    "cancelFailed": "We couldn't update your subscription. Please try again or use “Manage subscription”."
   },
   "pricing": {
     "eyebrow": "Pricing",
@@ -995,6 +1095,14 @@
         "f2": "All planning features",
         "f3": "Cancel any time from your account",
         "f4": "Renews yearly unless cancelled"
+      },
+      "monthly": {
+        "name": "Monthly",
+        "desc": "For regular trips without a yearly commitment.",
+        "f1": "{n} trip plans every billing month",
+        "f2": "All planning features",
+        "f3": "Cancel any time from your account",
+        "f4": "Unused trips don't carry over"
       }
     },
     "startPlanning": "Start planning",
@@ -1005,10 +1113,14 @@
     "transparencyTitle": "Our promise",
     "transparency1": "You're never charged without confirming on Stripe's secure checkout.",
     "transparency2": "Paid access starts only after the payment is confirmed on our servers.",
-    "transparency3": "Cancel the Annual plan any time — access continues until the end of the paid year.",
+    "transparency3": "Cancel Monthly or Annual any time — access continues until the end of the paid period.",
     "transparency4": "Prices include applicable taxes unless stated otherwise at checkout.",
     "transparency5": "Your saved trips stay available even if a subscription ends.",
-    "policyLink": "Read the subscription policy"
+    "policyLink": "Read the subscription policy",
+    "perMonth": "/ month",
+    "periodLimitReached": "You've used the {n} trips included in your plan this billing month. More trips become available on {date} — or buy a single extra trip now.",
+    "testMode": "Payments are in Stripe test mode: no real money is charged and test purchases are not real transactions.",
+    "currentPlan": "Your current plan"
   },
   "about": {
     "eyebrow": "About Triplan",
@@ -1186,7 +1298,8 @@
     "tripTooLong": "Trips can be up to 21 days long.",
     "terms": "Please accept the terms to continue.",
     "unsupportedDestination": "Please choose a destination from the list.",
-    "confirmEmail": "Type your email address exactly to confirm."
+    "confirmEmail": "Type your email address exactly to confirm.",
+    "tooMany": "Too many items."
   },
   "status": {
     "genericError": "Something went wrong. Please try again.",
@@ -1204,7 +1317,11 @@
     "contactSent": "Thank you — your message has been sent. We'll reply by email.",
     "saved": "Saved.",
     "passwordChanged": "Your password has been updated.",
-    "oauthFailed": "Google sign-in didn't complete. Please try again."
+    "oauthFailed": "Google sign-in didn't complete. Please try again.",
+    "postUpdated": "Your changes are saved.",
+    "commentAdded": "Comment posted.",
+    "commentPending": "Thanks — your comment will appear after review.",
+    "notAllowed": "This action isn't available."
   },
   "email": {
     "footer": "You received this email because of activity on your Triplan account.",
@@ -1230,7 +1347,8 @@
       "moderation": "Moderation",
       "users": "Users",
       "pricing": "Pricing",
-      "translations": "Translations"
+      "translations": "Translations",
+      "affiliates": "Affiliates"
     },
     "stats": {
       "users": "Users",
@@ -1240,7 +1358,8 @@
       "posts": "Community posts",
       "openReports": "Open reports",
       "activeSubs": "Active subscriptions",
-      "payments": "Paid payments"
+      "payments": "Paid payments",
+      "affiliateClicks30": "Partner clicks (30 days)"
     },
     "integrations": "Integrations",
     "configured": "configured",
@@ -1298,7 +1417,15 @@
       "hidden": "Hidden",
       "places": "Places",
       "add": "Add destination",
-      "viewPublic": "View public page"
+      "viewPublic": "View public page",
+      "kind": "Type",
+      "wikiTitle": "Wikipedia article title (English)",
+      "kinds": {
+        "city": "City",
+        "coastal": "Coast",
+        "island": "Island",
+        "nature": "Nature area"
+      }
     },
     "places": {
       "title": "Places",
@@ -1320,7 +1447,7 @@
       "booking": "Booking URL",
       "source": "Source"
     },
-    "moderationHelp": "Posts with 3 or more reports are hidden automatically until reviewed.",
+    "moderationHelp": "Posts and comments with 3 or more reports are hidden automatically until reviewed.",
     "postsQueue": "Posts needing attention",
     "reviewsQueue": "Reviews awaiting approval",
     "reports": "{n, plural, one {# report} other {# reports}}",
@@ -1350,6 +1477,220 @@
     "key": "Key",
     "value": "Text",
     "reviewed": "Reviewed",
-    "noOverrides": "No overrides yet — the built-in dictionaries are used."
+    "noOverrides": "No overrides yet — the built-in dictionaries are used.",
+    "enrich": {
+      "title": "Destination content import",
+      "body": "Introductions (8 languages), freely licensed photos with credits, main attractions and transport hubs are imported from Wikipedia, Wikimedia Commons and Wikidata. It also runs automatically on every deploy and once a day.",
+      "done": "{n} imported",
+      "partial": "{n} partly imported",
+      "failed": "{n} failed",
+      "pending": "{n} waiting",
+      "run": "Import next batch (≈ 40 s)",
+      "running": "Importing…",
+      "result": "Processed {processed}: {done} imported, {failed} failed. {remaining} still waiting.",
+      "column": "Content import",
+      "reimport": "Re-import",
+      "status": {
+        "pending": "Waiting",
+        "done": "Imported",
+        "partial": "Partly imported",
+        "failed": "Failed",
+        "skipped": "Skipped"
+      }
+    },
+    "commentsQueue": "Comments to review",
+    "tripsPerMonth": "Trips per billing month",
+    "pricingExisting": "Price changes apply to new purchases and subscriptions. Existing subscriptions keep the price they were bought at in Stripe; the Monthly trip allowance applies to everyone immediately.",
+    "revenue": "Revenue (live payments)",
+    "revenueNote": "Paid live-mode payments only.",
+    "testPaymentsExcluded": "{n} Stripe test-mode payments are excluded.",
+    "stripeTestMode": "Stripe test mode — no real payments",
+    "aff": {
+      "help": "Add a partner programme here only after you have joined it. Partners stay hidden from visitors until you mark them Approved — do that only once the programme has actually accepted TRIPLAN. Commissions are tracked in the partner's own dashboard; TRIPLAN counts clicks only.",
+      "name": "Name",
+      "slug": "Link name (in /api/go/…)",
+      "category": "Category",
+      "status": "Status",
+      "template": "Tracking link",
+      "templateHint": "Paste the https link the programme gave you (with your partner ID). Optional placeholders filled in by TRIPLAN: {list}",
+      "website": "Partner website (optional)",
+      "order": "Order",
+      "notes": "Internal notes (never shown)",
+      "clicks7": "Clicks 7 days",
+      "clicks30": "Clicks 30 days",
+      "visitors30": "Visitors 30 days",
+      "total": "All clicks",
+      "none": "No partners yet. Nothing affiliate-related is shown on the site.",
+      "approve": "Mark approved",
+      "confirmApprove": "Has {name} actually accepted TRIPLAN into its programme? Its links will appear on the site, labelled as partner links.",
+      "pause": "Pause",
+      "reject": "Mark rejected",
+      "markPending": "Mark pending",
+      "delete": "Delete",
+      "confirmDelete": "Delete {name} and its click history?",
+      "add": "Add a partner",
+      "addButton": "Add partner (pending)",
+      "statuses": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "paused": "Paused",
+        "rejected": "Rejected"
+      },
+      "categories": {
+        "accommodation": "Accommodation",
+        "flights": "Flights",
+        "activities": "Activities & tours",
+        "transport": "Transport",
+        "car_rental": "Car rental",
+        "luggage": "Luggage storage",
+        "insurance": "Travel insurance",
+        "esim": "eSIM / mobile data",
+        "other": "Other"
+      }
+    },
+    "integrationNames": {
+      "uploads": "Photo uploads (Vercel Blob)",
+      "cron": "Daily job (CRON_SECRET)"
+    },
+    "postStatus": {
+      "published": "Published",
+      "pending": "Waiting for review",
+      "hidden": "Hidden",
+      "removed": "Removed"
+    },
+    "roles": {
+      "user": "Member",
+      "admin": "Admin"
+    },
+    "placeKinds": {
+      "attraction": "Attraction",
+      "activity": "Activity",
+      "restaurant": "Restaurant",
+      "accommodation": "Accommodation",
+      "luggage_storage": "Luggage storage",
+      "transport_hub": "Transport hub"
+    },
+    "verificationStates": {
+      "sample": "Sample (unverified)",
+      "verified": "Verified",
+      "community": "Community"
+    },
+    "budgets": {
+      "budget": "Budget",
+      "mid": "Mid-range",
+      "premium": "Premium"
+    }
+  },
+  "media": {
+    "photoBy": "Photo:",
+    "unknownAuthor": "Unknown author",
+    "viaCommons": "via Wikimedia Commons"
+  },
+  "nearby": {
+    "leg": "About {time} by {mode}",
+    "legEstimate": "About {time} by road (estimate)",
+    "direct": "Direct",
+    "withChange": "With a change",
+    "modes": {
+      "train": "train",
+      "bus": "bus",
+      "ferry": "ferry",
+      "flight": "plane",
+      "car": "car"
+    },
+    "suitability": {
+      "day_trip": "Day trip",
+      "short_stay": "1–2 nights",
+      "multi_day": "Several days"
+    },
+    "distance": "{km} km away",
+    "plan": "Plan",
+    "planWith": "Plan a trip to {city}",
+    "note": "Journey times from {city} are typical and approximate. Check the operator's timetable before you travel."
+  },
+  "split": {
+    "title": "Make the most of your extra days",
+    "lead": "{city} usually fills about {capacity} days at your pace, and your trip has {total}. Here are some ways to use the extra time — or keep everything in {city}.",
+    "optionsLegend": "Ways to use your extra days",
+    "daysIn": "{n, plural, one {# day in {city}} other {# days in {city}}}",
+    "dayTripTo": "a day trip to {city}",
+    "typicalNote": "Journey times are typical durations, not timetables. Check schedules and prices with the operator before booking.",
+    "accept": "Use this plan",
+    "other": "Choose another place",
+    "keep": "Keep all days in {city}",
+    "pickLead": "Places that are practical to reach from here:",
+    "asDayTrip": "Add as a day trip",
+    "asStay": "Stay a few nights",
+    "noneNearby": "We don't have practical nearby places for this destination yet.",
+    "back": "Back to suggestions",
+    "routeTitle": "Your route",
+    "then": "then",
+    "nDays": "{n, plural, one {# day} other {# days}}",
+    "dayTripsFrom": "Day trips from {city}: {places}",
+    "reset": "Spend the whole trip in {city}",
+    "confirmReset": "Re-plan the trip with every day in {city}? Locked items in other places will be removed."
+  },
+  "stay": {
+    "title": "Where you're staying",
+    "usedAsStart": "Each day in this destination starts and ends here.",
+    "noPin": "Add a map pin so we can start and end your days here.",
+    "change": "Change",
+    "clear": "Remove",
+    "addBooked": "I've booked a place in {city}",
+    "name": "Accommodation name",
+    "address": "Address",
+    "pinHint": "Tap the map to place a pin at your accommodation.",
+    "reorganizeNote": "Saving re-plans your days around this address. Locked items stay where they are.",
+    "save": "Save and re-plan",
+    "cancel": "Cancel",
+    "areaSuggestion": "In {city}, staying around <b>{area}</b> puts you close to {n, plural, one {# of your planned sights} other {# of your planned sights}}.",
+    "cityCentre": "In {city}, a central stay keeps you close to your {n, plural, one {# planned sight} other {# planned sights}}.",
+    "dates": "{from} – {to}",
+    "showArea": "Show on map",
+    "areaNote": "Suggested from where your planned sights are — not a rating of the area. Prices and availability are on the booking sites.",
+    "cityOnly": "We don't have enough sights mapped in {city} yet to suggest an area — a central stay near public transport is a safe choice."
+  },
+  "journey": {
+    "title": {
+      "onward": "{from} → {to} by {mode}",
+      "out": "{from} → {to} by {mode}",
+      "back": "Back to {to} by {mode}"
+    },
+    "typical": "Typical journey {time}",
+    "estimate": "Estimated {time}",
+    "checkNote": "Not a live timetable — check times, fares and availability before you travel.",
+    "googleMaps": "Directions in Google Maps",
+    "distance": "about {km} km"
+  },
+  "upload": {
+    "label": "Photos (optional)",
+    "disabled": "Photo uploads aren't enabled on this site yet. You can still publish your post without photos.",
+    "hint": "Up to {max} photos. They're resized on your device and location data is removed before upload.",
+    "photoN": "Photo {n}",
+    "moveEarlier": "Move earlier",
+    "moveLater": "Move later",
+    "remove": "Remove photo {n}",
+    "altLabel": "Description of photo {n}",
+    "altPlaceholder": "Describe the photo (optional)",
+    "uploading": "Uploading…",
+    "addMore": "Add more photos",
+    "add": "Add photos",
+    "max": "You've added the maximum of {max} photos.",
+    "rights": "Only upload photos you took yourself or have permission to share.",
+    "problems": {
+      "unsupported": "This file isn't a supported image.",
+      "tooSmall": "This photo is too small (at least 200 px).",
+      "tooLarge": "This photo is too large.",
+      "tooBig": "This photo's dimensions are too large.",
+      "empty": "The file is empty.",
+      "uploadFailed": "Upload failed. Please try again.",
+      "storeFailed": "Upload failed. Please try again.",
+      "uploadsDisabled": "Photo uploads aren't enabled on this site yet.",
+      "rateLimited": "Too many uploads. Please try again later.",
+      "tooManyPending": "Too many photos at once. Publish or remove some first.",
+      "signInRequired": "Please sign in first.",
+      "verifyEmailFirst": "Verify your email address to upload photos.",
+      "forbidden": "Upload refused."
+    }
   }
 }

@@ -1,6 +1,6 @@
 # TRIPLAN — Plan less. Explore more.
 
-TRIPLAN is an international travel-planning website. Travellers describe a trip, either quickly or in detail, and get a realistic day-by-day itinerary with meals, breaks, travel times and a numbered interactive map. They can edit it, then book through trusted partner sites.
+TRIPLAN is an international travel-planning website. Travellers describe a trip, either quickly or in detail, and get a realistic day-by-day itinerary with meals, breaks, travel times and a numbered interactive map. When a trip is longer than a destination needs, TRIPLAN suggests a nearby city or day trip (e.g. 3 days in Lisbon + 2 in Porto by train) and reorganizes the plan around it, including travel days and the traveller's accommodation. Members share recommendations with photos in the community. Travellers edit everything, then book through the sites they choose.
 
 - **8 languages:** English, العربية (full right-to-left), Français, Español, Italiano, 简体中文, Русский, Português
 - **Honest by design:** no invented prices, reviews, availability or restaurants. Estimates are labelled; sample content says "Unverified".
@@ -25,7 +25,9 @@ TRIPLAN is an international travel-planning website. Travellers describe a trip,
 | Accounts | Own secure implementation: bcrypt, hashed sessions, email verification, password reset, optional Google sign-in |
 | Maps | Leaflet + OpenStreetMap (configurable tiles); "Open in Google Maps" for navigation |
 | Itineraries | Rules engine, plus optional AI (Anthropic) restricted to places in the database |
-| Payments | Stripe Checkout + Billing Portal, verified webhooks |
+| Payments | Stripe Checkout + Billing Portal, verified webhooks; Free, per trip, Monthly (trips per billing month) and Annual plans; test-mode payments labelled and excluded from revenue |
+| Photos | Vercel Blob for member photos (resized in the browser, checked and metadata-stripped on the server) |
+| Affiliates | Admin-approved partners only, labelled "Partner", clicks counted via `/api/go/…` without storing IPs |
 | Hosting | Vercel (`vercel.json`), with migrations and seed run automatically on every deploy |
 | CI | GitHub Actions (`.github/workflows/ci.yml`): install, translations check, type-check, tests, build |
 
@@ -110,10 +112,11 @@ Without email keys, verification and password-reset links are printed in the ter
 
 ## Configuration
 
-All settings are environment variables. **`.env.example` lists every one with explanations and no real values.** Only `DATABASE_URL` and `AUTH_SECRET` are required; everything else switches on an optional service (email, payments, Google sign-in, AI, routing, map tiles, affiliate IDs, social links). Secrets are never committed: `.env` and `.env.local` are git-ignored.
+All settings are environment variables. **`.env.example` lists every one with explanations and no real values.** Only `DATABASE_URL` and `AUTH_SECRET` are required; everything else switches on an optional service (email, payments, photo uploads, the daily job, Google sign-in, AI, routing, map tiles, social links). Affiliate partners are managed in the admin area, not in variables. Secrets are never committed: `.env` and `.env.local` are git-ignored.
 
 ## Data, photos and content
-- The seed creates 56 destinations, 38 countries, landmark places for ~18 cities, the three pricing plans and the hero rotation. All editorial text is **sample** content, shown as "Unverified" until an editor verifies it in `/admin/destinations`. No restaurants, prices, ratings or reviews are seeded.
+- The seed creates **351 destinations** in 95 countries, landmark places for ~18 cities, about 280 curated intercity journey times (typical durations, not timetables), the four pricing plans and the hero rotation. Editorial text is **sample** content, shown as "Unverified" until an editor verifies it in `/admin/destinations`. No restaurants, prices, ratings, reviews or community members are seeded.
+- On deploy and once a day, an importer adds **Wikipedia introductions in 8 languages, localized city names, freely licensed Wikimedia Commons photos (credited) and main attractions/transport hubs from Wikidata**. It never overwrites text or places an editor has written or verified.
 - Hero and destination photos are from **Unsplash** under the [Unsplash License](https://unsplash.com/license), with photographer credits shown on each slide (`src/data/hero.ts`, editable in `/admin/hero`).
 - Legal pages (`src/content/legal.ts`) are **templates with placeholders**. They must be completed and checked by a lawyer before launch.
 
