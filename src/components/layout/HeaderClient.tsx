@@ -61,8 +61,8 @@ export function HeaderClient({ labels, user }: { labels: Labels; user: { name: s
       <header className={`site-header ${overlay ? "site-header--overlay" : ""} ${scrolled ? "is-scrolled" : ""}`}>
         <div className="container site-header__inner">
           <Link href="/" className="site-header__brand" aria-label="TRIPLAN — Home">
-            <Logo variant="white" className="logo-light" alt="" />
-            <Logo variant="teal" className="logo-dark" alt="" />
+            <Logo kind="wordmark" variant="white" className="logo-light" alt="" />
+            <Logo kind="wordmark" variant="teal" className="logo-dark" alt="" />
           </Link>
           <nav className="main-nav" aria-label={labels.mainNav}>
             {NAV.map((n) => (
@@ -151,7 +151,7 @@ export function HeaderClient({ labels, user }: { labels: Labels; user: { name: s
           <div className="drawer-backdrop" onClick={() => setDrawer(false)} aria-hidden />
           <div className="drawer" role="dialog" aria-modal="true" aria-label={labels.menu}>
             <div className="cluster" style={{ justifyContent: "space-between" }}>
-              <Logo variant="teal" height={26} />
+              <Logo kind="wordmark" variant="teal" height={26} />
               <button type="button" className="btn btn--icon btn--ghost" aria-label={labels.close} onClick={() => setDrawer(false)} autoFocus>
                 <Icon name="close" />
               </button>

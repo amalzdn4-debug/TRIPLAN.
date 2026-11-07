@@ -14,9 +14,9 @@ const INTERVAL_MS = 7000;
 
 /**
  * Rotating international destination hero.
- * - crossfades every 7s; pauses on hover, focus within, when the tab is hidden, or via the pause button
+ * - crossfades every 7s; pauses on hover, focus within, or when the tab is hidden
  * - honours prefers-reduced-motion (no auto-rotation, no zoom)
- * - keyboard: ←/→ when the carousel has focus; dots and arrows are real buttons
+ * - no visible dots/arrows (owner's choice); ←/→ still work when focus is inside (e.g. on the place link)
  * - only the current and next images are requested; the next one is preloaded before it shows
  */
 export function HeroCarousel({ slides, children }: { slides: HeroSlideData[]; children: React.ReactNode }) {
@@ -24,7 +24,6 @@ export function HeroCarousel({ slides, children }: { slides: HeroSlideData[]; ch
   const locale = useLocale();
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
-  const [userPaused, setUserPaused] = useState(false);
   const [reduced, setReduced] = useState(false);
   const [loaded, setLoaded] = useState<Set<number>>(() => new Set([0, slides.length > 1 ? 1 : 0]));
   const root = useRef<HTMLElement>(null);
@@ -53,10 +52,10 @@ export function HeroCarousel({ slides, children }: { slides: HeroSlideData[]; ch
   }, []);
 
   useEffect(() => {
-    if (count < 2 || paused || userPaused || reduced) return;
+    if (count < 2 || paused || reduced) return;
     const id = window.setTimeout(() => go(index + 1), INTERVAL_MS);
     return () => window.clearTimeout(id);
-  }, [index, paused, userPaused, reduced, count, go]);
+  }, [index, paused, reduced, count, go]);
 
   const onKey = (e: React.KeyboardEvent) => {
     const rtl = document.documentElement.dir === "rtl";
@@ -93,7 +92,7 @@ export function HeroCarousel({ slides, children }: { slides: HeroSlideData[]; ch
       <div className="container hero__content">
         {children}
         <div className="hero__bar">
-          <div className="hero__caption" aria-live={paused || userPaused || reduced ? "polite" : "off"}>
+          <div className="hero__caption" aria-live={paused || reduced ? "polite" : "off"}>
             <div>
               <div className="hero__caption-place">
                 <Icon name="pin" />
@@ -112,24 +111,6 @@ export function HeroCarousel({ slides, children }: { slides: HeroSlideData[]; ch
               ) : null}
             </div>
           </div>
-          {count > 1 ? (
-            <div className="hero__controls">
-              <div className="hero__dots" role="group" aria-label={t("chooseSlide")}>
-                {slides.map((s, i) => (
-                  <button key={s.id} type="button" className="hero__dot" aria-label={t("goTo", { place: cityOf(s) })} aria-current={i === index ? "true" : undefined} onClick={() => go(i)} />
-                ))}
-              </div>
-              <button type="button" className="hero__arrow" aria-label={t("previous")} onClick={() => go(index - 1)}>
-                <Icon name="chevronLeft" className="flip-rtl" />
-              </button>
-              <button type="button" className="hero__arrow" aria-label={userPaused ? t("play") : t("pause")} aria-pressed={userPaused} onClick={() => setUserPaused((p) => !p)}>
-                <Icon name={userPaused ? "play" : "pause"} />
-              </button>
-              <button type="button" className="hero__arrow" aria-label={t("next")} onClick={() => go(index + 1)}>
-                <Icon name="chevronRight" className="flip-rtl" />
-              </button>
-            </div>
-          ) : null}
         </div>
       </div>
     </section>

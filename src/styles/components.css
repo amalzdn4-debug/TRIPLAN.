@@ -976,7 +976,9 @@ fieldset > legend {
     linear-gradient(270deg, rgba(9, 24, 44, 0.55) 0%, rgba(9, 24, 44, 0) 60%);
 }
 .hero__content {
-  padding-block: calc(var(--header-h) + var(--sp-16)) var(--sp-10);
+  /* Bottom space = the quick-categories bar that overlaps the hero (44px) + breathing room,
+     so the photo caption never sits under it. */
+  padding-block: calc(var(--header-h) + var(--sp-16)) calc(44px + var(--sp-8));
 }
 .hero__title {
   font-size: var(--fs-hero);
