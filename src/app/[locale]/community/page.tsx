@@ -77,7 +77,7 @@ export default async function CommunityPage({ params, searchParams }: { params: 
                 <Link href={{ pathname: "/login", query: { next: "/community" } }} className="btn">{t("signIn")}</Link>
               </div>
             ) : !user.emailVerified ? (
-              <Notice tone="warning">{t("verifyToPost")} <ResendVerification /></Notice>
+              <Notice tone="warning">{t("verifyToPost")} <ResendVerification available={features.emailDelivery()} /></Notice>
             ) : (
               <PostForm destinations={dests} defaultDestination={destination} uploadsEnabled={features.uploads()} />
             )}

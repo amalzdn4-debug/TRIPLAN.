@@ -10,7 +10,8 @@
     "saved": "Saved",
     "partner": "Partner",
     "partnerDisclosure": "Links marked “Partner” are affiliate links: if you book through them, TRIPLAN may earn a commission at no extra cost to you. Partners can't pay to change your itinerary or our recommendations.",
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "contactUs": "Contact us"
   },
   "nav": {
     "home": "Home",
@@ -381,7 +382,9 @@
       "airport": "Airport",
       "rail": "Railway station",
       "bus": "Bus station"
-    }
+    },
+    "ticketsOfficial": "Tickets & opening hours · official website",
+    "officialSite": "Official website"
   },
   "planIntro": {
     "eyebrow": "Plan a trip",
@@ -642,7 +645,8 @@
     "stay": "Accommodation",
     "rhythm": "Daily rhythm",
     "coveredByMonthly": "This trip is included in your Monthly plan ({left} of {total} trips left this billing month).",
-    "periodUsedUp": "You've used the {total} trips in your plan for this billing month (more on {date}). You can buy a single extra trip — you won't be charged without confirming."
+    "periodUsedUp": "You've used the {total} trips in your plan for this billing month (more on {date}). You can buy a single extra trip — you won't be charged without confirming.",
+    "coveredByAdmin": "Admin account: unlimited trips for testing. This trip isn't counted."
   },
   "trips": {
     "title": "My Trips",
@@ -684,7 +688,8 @@
       "monthly": "Monthly",
       "trip_pack": "Additional trip",
       "free": "Free"
-    }
+    },
+    "adminUnlimited": "Admin · unlimited trips"
   },
   "itinerary": {
     "backToTrips": "My Trips",
@@ -793,7 +798,9 @@
       "to_flight": "To the airport",
       "to_car": "To the car",
       "from": "Into {place}"
-    }
+    },
+    "ticketsOfficial": "Tickets & opening hours · official website",
+    "officialSite": "Official website"
   },
   "map": {
     "label": "Itinerary map",
@@ -1321,7 +1328,9 @@
     "postUpdated": "Your changes are saved.",
     "commentAdded": "Comment posted.",
     "commentPending": "Thanks — your comment will appear after review.",
-    "notAllowed": "This action isn't available."
+    "notAllowed": "This action isn't available.",
+    "emailUnavailable": "We couldn't send the email right now: email sending isn't set up on this site yet. Please try again later or contact us.",
+    "verifyManual": "Email verification isn't available on this site yet. Write to us and we'll verify your account by hand."
   },
   "email": {
     "footer": "You received this email because of activity on your Triplan account.",
@@ -1579,7 +1588,13 @@
       "budget": "Budget",
       "mid": "Mid-range",
       "premium": "Premium"
-    }
+    },
+    "emailVerified": "Email verified",
+    "emailNotVerified": "Not verified",
+    "markVerified": "Mark email as verified",
+    "confirmMarkVerified": "Mark {email} as verified? Only do this if you know the address belongs to this person.",
+    "emailOffUsers": "Email sending isn't set up yet (Resend), so members don't receive verification or password-reset emails. You can mark accounts as verified here meanwhile.",
+    "emailOffDashboard": "Email sending isn't set up yet: verification and password-reset emails aren't delivered. Connect Resend (see docs/DEPLOYMENT.md). Meanwhile you can mark members as verified in Users."
   },
   "media": {
     "photoBy": "Photo:",

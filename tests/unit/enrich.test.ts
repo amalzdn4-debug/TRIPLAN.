@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { cleanExtract, shortSummary, fetchArticle } from "@/lib/enrich/wikipedia";
 import { isAcceptedLicense, looksLikePhoto, stripHtml, fetchLicensedImages, fileFromCommonsUrl, wikimediaThumb } from "@/lib/enrich/commons";
-import { parsePoint, rowsToPlaces } from "@/lib/enrich/wikidata";
+import { cleanWebsite, parsePoint, rowsToPlaces, TICKETED_TYPES } from "@/lib/enrich/wikidata";
 import { setFetcher } from "@/lib/enrich/http";
 
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
@@ -57,6 +57,24 @@ describe("Wikidata parsing", () => {
     const places = rowsToPlaces({ results: { bindings: [b("Q1", "Q570116", "40"), b("Q1", "Q33506", "40"), b("Q2", "Q16970", "60", "Clérigos Church"), b("Q3", "Q16970", "5", "Q3")] } }, ["Q33506", "Q16970", "Q570116"]);
     expect(places.map((p) => p.qid)).toEqual(["Q2", "Q1"]); // sorted by sitelinks; label-less Q3 dropped
     expect(places[1].typeQid).toBe("Q33506");
+  });
+  it("keeps the official website (P856) only when it's a real web address", () => {
+    const row = (website?: string) => ({
+      item: { value: "http://www.wikidata.org/entity/Q9" }, label: { value: "Museo" }, coord: { value: "Point(9.19 45.46)" }, sitelinks: { value: "30" },
+      type: { value: "http://www.wikidata.org/entity/Q33506" }, ...(website ? { website: { value: website } } : {}),
+    });
+    expect(rowsToPlaces({ results: { bindings: [row(), row("https://museo.example/")] } }, ["Q33506"])[0].website).toBe("https://museo.example/");
+    expect(rowsToPlaces({ results: { bindings: [row()] } }, ["Q33506"])[0].website).toBeNull();
+    expect(cleanWebsite("http://museo.example/biglietti")).toBe("https://museo.example/biglietti");
+    expect(cleanWebsite("javascript:alert(1)")).toBeNull();
+    expect(cleanWebsite("ftp://x.example/")).toBeNull();
+    expect(cleanWebsite("not a url")).toBeNull();
+    expect(cleanWebsite("https://x.example/" + "a".repeat(400))).toBeNull();
+  });
+  it("marks museums, theatres and similar as needing tickets", () => {
+    expect(TICKETED_TYPES.has("Q33506")).toBe(true); // museum
+    expect(TICKETED_TYPES.has("Q24354")).toBe(true); // theatre building
+    expect(TICKETED_TYPES.has("Q16970")).toBe(false); // church
   });
 });
 

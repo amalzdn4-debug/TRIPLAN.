@@ -10,7 +10,8 @@
     "saved": "已保存",
     "partner": "合作伙伴",
     "partnerDisclosure": "标有“合作伙伴”的链接为联盟链接：若您通过它们预订，TRIPLAN 可能获得佣金，您无需额外付费。合作伙伴无法付费更改您的行程或我们的推荐。",
-    "loading": "加载中…"
+    "loading": "加载中…",
+    "contactUs": "联系我们"
   },
   "nav": {
     "home": "首页",
@@ -381,7 +382,9 @@
       "airport": "机场",
       "rail": "火车站",
       "bus": "汽车站"
-    }
+    },
+    "ticketsOfficial": "门票和开放时间 · 官方网站",
+    "officialSite": "官方网站"
   },
   "planIntro": {
     "eyebrow": "规划",
@@ -642,7 +645,8 @@
     "stay": "住宿",
     "rhythm": "节奏",
     "coveredByMonthly": "此行程包含在您的包月套餐中（本计费月还剩 {left}/{total} 次）。",
-    "periodUsedUp": "您本计费月已用完套餐的 {total} 次行程（{date} 起恢复）。可以单独购买一次行程——未经您确认不会扣费。"
+    "periodUsedUp": "您本计费月已用完套餐的 {total} 次行程（{date} 起恢复）。可以单独购买一次行程——未经您确认不会扣费。",
+    "coveredByAdmin": "管理员账户：可无限创建测试行程，此行程不计入额度。"
   },
   "trips": {
     "title": "我的旅行",
@@ -684,7 +688,8 @@
       "monthly": "包月",
       "trip_pack": "单次行程",
       "free": "免费"
-    }
+    },
+    "adminUnlimited": "管理员 · 不限行程"
   },
   "itinerary": {
     "backToTrips": "我的旅行",
@@ -793,7 +798,9 @@
       "to_flight": "前往机场",
       "to_car": "前往车辆",
       "from": "前往{place}市中心"
-    }
+    },
+    "ticketsOfficial": "门票和开放时间 · 官方网站",
+    "officialSite": "官方网站"
   },
   "map": {
     "label": "行程地图",
@@ -1321,7 +1328,9 @@
     "postUpdated": "您的更改已保存。",
     "commentAdded": "评论已发表。",
     "commentPending": "谢谢！您的评论将在审核后显示。",
-    "notAllowed": "无法执行此操作。"
+    "notAllowed": "无法执行此操作。",
+    "emailUnavailable": "暂时无法发送邮件：本网站尚未设置邮件发送服务。请稍后再试或联系我们。",
+    "verifyManual": "本网站暂不支持邮件验证。请联系我们，我们会手动验证你的账户。"
   },
   "email": {
     "footer": "您收到此邮件是因为您的 Triplan 账户有相关操作。",
@@ -1691,6 +1700,12 @@
       "budget": "经济",
       "mid": "中档",
       "premium": "高端"
-    }
+    },
+    "emailVerified": "邮箱已验证",
+    "emailNotVerified": "未验证",
+    "markVerified": "标记邮箱为已验证",
+    "confirmMarkVerified": "将 {email} 标记为已验证？请仅在确认该地址属于此人时操作。",
+    "emailOffUsers": "尚未设置邮件发送（Resend），会员收不到验证邮件和重置密码邮件。在此期间，你可以在这里将账户标记为已验证。",
+    "emailOffDashboard": "尚未设置邮件发送：验证邮件和重置密码邮件无法送达。请连接 Resend（见 docs/DEPLOYMENT.md）。在此期间，可在“用户”中将会员标记为已验证。"
   }
 }

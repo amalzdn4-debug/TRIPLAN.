@@ -3,7 +3,15 @@ import { and, desc, eq, gt, inArray, or, isNull } from "drizzle-orm";
 import { getDb, schema } from "@/db";
 import { FREE_TRIPS_INCLUDED } from "@/config/site";
 
-export type Entitlement = "subscription" | "free" | "credit";
+/** "admin": the site owner, who can create unlimited trips for testing (never counted as usage). */
+export type Entitlement = "subscription" | "free" | "credit" | "admin";
+
+/** Admins (accounts listed in ADMIN_EMAILS or promoted in /admin/users) have unlimited trips. */
+export async function isAdminUser(userId: string): Promise<boolean> {
+  const db = await getDb();
+  const [u] = await db.select({ role: schema.users.role, status: schema.users.status }).from(schema.users).where(eq(schema.users.id, userId));
+  return u?.role === "admin" && u.status === "active";
+}
 
 const ACTIVE = ["active", "trialing"];
 
@@ -62,6 +70,7 @@ const hasTripsLeft = (s: SubscriptionView) => s.tripsIncluded == null || s.trips
 
 /** What would pay for the next new trip, without consuming anything. Server-side source of truth. */
 export async function nextTripEntitlement(userId: string): Promise<Entitlement | null> {
+  if (await isAdminUser(userId)) return "admin";
   if ((await getActiveSubscriptions(userId)).some(hasTripsLeft)) return "subscription";
   const db = await getDb();
   const [u] = await db.select({ total: schema.users.tripsCreatedTotal, credits: schema.users.tripCredits }).from(schema.users).where(eq(schema.users.id, userId));
@@ -76,13 +85,16 @@ export async function getUsage(userId: string) {
   const [u] = await db.select({ total: schema.users.tripsCreatedTotal, credits: schema.users.tripCredits }).from(schema.users).where(eq(schema.users.id, userId));
   const subs = await getActiveSubscriptions(userId);
   const sub = subs[0] ?? null;
+  const admin = await isAdminUser(userId);
   return {
+    /** Unlimited trips for testing (site admins only). */
+    admin,
     tripsCreated: u?.total ?? 0,
     freeRemaining: Math.max(0, FREE_TRIPS_INCLUDED - (u?.total ?? 0)),
     credits: u?.credits ?? 0,
     /** The best active subscription (may have no trips left this period). */
     subscription: sub,
     /** Trips left in the current billing period across subscriptions (null = unlimited). */
-    subscriptionTripsLeft: subs.some((s) => s.tripsIncluded == null) ? null : subs.reduce((n, s) => n + Math.max(0, (s.tripsIncluded ?? 0) - s.tripsUsedInPeriod), 0),
+    subscriptionTripsLeft: admin || subs.some((s) => s.tripsIncluded == null) ? null : subs.reduce((n, s) => n + Math.max(0, (s.tripsIncluded ?? 0) - s.tripsUsedInPeriod), 0),
   };
 }

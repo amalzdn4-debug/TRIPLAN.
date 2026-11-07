@@ -38,7 +38,7 @@ type Cmd =
   | { type: "place"; id: string; command: "verify" | "unverify" | "delete" }
   | { type: "post"; id: string; command: "published" | "hidden" | "removed" }
   | { type: "review"; id: string; command: "published" | "hidden" }
-  | { type: "user"; id: string; command: "make_admin" | "make_user" | "suspend" | "activate" }
+  | { type: "user"; id: string; command: "make_admin" | "make_user" | "suspend" | "activate" | "verify_email" }
   | { type: "contact"; id: string; command: "handled" }
   | { type: "enrich"; id: string; command: "reimport" }
   | { type: "comment"; id: string; command: "published" | "hidden" | "removed" }

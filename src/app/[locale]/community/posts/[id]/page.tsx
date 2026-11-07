@@ -7,6 +7,7 @@ import { PostCard } from "@/components/community/PostCard";
 import { Comments } from "@/components/community/Comments";
 import { Notice } from "@/components/ui/Form";
 import { Icon } from "@/components/ui/Icon";
+import { features } from "@/lib/env";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; id: string }> }) {
   const { id, locale } = await params;
@@ -39,7 +40,7 @@ export default async function PostPage({ params }: { params: Promise<{ locale: s
         </Link>
         <Notice>{t("opinionNotice")}</Notice>
         <PostCard post={post} signedIn={!!user} full />
-        <Comments postId={post.id} comments={comments} signedIn={!!user} verified={!!user?.emailVerified} canComment={post.status === "published"} />
+        <Comments postId={post.id} comments={comments} signedIn={!!user} verified={!!user?.emailVerified} emailAvailable={features.emailDelivery()} canComment={post.status === "published"} />
       </div>
     </section>
   );

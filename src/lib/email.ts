@@ -11,19 +11,34 @@ interface Mail {
   text: string;
 }
 
-async function send(mail: Mail): Promise<void> {
+/** Sends an email. Returns true only when the email service accepted it (or, in local development, printed it) — callers never claim more. */
+async function send(mail: Mail): Promise<boolean> {
   if (!features.email()) {
     // Development fallback: print instead of sending. Never silently claims success in production.
     console.info(`\n[email:dev] To: ${mail.to}\nSubject: ${mail.subject}\n${mail.text}\n`);
-    if (process.env.NODE_ENV === "production") console.warn("[email] RESEND_API_KEY not configured — email not delivered.");
-    return;
+    if (process.env.NODE_ENV === "production") {
+      console.warn("[email] RESEND_API_KEY not configured — email not delivered.");
+      return false;
+    }
+    return true; // local development: the printed message is the delivery
+
   }
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: process.env.EMAIL_FROM, to: mail.to, subject: mail.subject, html: mail.html, text: mail.text }),
-  });
-  if (!res.ok) console.error("[email] send failed", res.status, await res.text().catch(() => ""));
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ from: process.env.EMAIL_FROM, to: mail.to, subject: mail.subject, html: mail.html, text: mail.text }),
+      signal: AbortSignal.timeout(10_000),
+    });
+    if (!res.ok) {
+      console.error("[email] send failed", res.status, await res.text().catch(() => ""));
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error("[email] send failed", err);
+    return false;
+  }
 }
 
 function escapeHtml(s: string) {
@@ -48,10 +63,10 @@ function layout(locale: string, heading: string, body: string, cta?: { label: st
   </div></body></html>`;
 }
 
-export async function sendVerificationEmail(to: string, token: string, locale: string) {
+export async function sendVerificationEmail(to: string, token: string, locale: string): Promise<boolean> {
   const t = await getTranslations({ locale, namespace: "email" });
   const url = `${siteUrl()}/${locale}/verify-email?token=${encodeURIComponent(token)}`;
-  await send({
+  return send({
     to,
     subject: t("verify.subject"),
     html: layout(locale, t("verify.heading"), t("verify.body"), { label: t("verify.cta"), url }, t("footer")),
@@ -59,10 +74,10 @@ export async function sendVerificationEmail(to: string, token: string, locale: s
   });
 }
 
-export async function sendPasswordResetEmail(to: string, token: string, locale: string) {
+export async function sendPasswordResetEmail(to: string, token: string, locale: string): Promise<boolean> {
   const t = await getTranslations({ locale, namespace: "email" });
   const url = `${siteUrl()}/${locale}/reset-password?token=${encodeURIComponent(token)}`;
-  await send({
+  return send({
     to,
     subject: t("reset.subject"),
     html: layout(locale, t("reset.heading"), t("reset.body"), { label: t("reset.cta"), url }, t("footer")),
@@ -72,8 +87,8 @@ export async function sendPasswordResetEmail(to: string, token: string, locale: 
 
 export async function sendContactNotification(fields: { name: string; email: string; topic: string; message: string }) {
   const inbox = process.env.CONTACT_INBOX;
-  if (!inbox) return;
-  await send({
+  if (!inbox) return false;
+  return send({
     to: inbox,
     subject: `[Triplan contact] ${fields.topic} — ${fields.name}`,
     html: `<pre style="font-family:inherit;white-space:pre-wrap">${escapeHtml(`${fields.name} <${fields.email}>\n\n${fields.message}`)}</pre>`,

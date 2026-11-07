@@ -5,6 +5,8 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { CommandButton } from "@/components/admin/AdminForms";
 import { formatDate } from "@/lib/format";
+import { features } from "@/lib/env";
+import { Notice } from "@/components/ui/Form";
 
 export default async function AdminUsers({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ q?: string }> }) {
   const { locale } = await params;
@@ -20,6 +22,7 @@ export default async function AdminUsers({ params, searchParams }: { params: Pro
   const users = await (q ? base.where(ilike(schema.users.email, `%${q.replace(/[%_]/g, "")}%`)) : base).orderBy(desc(schema.users.createdAt)).limit(200);
   return (
     <AdminShell current="/admin/users" title={t("sections.users")}>
+      {!features.email() ? <Notice tone="warning">{t("emailOffUsers")}</Notice> : null}
       <form method="get" className="cluster">
         <label className="visually-hidden" htmlFor="uq">{t("search")}</label>
         <input id="uq" name="q" className="input" defaultValue={q ?? ""} placeholder={t("searchEmail")} style={{ maxInlineSize: 320 }} />
@@ -28,7 +31,11 @@ export default async function AdminUsers({ params, searchParams }: { params: Pro
       <div className="table-wrap"><table className="table"><thead><tr><th>{t("user")}</th><th>{t("role")}</th><th>{t("trips")}</th><th>{t("joined")}</th><th>{t("actions")}</th></tr></thead><tbody>
         {users.map((u) => (
           <tr key={u.id}>
-            <td><strong>{u.name}</strong><br /><span className="small ltr">{u.email}</span> {u.verified ? "✓" : ""}</td>
+            <td>
+              <strong>{u.name}</strong><br /><span className="small ltr">{u.email}</span>{" "}
+              {u.verified ? <span className="badge badge--blue">{t("emailVerified")}</span> : <span className="badge badge--outline">{t("emailNotVerified")}</span>}
+              {!u.verified ? <div style={{ marginBlockStart: 6 }}><CommandButton cmd={{ type: "user", id: u.id, command: "verify_email" }} label={t("markVerified")} confirmText={t("confirmMarkVerified", { email: u.email })} /></div> : null}
+            </td>
             <td><span className="badge">{t(`roles.${u.role}`)}</span> {u.status === "suspended" ? <span className="badge badge--alert">{t("suspended")}</span> : null}</td>
             <td>{u.trips}</td>
             <td>{formatDate(u.createdAt.toISOString(), locale)}</td>

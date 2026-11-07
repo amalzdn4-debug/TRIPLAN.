@@ -9,7 +9,7 @@
 import type { SqlClient } from "@/db/raw";
 import { fetchArticle, SITE_LANGS, cityNameFromTitle } from "./wikipedia";
 import { fetchLicensedImages, type LicensedImage } from "./commons";
-import { ATTRACTION_TYPES, fetchAttractions, fetchHubs, type WikidataPlace } from "./wikidata";
+import { ATTRACTION_TYPES, fetchAttractions, fetchHubs, type WikidataPlace, TICKETED_TYPES } from "./wikidata";
 import { haversineMeters } from "@/lib/geo";
 
 export interface EnrichOptions {
@@ -125,7 +125,7 @@ export async function enrichDestination(db: SqlClient, d: DestRow, log: (m: stri
   );
   const upsert = async (p: WikidataPlace, kind: "attraction" | "transport_hub", extra: Record<string, unknown>, minutes: number | null, tags: string[]) => {
     const img = p.imageFile ? licensed.get(p.imageFile) : undefined;
-    const details = JSON.stringify({ names: p.names, wikidataType: p.typeQid, ...extra });
+    const details = JSON.stringify({ names: p.names, wikidataType: p.typeQid, ...(TICKETED_TYPES.has(p.typeQid) ? { ticketed: true } : {}), ...extra });
     // Same place = same Wikidata item, a similar name within 400 m, or anything of the same kind within 150 m
     // (catches places an editor has renamed).
     const same =
@@ -136,17 +136,17 @@ export async function enrichDestination(db: SqlClient, d: DestRow, log: (m: stri
       if (same.verification === "verified") return; // editor-checked places are never changed automatically
       await db.query(
         `UPDATE places SET wikidata_id = $2, popularity = $3, image_url = COALESCE(image_url, $4), image_credit = COALESCE(image_credit, $5), image_license = COALESCE(image_license, $6),
-           details = details || $7::jsonb, updated_at = now() WHERE id = $1`,
-        [same.id, p.qid, p.sitelinks, img?.url ?? null, img?.author ?? null, img?.license ?? null, details],
+           details = details || $7::jsonb, website_url = COALESCE(website_url, $8), updated_at = now() WHERE id = $1`,
+        [same.id, p.qid, p.sitelinks, img?.url ?? null, img?.author ?? null, img?.license ?? null, details, p.website],
       );
       same.wikidata_id = p.qid;
       return;
     }
     await db.query(
-      `INSERT INTO places (destination_id, kind, name, lat, lng, tags, duration_min, verification, source, wikidata_id, image_url, image_credit, image_license, popularity, details)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,'sample','wikidata',$8,$9,$10,$11,$12,$13::jsonb)
+      `INSERT INTO places (destination_id, kind, name, lat, lng, tags, duration_min, verification, source, wikidata_id, image_url, image_credit, image_license, popularity, details, website_url)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,'sample','wikidata',$8,$9,$10,$11,$12,$13::jsonb,$14)
        ON CONFLICT (destination_id, wikidata_id) WHERE wikidata_id IS NOT NULL DO NOTHING`,
-      [d.id, kind, p.name, p.lat, p.lng, tags, minutes, p.qid, img?.url ?? null, img?.author ?? null, img?.license ?? null, p.sitelinks, details],
+      [d.id, kind, p.name, p.lat, p.lng, tags, minutes, p.qid, img?.url ?? null, img?.author ?? null, img?.license ?? null, p.sitelinks, details, p.website],
     );
     places.push({ id: "", name: p.name, lat: p.lat, lng: p.lng, wikidata_id: p.qid, verification: "sample", kind });
   };

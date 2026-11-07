@@ -6,6 +6,8 @@ export const features = {
   stripe: () => Boolean(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET),
   googleAuth: () => Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
   email: () => Boolean(process.env.RESEND_API_KEY),
+  /** Emails reach someone: a real provider, or (local development only) the printed dev log. */
+  emailDelivery: () => Boolean(process.env.RESEND_API_KEY) || process.env.NODE_ENV !== "production",
   googleRoutes: () => Boolean(process.env.GOOGLE_MAPS_API_KEY),
   /** Photo uploads (Vercel Blob). Set automatically when a Blob store is connected to the project. */
   uploads: () => Boolean(process.env.BLOB_READ_WRITE_TOKEN),

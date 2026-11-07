@@ -8,6 +8,7 @@ export async function EntitlementBanner({ userId }: { userId: string }) {
   const t = await getTranslations("planner");
   const format = await getFormatter();
   const u = await getUsage(userId);
+  if (u.admin) return <Notice tone="success">{t("coveredByAdmin")}</Notice>;
   const sub = u.subscription;
   if (sub && (sub.tripsIncluded == null || sub.tripsUsedInPeriod < sub.tripsIncluded)) {
     return (

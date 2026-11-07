@@ -129,6 +129,20 @@ Add each variable in **Vercel → Settings → Environment Variables** (Producti
 | Affiliate commissions | Acceptance into each programme (Booking.com, GetYourGuide, Viator…) | None. Managed in **/admin/affiliates** (see below). The old `*_AFFILIATE_ID` variables are no longer used; delete them if you added any. |
 | Footer social links | Real accounts only | `NEXT_PUBLIC_SOCIAL_INSTAGRAM`, `…_YOUTUBE`, `…_LINKEDIN`, `…_X` |
 
+### Emails with Resend (verification, password reset, contact form)
+
+Until this is set up the site says so honestly: members see "email verification isn't available yet, write to us", and the admin dashboard and **/admin/users** show a warning. Meanwhile you can verify people by hand with **Mark email as verified** in /admin/users (also for your own account).
+
+1. You need your own domain first. Resend's test sender (`onboarding@resend.dev`) only delivers to the email address of your Resend account, so it can't serve real members.
+2. Create an account at resend.com → **Domains → Add domain**. Enter your domain (or a subdomain such as `mail.yourdomain.com`).
+3. Resend shows some DNS records (TXT and MX). Add them at the company where you bought the domain, exactly as shown, then click **Verify** in Resend. This can take from minutes to a few hours.
+4. Resend → **API Keys → Create API key**, permission **Sending access**, restricted to your domain. Copy it straight away (it's shown once). Never paste it into code or GitHub.
+5. Vercel → Settings → Environments → **Production** → add:
+   - `RESEND_API_KEY` = the key (mark it **Sensitive**)
+   - `EMAIL_FROM` = `TRIPLAN <no-reply@yourdomain.com>` — the domain must be exactly the one you verified
+   - `CONTACT_INBOX` = an address you actually read (contact-form messages go there)
+6. **Redeploy**. The warning disappears from /admin. Test it: sign up with a second email address of yours, or use "Forgot password", and check the inbox (and spam folder).
+
 ### Member photo uploads (Vercel Blob)
 1. Vercel → your project → **Storage → Create Database → Blob** → name it `triplan-photos` → **Create**.
 2. **Connect** it to the `triplan` project for **Production** (and **Preview** if you use previews). Vercel adds `BLOB_READ_WRITE_TOKEN` automatically. It's a server-only secret that is never sent to browsers.

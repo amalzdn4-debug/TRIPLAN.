@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath, revalidateTag } from "next/cache";
-import { and, asc, eq, sql } from "drizzle-orm";
+import { and, asc, eq, sql, isNull } from "drizzle-orm";
 import { z } from "zod";
 import { getDb, schema } from "@/db";
 import { getCurrentUser } from "@/lib/auth/session";
@@ -258,8 +258,15 @@ export async function moderateReviewAction(reviewId: string, status: "published"
 
 /* ───────────── Users ───────────── */
 
-export async function userCommandAction(userId: string, command: "make_admin" | "make_user" | "suspend" | "activate") {
+export async function userCommandAction(userId: string, command: "make_admin" | "make_user" | "suspend" | "activate" | "verify_email") {
   const me = await admin();
+  if (command === "verify_email") {
+    // Manual verification while email sending isn't set up (also allowed for your own account).
+    const db = await getDb();
+    await db.update(schema.users).set({ emailVerifiedAt: new Date() }).where(and(eq(schema.users.id, userId), isNull(schema.users.emailVerifiedAt)));
+    revalidatePath("/[locale]/admin/users", "page");
+    return;
+  }
   if (userId === me.id) return; // admins can't demote or suspend themselves
   const db = await getDb();
   if (command === "make_admin" || command === "make_user") await db.update(schema.users).set({ role: command === "make_admin" ? "admin" : "user" }).where(eq(schema.users.id, userId));

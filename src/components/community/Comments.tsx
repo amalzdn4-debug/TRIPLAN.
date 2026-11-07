@@ -10,8 +10,9 @@ import type { CommentView } from "@/lib/community";
 import type { ActionState } from "@/lib/validation";
 import { Avatar } from "./PostCard";
 import { ReportForm } from "./ReportForm";
+import { ResendVerification } from "@/components/account/ResendVerification";
 
-export function Comments({ postId, comments, signedIn, canComment, verified }: { postId: string; comments: CommentView[]; signedIn: boolean; canComment: boolean; verified: boolean }) {
+export function Comments({ postId, comments, signedIn, canComment, verified, emailAvailable = true }: { postId: string; comments: CommentView[]; signedIn: boolean; canComment: boolean; verified: boolean; emailAvailable?: boolean }) {
   const t = useTranslations("community");
   const [state, action] = useActionState(addCommentAction.bind(null, postId), { ok: false } as ActionState);
   const err = useFieldError(state);
@@ -30,7 +31,7 @@ export function Comments({ postId, comments, signedIn, canComment, verified }: {
           <Link href={{ pathname: "/login", query: { next: `/community/posts/${postId}` } }}>{t("signInToComment")}</Link>
         </p>
       ) : !verified ? (
-        <p className="small muted">{t("verifyToComment")}</p>
+        <p className="small muted">{t("verifyToComment")} <ResendVerification available={emailAvailable} /></p>
       ) : canComment ? (
         <form action={action} className="form" key={state.ok ? `ok-${comments.length}` : "form"}>
           <FormMessage state={state} />

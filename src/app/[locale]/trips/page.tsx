@@ -8,6 +8,7 @@ import { Icon } from "@/components/ui/Icon";
 import { Notice } from "@/components/ui/Form";
 import { AccountNav } from "@/components/account/AccountNav";
 import { pageMetadata } from "@/lib/seo";
+import { features } from "@/lib/env";
 import { ResendVerification } from "@/components/account/ResendVerification";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -48,11 +49,13 @@ export default async function TripsPage({ params, searchParams }: { params: Prom
           </div>
           {!user.emailVerified ? (
             <Notice tone="warning">
-              {t("verifyEmail")} <ResendVerification />
+              {t("verifyEmail")} <ResendVerification available={features.emailDelivery()} />
             </Notice>
           ) : null}
           <div className="cluster small muted">
-            {usage.subscription ? (
+            {usage.admin ? (
+              <span className="badge badge--navy">{t("adminUnlimited")}</span>
+            ) : usage.subscription ? (
               <>
                 <span className="badge badge--navy">{t("planActive", { plan: t(`planNames.${usage.subscription.planId}`) })}</span>
                 {usage.subscription.tripsIncluded != null ? <span className="badge">{t("periodLeft", { n: Math.max(0, usage.subscription.tripsIncluded - usage.subscription.tripsUsedInPeriod) })}</span> : null}

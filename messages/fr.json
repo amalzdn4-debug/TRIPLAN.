@@ -10,7 +10,8 @@
     "saved": "Enregistré",
     "partner": "Partenaire",
     "partnerDisclosure": "Les liens marqués « Partenaire » sont des liens affiliés : si vous réservez par leur intermédiaire, TRIPLAN peut percevoir une commission, sans surcoût pour vous. Les partenaires ne peuvent pas payer pour modifier votre itinéraire ou nos recommandations.",
-    "loading": "Chargement…"
+    "loading": "Chargement…",
+    "contactUs": "Contactez-nous"
   },
   "nav": {
     "home": "Accueil",
@@ -381,7 +382,9 @@
       "airport": "Aéroport",
       "rail": "Gare ferroviaire",
       "bus": "Gare routière"
-    }
+    },
+    "ticketsOfficial": "Billets et horaires · site officiel",
+    "officialSite": "Site officiel"
   },
   "planIntro": {
     "eyebrow": "Planifier un voyage",
@@ -642,7 +645,8 @@
     "stay": "Hébergement",
     "rhythm": "Rythme quotidien",
     "coveredByMonthly": "Ce voyage est inclus dans votre formule mensuelle (il reste {left} voyage(s) sur {total} ce mois de facturation).",
-    "periodUsedUp": "Vous avez utilisé les {total} voyages de votre formule ce mois de facturation (de nouveaux le {date}). Vous pouvez acheter un voyage supplémentaire — rien n'est débité sans votre confirmation."
+    "periodUsedUp": "Vous avez utilisé les {total} voyages de votre formule ce mois de facturation (de nouveaux le {date}). Vous pouvez acheter un voyage supplémentaire — rien n'est débité sans votre confirmation.",
+    "coveredByAdmin": "Compte administrateur : voyages illimités pour les tests. Ce voyage n'est pas décompté."
   },
   "trips": {
     "title": "Mes voyages",
@@ -684,7 +688,8 @@
       "monthly": "Mensuel",
       "trip_pack": "Voyage supplémentaire",
       "free": "Gratuit"
-    }
+    },
+    "adminUnlimited": "Admin · voyages illimités"
   },
   "itinerary": {
     "backToTrips": "Mes voyages",
@@ -793,7 +798,9 @@
       "to_flight": "Vers l'aéroport",
       "to_car": "Vers la voiture",
       "from": "Vers le centre de {place}"
-    }
+    },
+    "ticketsOfficial": "Billets et horaires · site officiel",
+    "officialSite": "Site officiel"
   },
   "map": {
     "label": "Carte de l'itinéraire",
@@ -1321,7 +1328,9 @@
     "postUpdated": "Vos modifications sont enregistrées.",
     "commentAdded": "Commentaire publié.",
     "commentPending": "Merci — votre commentaire apparaîtra après vérification.",
-    "notAllowed": "Cette action n'est pas disponible."
+    "notAllowed": "Cette action n'est pas disponible.",
+    "emailUnavailable": "Impossible d'envoyer l'e-mail pour le moment : l'envoi d'e-mails n'est pas encore configuré sur ce site. Réessayez plus tard ou contactez-nous.",
+    "verifyManual": "La vérification par e-mail n'est pas encore disponible sur ce site. Écrivez-nous et nous vérifierons votre compte manuellement."
   },
   "email": {
     "footer": "Vous recevez cet e-mail en raison d'une activité sur votre compte Triplan.",
@@ -1691,6 +1700,12 @@
       "budget": "Économique",
       "mid": "Intermédiaire",
       "premium": "Haut de gamme"
-    }
+    },
+    "emailVerified": "E-mail vérifié",
+    "emailNotVerified": "Non vérifié",
+    "markVerified": "Marquer l'e-mail comme vérifié",
+    "confirmMarkVerified": "Marquer {email} comme vérifié ? Faites-le seulement si vous savez que l'adresse appartient à cette personne.",
+    "emailOffUsers": "L'envoi d'e-mails n'est pas encore configuré (Resend) : les membres ne reçoivent ni e-mail de vérification ni e-mail de réinitialisation. En attendant, vous pouvez marquer les comptes comme vérifiés ici.",
+    "emailOffDashboard": "L'envoi d'e-mails n'est pas encore configuré : les e-mails de vérification et de réinitialisation ne sont pas envoyés. Connectez Resend (voir docs/DEPLOYMENT.md). En attendant, marquez les membres comme vérifiés dans Utilisateurs."
   }
 }

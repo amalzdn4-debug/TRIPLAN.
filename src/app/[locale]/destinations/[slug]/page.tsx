@@ -190,6 +190,11 @@ export default async function DestinationPage({ params }: { params: Promise<{ lo
                         ))}
                         <span className={`badge ${p.verification === "verified" ? "badge--blue" : "badge--outline"}`}>{p.verification === "verified" ? t("verified") : t("sample")}</span>
                         <a className="small" href={googleMapsPlaceUrl(p.name, city)} target="_blank" rel="noopener noreferrer">{t("openMap")}</a>
+                        {p.websiteUrl && /^https:\/\//.test(p.websiteUrl) ? (
+                          <a className="small" href={p.websiteUrl} target="_blank" rel="noopener noreferrer">
+                            {(p.details as { ticketed?: boolean } | null)?.ticketed || p.tags.includes("museums") ? t("ticketsOfficial") : t("officialSite")}
+                          </a>
+                        ) : null}
                         {p.imageUrl && p.imageCredit ? <span className="small muted">{t("photoBy")} {p.imageCredit}, {p.imageLicense}</span> : null}
                       </div>
                     </div>

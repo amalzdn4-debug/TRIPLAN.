@@ -2,7 +2,7 @@ import "server-only";
 import { and, asc, desc, eq, inArray, ne, sql, gt, lt } from "drizzle-orm";
 import { getDb, schema } from "@/db";
 import { MAX_TRIP_DAYS } from "@/config/site";
-import { getActiveSubscriptions, type Entitlement } from "@/lib/entitlements";
+import { getActiveSubscriptions, isAdminUser, type Entitlement } from "@/lib/entitlements";
 import { buildDay, buildItinerary, buildPlan, enumerateDates, scheduleDay, scorePlace, dayStartTime } from "@/lib/itinerary/engine";
 import { customOption, layoutDays, segmentsFor, suggestSplit, type SplitOption, type BaseInfo, type NearbyWithId, type SplitSuggestion, type TripSegment } from "@/lib/itinerary/split";
 import { getDestinationCards, getNearby } from "@/lib/destinations";
@@ -51,6 +51,10 @@ export interface StopView {
   travelSource: "provider" | "estimate" | null;
   /** Intercity journey details (typical time, not a timetable). */
   intercity: IntercityDetails | null;
+  /** The place's official website (from Wikidata or an editor), if known. Never invented. */
+  officialUrl: string | null;
+  /** Usually needs a ticket / has opening hours worth checking (museums, palaces, theatres…). */
+  ticketed: boolean;
 }
 
 export interface DayView {
@@ -117,6 +121,8 @@ function toStopView(s: typeof schema.itineraryStops.$inferSelect): StopView {
     travelMeters: s.travelMeters,
     travelSource: s.travelSource,
     intercity: s.details?.intercity ?? null,
+    officialUrl: null,
+    ticketed: false,
   };
 }
 
@@ -157,6 +163,24 @@ export async function getTrip(tripId: string, userId: string): Promise<TripView 
   if (!row) return null;
   const days = await db.select().from(schema.itineraryDays).where(eq(schema.itineraryDays.tripId, tripId)).orderBy(asc(schema.itineraryDays.dayIndex));
   const stops = await db.select().from(schema.itineraryStops).where(eq(schema.itineraryStops.tripId, tripId)).orderBy(asc(schema.itineraryStops.position));
+  // Official websites and "needs a ticket" hints come from the places themselves, so older trips get them too.
+  const placeIds = [...new Set(stops.map((s) => s.placeId).filter(Boolean) as string[])];
+  const placeInfo = new Map<string, { url: string | null; ticketed: boolean }>();
+  if (placeIds.length) {
+    const rows = await db
+      .select({ id: schema.places.id, url: schema.places.websiteUrl, tags: schema.places.tags, details: schema.places.details })
+      .from(schema.places)
+      .where(inArray(schema.places.id, placeIds));
+    for (const r of rows) {
+      const details = (r.details ?? {}) as { ticketed?: boolean };
+      placeInfo.set(r.id, { url: r.url && /^https:\/\//.test(r.url) ? r.url : null, ticketed: Boolean(details.ticketed) || r.tags.includes("museums") });
+    }
+  }
+  const view = (s: (typeof stops)[number]): StopView => {
+    const v = toStopView(s);
+    const info = s.placeId ? placeInfo.get(s.placeId) : undefined;
+    return info ? { ...v, officialUrl: info.url, ticketed: info.ticketed } : v;
+  };
   const t = row.t;
   return {
     id: t.id,
@@ -185,7 +209,7 @@ export async function getTrip(tripId: string, userId: string): Promise<TripView 
       notes: d.notes,
       destinationId: d.destinationId ?? t.destinationId,
       kind: d.kind,
-      stops: stops.filter((s) => s.dayId === d.id).map(toStopView),
+      stops: stops.filter((s) => s.dayId === d.id).map(view),
     })),
   };
 }
@@ -370,6 +394,8 @@ async function placesBySegment(segments: TripSegment[]): Promise<Record<string, 
  */
 async function claimEntitlement(userId: string): Promise<{ entitlement: Entitlement; subscriptionId: string | null }> {
   const db = await getDb();
+  // The site owner tests freely: admin trips are unlimited and don't touch any counter.
+  if (await isAdminUser(userId)) return { entitlement: "admin", subscriptionId: null };
   const bumpTotal = () => db.update(schema.users).set({ tripsCreatedTotal: sql`${schema.users.tripsCreatedTotal} + 1` }).where(eq(schema.users.id, userId));
   const subs = await getActiveSubscriptions(userId);
   for (const s of subs) {
@@ -523,7 +549,7 @@ async function loadDayStops(dayId: string, tripId: string) {
 }
 
 function rowToPlanned(s: typeof schema.itineraryStops.$inferSelect): PlannedStop {
-  const { intercity: _i, ...v } = toStopView(s);
+  const { intercity: _i, officialUrl: _o, ticketed: _t, ...v } = toStopView(s);
   return { ...v, id: s.id, details: s.details ?? null };
 }
 
@@ -851,7 +877,7 @@ export async function duplicateTrip(userId: string, tripId: string, copyLabel: s
       startTime: d.startTime,
       destinationId: d.destinationId === src.destinationId ? null : d.destinationId,
       kind: d.kind,
-      stops: d.stops.map(({ intercity, ...s }) => ({ ...s, id: undefined, details: intercity ? { intercity } : null })),
+      stops: d.stops.map(({ intercity, officialUrl: _o, ticketed: _t, ...s }) => ({ ...s, id: undefined, details: intercity ? { intercity } : null })),
     })),
   );
   return copy.id;

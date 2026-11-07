@@ -3348,3 +3348,18 @@ html[lang="zh"] .hero__tagline {
 .footer-logo {
   inline-size: auto;
 }
+
+/* Official website / tickets link on itinerary stops */
+.stop__official {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-block-start: 6px;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--tp-blue);
+}
+.stop__official svg {
+  inline-size: 14px;
+  block-size: 14px;
+}

@@ -75,6 +75,24 @@ export interface WikidataPlace {
   sitelinks: number;
   typeQid: string;
   imageFile: string | null;
+  /** Official website (Wikidata P856), https only. */
+  website: string | null;
+}
+
+/** Place types that usually need a ticket or have opening hours worth checking on the official site. */
+export const TICKETED_TYPES = new Set([
+  "Q33506", "Q207694", "Q16560", "Q23413", "Q751876", "Q839954", "Q24354", "Q153562", "Q43501", "Q2281788", "Q1440300", "Q167346", "Q57821", "Q1785071",
+]);
+
+/** Only plain https web addresses are kept (no scripts, no odd schemes, no very long URLs). */
+export function cleanWebsite(url: string | undefined | null): string | null {
+  if (!url || url.length > 300) return null;
+  try {
+    const u = new URL(url.trim());
+    return u.protocol === "https:" || u.protocol === "http:" ? u.toString().replace(/^http:/, "https:") : null;
+  } catch {
+    return null;
+  }
 }
 
 interface SparqlResponse {
@@ -94,7 +112,7 @@ async function sparql(query: string): Promise<SparqlResponse> {
 }
 
 function aroundQuery(lat: number, lng: number, radiusKm: number, types: string[], minSitelinks: number, limit: number): string {
-  return `SELECT ?item ?label ?coord ?image ?sitelinks ?type WHERE {
+  return `SELECT ?item ?label ?coord ?image ?website ?sitelinks ?type WHERE {
   SERVICE wikibase:around {
     ?item wdt:P625 ?coord .
     bd:serviceParam wikibase:center "Point(${lng} ${lat})"^^geo:wktLiteral .
@@ -105,6 +123,7 @@ function aroundQuery(lat: number, lng: number, radiusKm: number, types: string[]
   ?item wikibase:sitelinks ?sitelinks .
   FILTER(?sitelinks >= ${minSitelinks})
   OPTIONAL { ?item wdt:P18 ?image . }
+  OPTIONAL { ?item wdt:P856 ?website . }
   ?item rdfs:label ?label . FILTER(LANG(?label) = "en")
 }
 ORDER BY DESC(?sitelinks)
@@ -123,6 +142,7 @@ export function rowsToPlaces(res: SparqlResponse, typeOrder: string[]): Wikidata
     if (existing) {
       if (typeOrder.indexOf(typeQid) >= 0 && typeOrder.indexOf(typeQid) < typeOrder.indexOf(existing.typeQid)) existing.typeQid = typeQid;
       if (!existing.imageFile && b.image) existing.imageFile = fileFromCommonsUrl(b.image.value);
+      if (!existing.website && b.website) existing.website = cleanWebsite(b.website.value);
       continue;
     }
     byItem.set(qid, {
@@ -134,6 +154,7 @@ export function rowsToPlaces(res: SparqlResponse, typeOrder: string[]): Wikidata
       sitelinks: Number(b.sitelinks?.value ?? 0),
       typeQid,
       imageFile: b.image ? fileFromCommonsUrl(b.image.value) : null,
+      website: b.website ? cleanWebsite(b.website.value) : null,
     });
   }
   return [...byItem.values()].sort((a, b) => b.sitelinks - a.sitelinks);

@@ -6,6 +6,7 @@ import { getDb, schema } from "@/db";
 import { AccountNav } from "@/components/account/AccountNav";
 import { DeleteAccountForm, PasswordForm, PreferencesForm, ProfileForm } from "@/components/account/AccountForms";
 import { Notice } from "@/components/ui/Form";
+import { features } from "@/lib/env";
 import { ResendVerification } from "@/components/account/ResendVerification";
 import { Icon } from "@/components/ui/Icon";
 
@@ -34,7 +35,7 @@ export default async function AccountPage({ params }: { params: Promise<{ locale
             <p className="muted"><span className="ltr">{user.email}</span> · {user.emailVerified ? t("verified") : t("unverified")}</p>
             <p className="small" style={{ margin: 0 }}><Link href={`/community/members/${user.id}`}>{t("viewPublicProfile")}</Link> · <span className="muted">{t("publicProfileNote")}</span></p>
           </div>
-          {!user.emailVerified ? <Notice tone="warning">{t("verifyPrompt")} <ResendVerification /></Notice> : null}
+          {!user.emailVerified ? <Notice tone="warning">{t("verifyPrompt")} <ResendVerification available={features.emailDelivery()} /></Notice> : null}
           <ProfileForm profile={{ displayName: profile?.displayName ?? user.displayName, homeCity: profile?.homeCity ?? "", bio: profile?.bio ?? "" }} />
           <PreferencesForm prefs={{ locale: prefs?.locale ?? locale, currency: prefs?.currency ?? "EUR", units: prefs?.units ?? "metric", timeFormat: prefs?.timeFormat ?? "auto", marketingEmails: prefs?.marketingEmails ?? false }} />
           <PasswordForm hasPassword={Boolean(row?.hash)} />

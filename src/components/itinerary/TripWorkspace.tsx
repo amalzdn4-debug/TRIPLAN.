@@ -378,6 +378,12 @@ export function TripWorkspace({
                               {s.locked ? <span className="lock-on"><Icon name="lock" style={{ display: "inline", inlineSize: 12, verticalAlign: -1 }} /> {t("locked")}</span> : null}
                             </div>
                             {s.description ? <p className="stop__desc">{s.description}</p> : null}
+                            {s.officialUrl && s.officialUrl !== s.linkUrl ? (
+                              <a className="stop__official" href={s.officialUrl} target="_blank" rel="noopener noreferrer">
+                                <Icon name={s.ticketed ? "ticket" : "external"} className={s.ticketed ? undefined : "flip-rtl"} />
+                                {s.ticketed ? t("ticketsOfficial") : t("officialSite")}
+                              </a>
+                            ) : null}
                             {journey && selected !== s.id ? <JourneyDetails info={journey} linkUrl={s.linkUrl} /> : null}
                             {selected === s.id && journey ? <JourneyDetails info={journey} linkUrl={s.linkUrl} /> : null}
                             {selected === s.id && !journey ? (

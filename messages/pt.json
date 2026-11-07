@@ -10,7 +10,8 @@
     "saved": "Guardado",
     "partner": "Parceiro",
     "partnerDisclosure": "As ligações marcadas como «Parceiro» são ligações de afiliado: se reservar através delas, a TRIPLAN pode receber uma comissão sem custo extra para si. Os parceiros não podem pagar para alterar o seu itinerário ou as nossas recomendações.",
-    "loading": "A carregar…"
+    "loading": "A carregar…",
+    "contactUs": "Contacte-nos"
   },
   "nav": {
     "home": "Início",
@@ -381,7 +382,9 @@
       "airport": "Aeroporto",
       "rail": "Estação ferroviária",
       "bus": "Terminal rodoviário"
-    }
+    },
+    "ticketsOfficial": "Bilhetes e horários · site oficial",
+    "officialSite": "Site oficial"
   },
   "planIntro": {
     "eyebrow": "Planear viagem",
@@ -642,7 +645,8 @@
     "stay": "Alojamento",
     "rhythm": "Ritmo diário",
     "coveredByMonthly": "Esta viagem está incluída no seu plano Mensal (restam {left} de {total} viagens neste mês de faturação).",
-    "periodUsedUp": "Usou as {total} viagens do seu plano neste mês de faturação (mais a {date}). Pode comprar uma viagem extra — nada é cobrado sem a sua confirmação."
+    "periodUsedUp": "Usou as {total} viagens do seu plano neste mês de faturação (mais a {date}). Pode comprar uma viagem extra — nada é cobrado sem a sua confirmação.",
+    "coveredByAdmin": "Conta de administrador: viagens ilimitadas para testes. Esta viagem não é contabilizada."
   },
   "trips": {
     "title": "As minhas viagens",
@@ -684,7 +688,8 @@
       "monthly": "Mensal",
       "trip_pack": "Viagem adicional",
       "free": "Grátis"
-    }
+    },
+    "adminUnlimited": "Admin · viagens ilimitadas"
   },
   "itinerary": {
     "backToTrips": "As minhas viagens",
@@ -793,7 +798,9 @@
       "to_flight": "Até ao aeroporto",
       "to_car": "Até ao carro",
       "from": "Para o centro de {place}"
-    }
+    },
+    "ticketsOfficial": "Bilhetes e horários · site oficial",
+    "officialSite": "Site oficial"
   },
   "map": {
     "label": "Mapa do roteiro",
@@ -1321,7 +1328,9 @@
     "postUpdated": "As suas alterações foram guardadas.",
     "commentAdded": "Comentário publicado.",
     "commentPending": "Obrigado — o seu comentário aparecerá após revisão.",
-    "notAllowed": "Esta ação não está disponível."
+    "notAllowed": "Esta ação não está disponível.",
+    "emailUnavailable": "Não foi possível enviar o e-mail: o envio de e-mails ainda não está configurado neste site. Tente mais tarde ou contacte-nos.",
+    "verifyManual": "A verificação por e-mail ainda não está disponível neste site. Escreva-nos e verificaremos a sua conta manualmente."
   },
   "email": {
     "footer": "Recebeu este e-mail devido a atividade na sua conta Triplan.",
@@ -1691,6 +1700,12 @@
       "budget": "Económico",
       "mid": "Intermédio",
       "premium": "Premium"
-    }
+    },
+    "emailVerified": "E-mail verificado",
+    "emailNotVerified": "Não verificado",
+    "markVerified": "Marcar e-mail como verificado",
+    "confirmMarkVerified": "Marcar {email} como verificado? Faça-o apenas se souber que o endereço pertence a esta pessoa.",
+    "emailOffUsers": "O envio de e-mails ainda não está configurado (Resend), por isso os membros não recebem e-mails de verificação nem de reposição de palavra-passe. Entretanto, pode marcar contas como verificadas aqui.",
+    "emailOffDashboard": "O envio de e-mails ainda não está configurado: os e-mails de verificação e de reposição não são entregues. Ligue o Resend (ver docs/DEPLOYMENT.md). Entretanto, marque os membros como verificados em Utilizadores."
   }
 }

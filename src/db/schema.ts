@@ -286,7 +286,7 @@ export const trips = pgTable(
     currency: char("currency", { length: 3 }).notNull().default("EUR"),
     preferences: jsonb("preferences").$type<Record<string, unknown>>().notNull().default({}),
     generationSource: text("generation_source", { enum: ["rules", "ai"] }),
-    entitlement: text("entitlement", { enum: ["free", "credit", "subscription"] }).notNull().default("free"),
+    entitlement: text("entitlement", { enum: ["free", "credit", "subscription", "admin"] }).notNull().default("free"),
     /** The subscription that paid for this trip, if any (for per-period counting). */
     subscriptionId: uuid("subscription_id"),
     createdAt: createdAt(),

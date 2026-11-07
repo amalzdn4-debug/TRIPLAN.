@@ -6,6 +6,7 @@ import { AdminShell } from "@/components/admin/AdminShell";
 import { CommandButton } from "@/components/admin/AdminForms";
 import { features, stripeMode } from "@/lib/env";
 import { formatCents, formatDate } from "@/lib/format";
+import { Notice } from "@/components/ui/Form";
 
 export default async function AdminDashboard({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -46,6 +47,7 @@ export default async function AdminDashboard({ params }: { params: Promise<{ loc
   ];
   return (
     <AdminShell current="/admin" title={t("sections.dashboard")}>
+      {!features.email() ? <Notice tone="warning">{t("emailOffDashboard")}</Notice> : null}
       <div className="grid grid--4">
         {stats.map((s) => (
           <div key={s.label} className="card"><p className="small muted">{s.label}</p><p className="plan__price" style={{ fontSize: "var(--fs-2xl)" }}>{s.value}</p></div>

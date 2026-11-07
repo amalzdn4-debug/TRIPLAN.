@@ -10,7 +10,8 @@
     "saved": "Salvato",
     "partner": "Partner",
     "partnerDisclosure": "I link contrassegnati come «Partner» sono link di affiliazione: se prenoti tramite essi, TRIPLAN può ricevere una commissione senza costi aggiuntivi per te. I partner non possono pagare per modificare il tuo itinerario o i nostri consigli.",
-    "loading": "Caricamento…"
+    "loading": "Caricamento…",
+    "contactUs": "Contattaci"
   },
   "nav": {
     "home": "Home",
@@ -381,7 +382,9 @@
       "airport": "Aeroporto",
       "rail": "Stazione ferroviaria",
       "bus": "Stazione degli autobus"
-    }
+    },
+    "ticketsOfficial": "Biglietti e orari · sito ufficiale",
+    "officialSite": "Sito ufficiale"
   },
   "planIntro": {
     "eyebrow": "Pianifica un viaggio",
@@ -642,7 +645,8 @@
     "stay": "Alloggio",
     "rhythm": "Ritmo quotidiano",
     "coveredByMonthly": "Questo viaggio è incluso nel tuo piano Mensile (restano {left} viaggi su {total} in questo mese di fatturazione).",
-    "periodUsedUp": "Hai usato i {total} viaggi del tuo piano per questo mese di fatturazione (altri il {date}). Puoi acquistare un viaggio extra: nessun addebito senza la tua conferma."
+    "periodUsedUp": "Hai usato i {total} viaggi del tuo piano per questo mese di fatturazione (altri il {date}). Puoi acquistare un viaggio extra: nessun addebito senza la tua conferma.",
+    "coveredByAdmin": "Account amministratore: viaggi illimitati per i test. Questo viaggio non viene conteggiato."
   },
   "trips": {
     "title": "I miei viaggi",
@@ -684,7 +688,8 @@
       "monthly": "Mensile",
       "trip_pack": "Viaggio aggiuntivo",
       "free": "Gratuito"
-    }
+    },
+    "adminUnlimited": "Admin · viaggi illimitati"
   },
   "itinerary": {
     "backToTrips": "I miei viaggi",
@@ -793,7 +798,9 @@
       "to_flight": "All'aeroporto",
       "to_car": "All'auto",
       "from": "Verso il centro di {place}"
-    }
+    },
+    "ticketsOfficial": "Biglietti e orari · sito ufficiale",
+    "officialSite": "Sito ufficiale"
   },
   "map": {
     "label": "Mappa dell'itinerario",
@@ -1321,7 +1328,9 @@
     "postUpdated": "Le modifiche sono state salvate.",
     "commentAdded": "Commento pubblicato.",
     "commentPending": "Grazie, il tuo commento apparirà dopo la revisione.",
-    "notAllowed": "Questa azione non è disponibile."
+    "notAllowed": "Questa azione non è disponibile.",
+    "emailUnavailable": "Non è stato possibile inviare l'email: l'invio di email non è ancora configurato su questo sito. Riprova più tardi o contattaci.",
+    "verifyManual": "La verifica via email non è ancora disponibile su questo sito. Scrivici e verificheremo il tuo account manualmente."
   },
   "email": {
     "footer": "Ricevi questa email per un'attività sul tuo account Triplan.",
@@ -1691,6 +1700,12 @@
       "budget": "Economico",
       "mid": "Medio",
       "premium": "Premium"
-    }
+    },
+    "emailVerified": "Email verificata",
+    "emailNotVerified": "Non verificata",
+    "markVerified": "Segna email come verificata",
+    "confirmMarkVerified": "Segnare {email} come verificata? Fallo solo se sai che l'indirizzo appartiene a questa persona.",
+    "emailOffUsers": "L'invio di email non è ancora configurato (Resend), quindi i membri non ricevono le email di verifica o di reimpostazione password. Nel frattempo puoi segnare gli account come verificati qui.",
+    "emailOffDashboard": "L'invio di email non è ancora configurato: le email di verifica e di reimpostazione password non vengono recapitate. Collega Resend (vedi docs/DEPLOYMENT.md). Nel frattempo segna i membri come verificati in Utenti."
   }
 }

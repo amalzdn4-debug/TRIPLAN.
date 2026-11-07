@@ -9,6 +9,7 @@ import { createSession, destroySession, destroyAllSessions, getCurrentUser } fro
 import { issueToken, consumeToken } from "@/lib/auth/tokens";
 import { safeNext } from "@/lib/auth/guards";
 import { sendPasswordResetEmail, sendVerificationEmail } from "@/lib/email";
+import { features } from "@/lib/env";
 import { rateLimit } from "@/lib/rate-limit";
 import { flattenErrors, formToObject, forgotSchema, loginSchema, resetSchema, signupSchema, type ActionState } from "@/lib/validation";
 import { isLocale } from "@/config/locales";
@@ -86,6 +87,8 @@ export async function forgotPasswordAction(_prev: ActionState, fd: FormData): Pr
   if (!(await rateLimit("forgot", 5, 15 * 60_000))) return { ok: false, message: "rateLimited" };
   const db = await getDb();
   const [user] = await db.select({ id: schema.users.id, email: schema.users.email }).from(schema.users).where(sql`lower(${schema.users.email}) = ${parsed.data.email}`);
+  // If the site can't send email at all, say so honestly (this reveals nothing about any account).
+  if (!features.emailDelivery()) return { ok: false, message: "emailUnavailable" };
   if (user) {
     const token = await issueToken(user.id, "reset_password");
     await sendPasswordResetEmail(user.email, token, await getLocale());
@@ -113,8 +116,9 @@ export async function resendVerificationAction(): Promise<ActionState> {
   if (user.emailVerified) return { ok: true, message: "alreadyVerified" };
   if (!(await rateLimit("resend-verify", 3, 15 * 60_000, user.id))) return { ok: false, message: "rateLimited" };
   const token = await issueToken(user.id, "verify_email");
-  await sendVerificationEmail(user.email, token, await getLocale());
-  return { ok: true, message: "verificationSent" };
+  const sent = await sendVerificationEmail(user.email, token, await getLocale());
+  // Never say "sent" when nothing was delivered (e.g. the email service isn't connected yet).
+  return sent ? { ok: true, message: "verificationSent" } : { ok: false, message: "emailUnavailable" };
 }
 
 /** Called from the verify-email page (server component) with the token from the link. */
