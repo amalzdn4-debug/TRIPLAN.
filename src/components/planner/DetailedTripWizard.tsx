@@ -2,7 +2,8 @@
 
 import dynamic from "next/dynamic";
 import { useActionState, useEffect, useMemo, useRef, useState } from "react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useFormatter, useLocale, useTranslations } from "next-intl";
+import { formatDate } from "@/lib/format";
 import { createTripAction } from "@/actions/trips";
 import { Field, FormMessage, SubmitButton, useFieldError, Notice } from "@/components/ui/Form";
 import { Icon } from "@/components/ui/Icon";
@@ -10,6 +11,9 @@ import { INTERESTS, FOOD_PREFS, TRANSPORT_PREFS, BUDGET_CATEGORIES, TRAVEL_STYLE
 import { ChipGroup, ChoiceCards, Counter } from "./Inputs";
 import { useDraft } from "./useDraft";
 import { CURRENCIES, todayPlus, type PlannerDestination } from "./shared";
+import { DateInput, TimeInput } from "./TimeDate";
+import { TravelEndFields } from "./TravelEndFields";
+import { AddressSearch } from "@/components/map/AddressSearch";
 import type { ActionState } from "@/lib/validation";
 
 const LocationPicker = dynamic(() => import("@/components/map/LocationPicker").then((m) => m.LocationPicker), { ssr: false, loading: () => <div style={{ blockSize: 260, borderRadius: 12, background: "var(--tp-blue-100)" }} /> });
@@ -21,6 +25,8 @@ type Step = (typeof STEPS)[number];
 /** Which wizard step owns each server-side field (to jump back to errors). */
 const FIELD_STEP: Record<string, Step> = {
   destination: "basics", departureCity: "basics", startDate: "basics", endDate: "basics", departureTime: "basics", returnTime: "basics", adults: "basics", children: "basics",
+  arrivalMode: "basics", arrivalPlace: "basics", arrivalLat: "basics", arrivalLng: "basics", departureMode: "basics", departurePlace: "basics", departureLat: "basics", departureLng: "basics",
+  checkInTime: "stay", checkOutTime: "stay",
   budgetTotal: "budget", budgetPerPerson: "budget", currency: "budget", budgetAccommodation: "budget", budgetFood: "budget", budgetActivities: "budget", budgetTransport: "budget",
   accommodationName: "stay", accommodationAddress: "stay", accommodationLat: "stay", accommodationLng: "stay",
   dietaryNotes: "food",
@@ -28,6 +34,9 @@ const FIELD_STEP: Record<string, Step> = {
 
 export function DetailedTripWizard({ destinations, defaults, aiEnabled }: { destinations: (PlannerDestination & { lat: number; lng: number })[]; defaults: { destination?: string; currency: string }; aiEnabled: boolean }) {
   const t = useTranslations("planner");
+  const tte = useTranslations("travelEnd");
+  const tst = useTranslations("stay");
+  const locale = useLocale();
   const format = useFormatter();
   const [state, formAction] = useActionState(action, { ok: false } as ActionState);
   const err = useFieldError(state);
@@ -43,6 +52,16 @@ export function DetailedTripWizard({ destinations, defaults, aiEnabled }: { dest
     endDate: todayPlus(49),
     departureTime: "",
     returnTime: "",
+    arrivalMode: "plane" as "plane" | "train" | "bus" | "car" | "other",
+    arrivalPlace: "",
+    arrivalLat: "" as string | number,
+    arrivalLng: "" as string | number,
+    departureMode: "same" as "same" | "plane" | "train" | "bus" | "car" | "other",
+    departurePlace: "",
+    departureLat: "" as string | number,
+    departureLng: "" as string | number,
+    checkInTime: "",
+    checkOutTime: "",
     adults: 2,
     children: 0,
     companions: "couple" as "solo" | "couple" | "family" | "friends" | "business",
@@ -118,7 +137,9 @@ export function DetailedTripWizard({ destinations, defaults, aiEnabled }: { dest
 
   const summary: { label: string; value: string; step: Step }[] = [
     { label: t("destination"), value: dest ? `${dest.city}, ${dest.country}` : "—", step: "basics" },
-    { label: t("dates"), value: v.startDate && v.endDate ? `${format.dateTime(new Date(v.startDate + "T12:00:00Z"), { dateStyle: "medium" })} → ${format.dateTime(new Date(v.endDate + "T12:00:00Z"), { dateStyle: "medium" })} (${t("nights", { n: nights })})` : "—", step: "basics" },
+    { label: t("dates"), value: v.startDate && v.endDate ? `${formatDate(v.startDate, locale)} → ${formatDate(v.endDate, locale)} (${t("nights", { n: nights })})` : "—", step: "basics" },
+    { label: tte("arriving"), value: [tte(`modes.${v.arrivalMode}`), v.arrivalLat !== "" ? v.arrivalPlace : null, v.departureTime].filter(Boolean).join(" · "), step: "basics" },
+    { label: tte("leaving"), value: [v.departureMode === "same" ? tte(`modes.${v.arrivalMode}`) : tte(`modes.${v.departureMode}`), v.departureMode === "same" ? (v.arrivalLat !== "" ? v.arrivalPlace : null) : v.departureLat !== "" ? v.departurePlace : null, v.returnTime].filter(Boolean).join(" · "), step: "basics" },
     { label: t("travellers"), value: `${t("adultsCount", { n: v.adults })}${v.children ? `, ${t("childrenCount", { n: v.children })}` : ""} · ${t(`companionOptions.${v.companions}`)}`, step: "basics" },
     { label: t("departureCity"), value: v.departureCity || "—", step: "basics" },
     { label: t("budget"), value: `${v.budgetTotal ? format.number(Number(v.budgetTotal), { style: "currency", currency: v.currency, maximumFractionDigits: 0 }) : t("notSet")} · ${t(`budgetCategories.${v.budgetCategory}`)}`, step: "budget" },
@@ -169,18 +190,56 @@ export function DetailedTripWizard({ destinations, defaults, aiEnabled }: { dest
               {dest && dest.placeCount === 0 ? <Notice tone="warning">{t("limitedData", { city: dest.city })}</Notice> : null}
               <div className="form-row">
                 <Field label={t("arrivalDate")} name="startDate" error={fieldErr("startDate")}>
-                  {(p) => <input {...p} className="input" type="date" min={todayPlus(0)} value={v.startDate} onChange={(e) => update("startDate", e.target.value)} />}
-                </Field>
-                <Field label={t("arrivalTime")} name="departureTime" error={fieldErr("departureTime")} hint={t("optional")}>
-                  {(p) => <input {...p} className="input" type="time" value={v.departureTime} onChange={(e) => update("departureTime", e.target.value)} />}
+                  {(p) => <DateInput {...p} min={todayPlus(0)} value={v.startDate} onChange={(x) => update("startDate", x)} />}
                 </Field>
                 <Field label={t("departureDate")} name="endDate" error={fieldErr("endDate")}>
-                  {(p) => <input {...p} className="input" type="date" min={v.startDate} value={v.endDate} onChange={(e) => update("endDate", e.target.value)} />}
-                </Field>
-                <Field label={t("returnTime")} name="returnTime" error={fieldErr("returnTime")} hint={t("optional")}>
-                  {(p) => <input {...p} className="input" type="time" value={v.returnTime} onChange={(e) => update("returnTime", e.target.value)} />}
+                  {(p) => <DateInput {...p} min={v.startDate} value={v.endDate} onChange={(x) => update("endDate", x)} />}
                 </Field>
               </div>
+              <TravelEndFields
+                idPrefix="arr"
+                legend={tte("arrivalLegend")}
+                value={{ mode: v.arrivalMode, name: v.arrivalPlace, lat: v.arrivalLat === "" ? null : Number(v.arrivalLat), lng: v.arrivalLng === "" ? null : Number(v.arrivalLng) }}
+                onChange={(x) => {
+                  update("arrivalMode", x.mode);
+                  update("arrivalPlace", x.name);
+                  update("arrivalLat", x.lat ?? "");
+                  update("arrivalLng", x.lng ?? "");
+                }}
+                time={v.departureTime}
+                onTimeChange={(x) => update("departureTime", x)}
+                timeLabel={t("arrivalTime")}
+                timeError={fieldErr("departureTime")}
+                destinationSlug={v.destination}
+                near={dest ? { lat: dest.lat, lng: dest.lng } : null}
+              />
+              <label className="checkbox">
+                <input type="checkbox" checked={v.departureMode === "same"} onChange={(e) => update("departureMode", e.target.checked ? "same" : v.arrivalMode)} />
+                <span>{tte("sameWay")}</span>
+              </label>
+              {v.departureMode === "same" ? (
+                <Field label={t("returnTime")} name="returnTime" error={fieldErr("returnTime")} hint={tte("timeHint")}>
+                  {(p) => <TimeInput {...p} value={v.returnTime} onChange={(x) => update("returnTime", x)} />}
+                </Field>
+              ) : (
+                <TravelEndFields
+                  idPrefix="dep"
+                  legend={tte("departureLegend")}
+                  value={{ mode: v.departureMode, name: v.departurePlace, lat: v.departureLat === "" ? null : Number(v.departureLat), lng: v.departureLng === "" ? null : Number(v.departureLng) }}
+                  onChange={(x) => {
+                    update("departureMode", x.mode);
+                    update("departurePlace", x.name);
+                    update("departureLat", x.lat ?? "");
+                    update("departureLng", x.lng ?? "");
+                  }}
+                  time={v.returnTime}
+                  onTimeChange={(x) => update("returnTime", x)}
+                  timeLabel={t("returnTime")}
+                  timeError={fieldErr("returnTime")}
+                  destinationSlug={v.destination}
+                  near={dest ? { lat: dest.lat, lng: dest.lng } : null}
+                />
+              )}
               <div className="form-row">
                 <Counter label={t("adults")} name="adults_ui" value={v.adults} min={1} max={20} onChange={(n) => update("adults", n)} />
                 <Counter label={t("children")} name="children_ui" value={v.children} min={0} max={20} onChange={(n) => update("children", n)} />
@@ -255,10 +314,26 @@ export function DetailedTripWizard({ destinations, defaults, aiEnabled }: { dest
                     <Field label={t("accommodationName")} name="accommodationName" error={fieldErr("accommodationName")}>
                       {(p) => <input {...p} className="input" value={v.accommodationName} onChange={(e) => update("accommodationName", e.target.value)} />}
                     </Field>
-                    <Field label={t("accommodationAddress")} name="accommodationAddress" error={fieldErr("accommodationAddress")}>
-                      {(p) => <input {...p} className="input" value={v.accommodationAddress} onChange={(e) => update("accommodationAddress", e.target.value)} autoComplete="street-address" />}
-                    </Field>
                   </div>
+                  <AddressSearch
+                    id="accommodationAddress"
+                    label={t("accommodationAddress")}
+                    near={dest ? { lat: dest.lat, lng: dest.lng } : null}
+                    value={v.accommodationAddress}
+                    onChange={(x) => {
+                      // A new address invalidates the old pin until a suggestion (or a map click) sets it again.
+                      update("accommodationAddress", x);
+                      update("accommodationLat", "");
+                      update("accommodationLng", "");
+                    }}
+                    onPick={(p) => {
+                      update("accommodationAddress", p.label);
+                      update("accommodationLat", p.lat);
+                      update("accommodationLng", p.lng);
+                    }}
+                    hint={v.accommodationLat !== "" ? tst("pinFound") : tst("addressHint")}
+                    error={fieldErr("accommodationAddress")}
+                  />
                   {dest ? (
                     <LocationPicker
                       center={{ lat: dest.lat, lng: dest.lng }}
@@ -269,18 +344,18 @@ export function DetailedTripWizard({ destinations, defaults, aiEnabled }: { dest
                       }}
                     />
                   ) : null}
-                  <div className="form-row">
-                    <Field label={t("latitude")} name="accommodationLat" error={fieldErr("accommodationLat")}>
-                      {(p) => <input {...p} className="input ltr" inputMode="decimal" value={v.accommodationLat} onChange={(e) => update("accommodationLat", e.target.value)} />}
-                    </Field>
-                    <Field label={t("longitude")} name="accommodationLng" error={fieldErr("accommodationLng")}>
-                      {(p) => <input {...p} className="input ltr" inputMode="decimal" value={v.accommodationLng} onChange={(e) => update("accommodationLng", e.target.value)} />}
-                    </Field>
-                  </div>
                 </>
               ) : (
                 <ChipGroup legend={t("accommodationTypes")} name="accommodationTypes_ui" options={["hotel", "apartment", "hostel", "guesthouse", "resort"] as const} value={v.accommodationTypes as ("hotel" | "apartment" | "hostel" | "guesthouse" | "resort")[]} onChange={(x) => update("accommodationTypes", x)} labelFor={(o) => t(`accommodationTypeOptions.${o}`)} />
               )}
+              <div className="form-row">
+                <Field label={tte("checkIn")} name="checkInTime" error={fieldErr("checkInTime")} hint={tte("checkInHint")}>
+                  {(p) => <TimeInput {...p} value={v.checkInTime} placeholder="15:00" onChange={(x) => update("checkInTime", x)} />}
+                </Field>
+                <Field label={tte("checkOut")} name="checkOutTime" error={fieldErr("checkOutTime")} hint={tte("checkOutHint")}>
+                  {(p) => <TimeInput {...p} value={v.checkOutTime} placeholder="10:00" onChange={(x) => update("checkOutTime", x)} />}
+                </Field>
+              </div>
             </>
           )}
 

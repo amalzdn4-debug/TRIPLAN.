@@ -349,7 +349,7 @@ export const itineraryStops = pgTable(
     travelMinutes: integer("travel_minutes"),
     travelMeters: integer("travel_meters"),
     travelSource: text("travel_source", { enum: ["provider", "estimate"] }),
-    details: jsonb("details").$type<{ intercity?: import("@/lib/itinerary/types").IntercityDetails } | null>(),
+    details: jsonb("details").$type<import("@/lib/itinerary/types").StopDetails | null>(),
   },
   (t) => [index("itinerary_stops_day_pos_idx").on(t.dayId, t.position), index("itinerary_stops_trip_idx").on(t.tripId)],
 );

@@ -800,7 +800,8 @@
       "from": "Verso il centro di {place}"
     },
     "ticketsOfficial": "Biglietti e orari · sito ufficiale",
-    "officialSite": "Sito ufficiale"
+    "officialSite": "Sito ufficiale",
+    "typical": "tipico"
   },
   "map": {
     "label": "Mappa dell'itinerario",
@@ -1414,7 +1415,9 @@
     "dates": "{from} – {to}",
     "showArea": "Mostra sulla mappa",
     "areaNote": "Suggerimento basato su dove si trovano le visite previste, non una valutazione della zona. Prezzi e disponibilità sui siti di prenotazione.",
-    "cityOnly": "Non abbiamo ancora abbastanza luoghi mappati a {city} per suggerire una zona: un alloggio centrale vicino ai mezzi pubblici è una scelta sicura."
+    "cityOnly": "Non abbiamo ancora abbastanza luoghi mappati a {city} per suggerire una zona: un alloggio centrale vicino ai mezzi pubblici è una scelta sicura.",
+    "addressHint": "Scrivi via e numero civico, es. Via Noale 7, Milano, poi scegli un suggerimento.",
+    "pinFound": "Trovato sulla mappa: le giornate inizieranno e finiranno qui."
   },
   "journey": {
     "title": {
@@ -1426,7 +1429,10 @@
     "estimate": "Stima: {time}",
     "checkNote": "Non è un orario in tempo reale: verifica orari, tariffe e disponibilità prima di partire.",
     "googleMaps": "Indicazioni in Google Maps",
-    "distance": "circa {km} km"
+    "distance": "circa {km} km",
+    "stations": "Da {from} a {to}",
+    "fromStation": "Da {from}",
+    "toStation": "A {to}"
   },
   "upload": {
     "label": "Foto (facoltative)",
@@ -1707,5 +1713,97 @@
     "confirmMarkVerified": "Segnare {email} come verificata? Fallo solo se sai che l'indirizzo appartiene a questa persona.",
     "emailOffUsers": "L'invio di email non è ancora configurato (Resend), quindi i membri non ricevono le email di verifica o di reimpostazione password. Nel frattempo puoi segnare gli account come verificati qui.",
     "emailOffDashboard": "L'invio di email non è ancora configurato: le email di verifica e di reimpostazione password non vengono recapitate. Collega Resend (vedi docs/DEPLOYMENT.md). Nel frattempo segna i membri come verificati in Utenti."
+  },
+  "geo": {
+    "noResults": "Nessun indirizzo trovato. Prova ad aggiungere la città o posiziona il segnaposto sulla mappa.",
+    "unavailable": "La ricerca degli indirizzi non è disponibile al momento. Puoi posizionare il segnaposto sulla mappa.",
+    "attribution": "Ricerca: © collaboratori di OpenStreetMap"
+  },
+  "logistics": {
+    "yourStay": "il tuo alloggio",
+    "leave": "Parti da {place}",
+    "backAt": "Rientro a {place}",
+    "checkIn": "Check-in a {place}",
+    "collectAndCheckIn": "Ritira i bagagli e fai il check-in a {place}",
+    "checkOut": "Check-out da {place}",
+    "dropBags": "Lascia i bagagli",
+    "collectBags": "Ritira i bagagli",
+    "arriveAt": "Arrivo a {place}",
+    "headTo": "Vai a {place}",
+    "beAtBy": "Essere a {place} entro le {time}",
+    "arrivalAt": {
+      "plane": "Il volo atterra alle {time}",
+      "train": "Il treno arriva alle {time}",
+      "bus": "Il pullman arriva alle {time}",
+      "car": "Arrivo alle {time}",
+      "other": "Arrivo alle {time}"
+    },
+    "exitTime": "calcola circa {duration} per uscire con i bagagli",
+    "departureAt": {
+      "plane": "Il tuo volo parte alle {time}.",
+      "train": "Il tuo treno parte alle {time}.",
+      "bus": "Il tuo pullman parte alle {time}.",
+      "car": "Partenza alle {time}.",
+      "other": "Partenza alle {time}."
+    },
+    "airportEarly": "Pianifichiamo l'arrivo in aeroporto 2 ore prima della partenza. Verifica le indicazioni della compagnia aerea.",
+    "typicalOne": "di solito {time}",
+    "typicalRange": "di solito {from}–{to} min",
+    "officialTimes": "Orari e biglietti (sito ufficiale)",
+    "transferNote": "Tempi di viaggio tipici indicati dall'operatore. Controlla orari e tariffe di oggi sul suo sito.",
+    "noVerifiedTransfer": "Non abbiamo ancora informazioni verificate sui collegamenti per questo aeroporto: usa le indicazioni in tempo reale.",
+    "liveDirections": "Indicazioni in tempo reale (Google Maps)",
+    "bagsBeforeCheckIn": "Chiedi a {place} di tenerti i bagagli fino al check-in (molti lo fanno), oppure usa un deposito bagagli vicino.",
+    "bagsAfterCheckOut": "Chiedi a {place} di tenerti i bagagli dopo il check-out, oppure usa un deposito bagagli vicino. Ritirali prima di partire.",
+    "bagsNearStation": "Lascia i bagagli in un deposito vicino a {place} e ritirali prima del check-in.",
+    "storageNear": "Deposito bagagli vicino: {name} ({distance})",
+    "website": "sito web",
+    "findStorage": "Trova un deposito bagagli vicino",
+    "storageNote": "Servizi e prezzi dei depositi variano: controlla gli orari prima di andare.",
+    "checkInFrom": "Check-in dalle {time}",
+    "checkOutBy": "Check-out entro le {time}",
+    "toPoint": "fino a {place}",
+    "fromPoint": "da {place}",
+    "takeFrom": "Prendi il {service} da {place}"
+  },
+  "travelEnd": {
+    "how": "Come?",
+    "modes": {
+      "plane": "Aereo",
+      "train": "Treno",
+      "bus": "Autobus o pullman",
+      "car": "Auto",
+      "other": "Altro"
+    },
+    "timeHint": "Formato 24 ore, es. 09:30",
+    "quickAirports": "Aeroporti con collegamenti verificati",
+    "place": {
+      "plane": "Aeroporto",
+      "train": "Stazione",
+      "bus": "Stazione o fermata del pullman",
+      "car": "Luogo",
+      "other": "Luogo"
+    },
+    "found": "Trovato: il piano partirà da qui.",
+    "placeHint": "Inizia a scrivere e scegli dall'elenco.",
+    "title": "Arrivo e partenza",
+    "arriving": "Arrivo",
+    "leaving": "Partenza",
+    "checkIn": "Check-in",
+    "checkOut": "Check-out",
+    "default": "orario abituale",
+    "notSet": "Non impostato",
+    "addForGuidance": "Indica come e quando arrivi per avere le indicazioni da aeroporto o stazione e un piano per i bagagli.",
+    "edit": "Modifica",
+    "arrivalLegend": "Come arrivi",
+    "departureLegend": "Come riparti",
+    "arrivalTime": "Orario di arrivo",
+    "departureTime": "Orario di partenza",
+    "sameWay": "Riparto allo stesso modo (stesso aeroporto o stazione)",
+    "replanNote": "Salvando, il viaggio viene ripianificato. Le tappe bloccate restano.",
+    "save": "Salva e ripianifica",
+    "cancel": "Annulla",
+    "checkInHint": "Dalla tua prenotazione. Di solito 14:00–16:00.",
+    "checkOutHint": "Dalla tua prenotazione. Di solito 10:00–11:00."
   }
 }

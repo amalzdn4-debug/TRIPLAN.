@@ -9,6 +9,7 @@ import type { IntercityDetails, TripPreferences } from "@/lib/itinerary/types";
 import type { SplitOption, TripSegment } from "@/lib/itinerary/split";
 import type { NearbyChoice, SplitChoice, StayArea, TripPlanning } from "@/lib/trips";
 import { OutboundLinks, PartnerDisclosure } from "@/components/ui/OutboundLinks";
+import { AddressSearch } from "@/components/map/AddressSearch";
 
 const LocationPicker = dynamic(() => import("@/components/map/LocationPicker").then((m) => m.LocationPicker), { ssr: false });
 
@@ -158,74 +159,127 @@ export function RouteSummary({ segments, busy, onReset }: { segments: TripSegmen
 
 /* ───────────── Accommodation ───────────── */
 
+type StayInput = { name: string; address: string | null; lat: number | null; lng: number | null };
+
+/** Name + real address search + map pin for a booked accommodation. */
+function StayForm({ idPrefix, initial, center, busy, onSubmit, onCancel }: { idPrefix: string; initial: Partial<StayInput>; center: { lat: number; lng: number }; busy: boolean; onSubmit: (s: StayInput) => void; onCancel: () => void }) {
+  const tst = useTranslations("stay");
+  const [name, setName] = useState(initial.name ?? "");
+  const [address, setAddress] = useState(initial.address ?? "");
+  const [point, setPoint] = useState<{ lat: number; lng: number } | null>(initial.lat != null && initial.lng != null ? { lat: Number(initial.lat), lng: Number(initial.lng) } : null);
+  return (
+    <form
+      className="form"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (!name.trim()) return;
+        onSubmit({ name: name.trim(), address: address.trim() || null, lat: point?.lat ?? null, lng: point?.lng ?? null });
+      }}
+    >
+      <div className="field">
+        <label htmlFor={`${idPrefix}-name`}>{tst("name")}</label>
+        <input id={`${idPrefix}-name`} className="input" value={name} maxLength={140} required onChange={(e) => setName(e.target.value)} />
+      </div>
+      <AddressSearch
+        id={`${idPrefix}-address`}
+        label={tst("address")}
+        near={point ?? center}
+        value={address}
+        onChange={(x) => {
+          setAddress(x);
+          setPoint(null);
+        }}
+        onPick={(p) => {
+          setAddress(p.label);
+          setPoint({ lat: p.lat, lng: p.lng });
+          if (!name.trim() && p.kind !== "address") setName(p.name);
+        }}
+        hint={tst("addressHint")}
+      />
+      <p className="small muted" style={{ margin: 0 }}>{point ? tst("pinFound") : tst("pinHint")}</p>
+      <LocationPicker center={center} value={point} onChange={setPoint} />
+      <p className="small muted" style={{ margin: 0 }}>{tst("reorganizeNote")}</p>
+      <div className="cluster" style={{ gap: 6 }}>
+        <button type="submit" className="btn btn--primary btn--sm" disabled={busy || !name.trim()}>{tst("save")}</button>
+        <button type="button" className="btn btn--sm btn--ghost" onClick={onCancel}>{tst("cancel")}</button>
+      </div>
+    </form>
+  );
+}
+
 export function AccommodationPanel({
   accommodation,
+  stays,
+  segments,
   stayAreas,
   baseName,
   center,
   busy,
   onSave,
+  onSaveStay,
   onShowArea,
 }: {
   accommodation: TripPreferences["accommodation"];
+  stays: TripPreferences["stays"];
+  segments: TripSegment[] | null;
   stayAreas: StayArea[];
   baseName: string;
   center: { lat: number; lng: number };
   busy: boolean;
   onSave: (a: { status: "booked" | "recommend"; name?: string | null; address?: string | null; lat?: number | null; lng?: number | null }) => void;
+  onSaveStay: (slug: string, s: StayInput | null) => void;
   onShowArea: (a: StayArea) => void;
 }) {
   const tst = useTranslations("stay");
   const locale = useLocale();
   const booked = accommodation?.status === "booked" && accommodation.name;
-  const [editing, setEditing] = useState(false);
-  const [name, setName] = useState(accommodation?.name ?? "");
-  const [address, setAddress] = useState(accommodation?.address ?? "");
-  const [point, setPoint] = useState<{ lat: number; lng: number } | null>(accommodation?.lat != null && accommodation?.lng != null ? { lat: Number(accommodation.lat), lng: Number(accommodation.lng) } : null);
+  /** Which form is open: "base" or a destination slug. */
+  const [editing, setEditing] = useState<string | null>(null);
+  const otherStays = (segments ?? []).filter((sg) => sg.type === "stay" && stays?.[sg.slug]?.name);
+
+  const bookedCard = (key: string, s: { name?: string | null; address?: string | null; lat?: number | null }, city: string | null, onClear: () => void) => (
+    <div className="stack" style={{ gap: 6 }} key={key}>
+      <p style={{ margin: 0 }}>
+        {city ? <span className="small muted">{city} · </span> : null}
+        <strong><bdi>{s.name}</bdi></strong>
+        {s.address ? <><br /><span className="small muted"><bdi>{s.address}</bdi></span></> : null}
+      </p>
+      <p className="small muted" style={{ margin: 0 }}>{s.lat != null ? tst("usedAsStart") : tst("noPin")}</p>
+      <div className="cluster" style={{ gap: 6 }}>
+        <button type="button" className="btn btn--sm" disabled={busy} onClick={() => setEditing(key)}><Icon name="edit" />{tst("change")}</button>
+        <button type="button" className="btn btn--sm btn--ghost" disabled={busy} onClick={onClear}>{tst("clear")}</button>
+      </div>
+    </div>
+  );
 
   return (
     <section className="plan-card" aria-labelledby="stay-title">
       <h3 id="stay-title" className="plan-card__title"><Icon name="bed" />{tst("title")}</h3>
-      {booked && !editing ? (
-        <div className="stack" style={{ gap: 6 }}>
-          <p style={{ margin: 0 }}><strong>{accommodation.name}</strong>{accommodation.address ? <><br /><span className="small muted">{accommodation.address}</span></> : null}</p>
-          <p className="small muted" style={{ margin: 0 }}>{accommodation.lat != null ? tst("usedAsStart") : tst("noPin")}</p>
-          <div className="cluster" style={{ gap: 6 }}>
-            <button type="button" className="btn btn--sm" disabled={busy} onClick={() => setEditing(true)}><Icon name="edit" />{tst("change")}</button>
-            <button type="button" className="btn btn--sm btn--ghost" disabled={busy} onClick={() => onSave({ status: "recommend" })}>{tst("clear")}</button>
-          </div>
-        </div>
+      {booked && editing !== "base" ? bookedCard("base", accommodation, segments ? baseName : null, () => onSave({ status: "recommend" })) : null}
+      {!booked && editing !== "base" ? (
+        <button type="button" className="btn btn--sm btn--primary" onClick={() => setEditing("base")}><Icon name="plus" />{tst("addBooked", { city: baseName })}</button>
       ) : null}
-      {!booked && !editing ? (
-        <button type="button" className="btn btn--sm btn--primary" onClick={() => setEditing(true)}><Icon name="plus" />{tst("addBooked", { city: baseName })}</button>
-      ) : null}
-      {editing ? (
-        <form
-          className="form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (!name.trim()) return;
-            setEditing(false);
-            onSave({ status: "booked", name, address, lat: point?.lat ?? null, lng: point?.lng ?? null });
+      {editing === "base" ? (
+        <StayForm
+          idPrefix="acc"
+          initial={{ name: accommodation?.name ?? "", address: accommodation?.address ?? "", lat: accommodation?.lat ?? null, lng: accommodation?.lng ?? null }}
+          center={center}
+          busy={busy}
+          onCancel={() => setEditing(null)}
+          onSubmit={(v) => {
+            setEditing(null);
+            onSave({ status: "booked", ...v });
           }}
-        >
-          <div className="field">
-            <label htmlFor="acc-name">{tst("name")}</label>
-            <input id="acc-name" className="input" value={name} maxLength={140} required onChange={(e) => setName(e.target.value)} />
-          </div>
-          <div className="field">
-            <label htmlFor="acc-address">{tst("address")}</label>
-            <input id="acc-address" className="input" value={address} maxLength={240} autoComplete="street-address" onChange={(e) => setAddress(e.target.value)} />
-          </div>
-          <p className="small muted" style={{ margin: 0 }}>{tst("pinHint")}</p>
-          <LocationPicker center={point ?? center} value={point} onChange={setPoint} />
-          <p className="small muted" style={{ margin: 0 }}>{tst("reorganizeNote")}</p>
-          <div className="cluster" style={{ gap: 6 }}>
-            <button type="submit" className="btn btn--primary btn--sm" disabled={busy || !name.trim()}>{tst("save")}</button>
-            <button type="button" className="btn btn--sm btn--ghost" onClick={() => setEditing(false)}>{tst("cancel")}</button>
-          </div>
-        </form>
+        />
       ) : null}
+
+      {otherStays.map((sg) =>
+        editing === sg.slug ? (
+          <StayForm key={sg.slug} idPrefix={`stay-${sg.slug}`} initial={stays![sg.slug]} center={{ lat: sg.lat, lng: sg.lng }} busy={busy} onCancel={() => setEditing(null)} onSubmit={(v) => { setEditing(null); onSaveStay(sg.slug, v); }} />
+        ) : (
+          bookedCard(sg.slug, stays![sg.slug], sg.name, () => onSaveStay(sg.slug, null))
+        ),
+      )}
 
       {stayAreas.length ? (
         <div className="stack" style={{ gap: 12, marginBlockStart: 8 }}>
@@ -243,6 +297,13 @@ export function AccommodationPanel({
                 <button type="button" className="ext-link" onClick={() => onShowArea(a)}><Icon name="map" />{tst("showArea")}</button>
               </div>
               <OutboundLinks links={a.links.slice(0, 4)} />
+              {a.slug && segments?.some((sg) => sg.slug === a.slug && sg.type === "stay") ? (
+                editing === a.slug ? (
+                  <StayForm idPrefix={`stay-${a.slug}`} initial={{}} center={{ lat: a.lat, lng: a.lng }} busy={busy} onCancel={() => setEditing(null)} onSubmit={(v) => { setEditing(null); onSaveStay(a.slug!, v); }} />
+                ) : (
+                  <button type="button" className="btn btn--sm" onClick={() => setEditing(a.slug)}><Icon name="plus" />{tst("addBooked", { city: a.city })}</button>
+                )
+              ) : null}
             </div>
           ))}
           <p className="small muted" style={{ margin: 0 }}>{tst("areaNote")} <PartnerDisclosure links={stayAreas.flatMap((x) => x.links.slice(0, 4))} /></p>
@@ -271,6 +332,12 @@ export function JourneyDetails({ info, linkUrl }: { info: IntercityDetails; link
         {info.distanceKm ? ` · ${tj("distance", { km: info.distanceKm })}` : ""}
         {info.note ? ` · ${info.note}` : ""}
       </p>
+      {info.fromStation || info.toStation ? (
+        <p className="small" style={{ margin: 0 }}>
+          <Icon name="train" className="logi__inline" />
+          {info.fromStation && info.toStation ? tj("stations", { from: info.fromStation, to: info.toStation }) : info.fromStation ? tj("fromStation", { from: info.fromStation }) : tj("toStation", { to: info.toStation! })}
+        </p>
+      ) : null}
       <p className="small muted" style={{ margin: 0 }}>{tj("checkNote")}</p>
       <div className="link-list">
         {linkUrl ? <a className="ext-link" href={linkUrl} target="_blank" rel="noopener noreferrer">{tj("googleMaps")}<Icon name="external" className="flip-rtl" /></a> : null}

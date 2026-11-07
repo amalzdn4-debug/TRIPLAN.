@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { formatDateTime } from "@/lib/format";
 import { Link, useRouter } from "@/i18n/navigation";
 import { Icon } from "@/components/ui/Icon";
 import { deletePostAction, reportPostAction, toggleLikeAction, toggleSavePostAction } from "@/actions/community";
@@ -22,7 +23,7 @@ export function Avatar({ name, url }: { name: string; url: string | null }) {
 
 export function PostCard({ post, signedIn, compact = false, full = false }: { post: PostView; signedIn: boolean; compact?: boolean; full?: boolean }) {
   const t = useTranslations("community");
-  const format = useFormatter();
+  const locale = useLocale();
   const router = useRouter();
   const [liked, setLiked] = useState(post.likedByMe);
   const [likes, setLikes] = useState(post.likeCount);
@@ -56,7 +57,7 @@ export function PostCard({ post, signedIn, compact = false, full = false }: { po
           <span className="small">
             <bdi><Link href={`/destinations/${post.destinationSlug}`}>{post.destinationCity}</Link></bdi>
             {" · "}
-            <bdi><time dateTime={post.createdAt}>{format.dateTime(new Date(post.createdAt), { dateStyle: "medium" })}</time></bdi>
+            <bdi><time dateTime={post.createdAt}>{formatDateTime(post.createdAt, locale)}</time></bdi>
             {post.editedAt ? <span className="muted"> · {t("edited")}</span> : null}
           </span>
         </span>

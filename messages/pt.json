@@ -800,7 +800,8 @@
       "from": "Para o centro de {place}"
     },
     "ticketsOfficial": "Bilhetes e horários · site oficial",
-    "officialSite": "Site oficial"
+    "officialSite": "Site oficial",
+    "typical": "habitual"
   },
   "map": {
     "label": "Mapa do roteiro",
@@ -1414,7 +1415,9 @@
     "dates": "{from} – {to}",
     "showArea": "Ver no mapa",
     "areaNote": "Sugestão baseada na localização das suas visitas planeadas — não é uma avaliação da zona. Preços e disponibilidade nos sites de reserva.",
-    "cityOnly": "Ainda não temos locais suficientes no mapa de {city} para sugerir uma zona — um alojamento central perto dos transportes públicos é uma escolha segura."
+    "cityOnly": "Ainda não temos locais suficientes no mapa de {city} para sugerir uma zona — um alojamento central perto dos transportes públicos é uma escolha segura.",
+    "addressHint": "Escreva a rua e o número, p. ex. Via Noale 7, Milano, e escolha uma sugestão.",
+    "pinFound": "Encontrado no mapa: os dias começam e terminam aqui."
   },
   "journey": {
     "title": {
@@ -1426,7 +1429,10 @@
     "estimate": "Estimativa: {time}",
     "checkNote": "Não é um horário em tempo real — confirme horários, tarifas e disponibilidade antes de viajar.",
     "googleMaps": "Direções no Google Maps",
-    "distance": "cerca de {km} km"
+    "distance": "cerca de {km} km",
+    "stations": "De {from} para {to}",
+    "fromStation": "De {from}",
+    "toStation": "Para {to}"
   },
   "upload": {
     "label": "Fotos (opcional)",
@@ -1707,5 +1713,97 @@
     "confirmMarkVerified": "Marcar {email} como verificado? Faça-o apenas se souber que o endereço pertence a esta pessoa.",
     "emailOffUsers": "O envio de e-mails ainda não está configurado (Resend), por isso os membros não recebem e-mails de verificação nem de reposição de palavra-passe. Entretanto, pode marcar contas como verificadas aqui.",
     "emailOffDashboard": "O envio de e-mails ainda não está configurado: os e-mails de verificação e de reposição não são entregues. Ligue o Resend (ver docs/DEPLOYMENT.md). Entretanto, marque os membros como verificados em Utilizadores."
+  },
+  "geo": {
+    "noResults": "Não foi encontrado nenhum endereço. Acrescente a cidade ou coloque o marcador no mapa.",
+    "unavailable": "A pesquisa de endereços não está disponível agora. Pode colocar o marcador no mapa.",
+    "attribution": "Pesquisa: © colaboradores do OpenStreetMap"
+  },
+  "logistics": {
+    "yourStay": "o seu alojamento",
+    "leave": "Saída de {place}",
+    "backAt": "Regresso a {place}",
+    "checkIn": "Check-in em {place}",
+    "collectAndCheckIn": "Recolha a bagagem e faça o check-in em {place}",
+    "checkOut": "Check-out de {place}",
+    "dropBags": "Deixe a bagagem",
+    "collectBags": "Recolha a bagagem",
+    "arriveAt": "Chegada a {place}",
+    "headTo": "Siga para {place}",
+    "beAtBy": "Estar em {place} até às {time}",
+    "arrivalAt": {
+      "plane": "O voo aterra às {time}",
+      "train": "O comboio chega às {time}",
+      "bus": "O autocarro chega às {time}",
+      "car": "Chegada às {time}",
+      "other": "Chegada às {time}"
+    },
+    "exitTime": "conte com cerca de {duration} para sair com a bagagem",
+    "departureAt": {
+      "plane": "O seu voo parte às {time}.",
+      "train": "O seu comboio parte às {time}.",
+      "bus": "O seu autocarro parte às {time}.",
+      "car": "Partida às {time}.",
+      "other": "Partida às {time}."
+    },
+    "airportEarly": "Planeamos chegar ao aeroporto 2 horas antes da partida. Siga as indicações da sua companhia aérea.",
+    "typicalOne": "normalmente {time}",
+    "typicalRange": "normalmente {from}–{to} min",
+    "officialTimes": "Horários e bilhetes (oficial)",
+    "transferNote": "Tempos de viagem habituais indicados pelo operador. Confirme os horários e preços de hoje no site.",
+    "noVerifiedTransfer": "Ainda não temos informação verificada sobre ligações neste aeroporto: use as indicações em tempo real.",
+    "liveDirections": "Indicações em tempo real (Google Maps)",
+    "bagsBeforeCheckIn": "Peça a {place} que guarde a bagagem até ao check-in (muitos fazem-no) ou use um depósito de bagagem próximo.",
+    "bagsAfterCheckOut": "Peça a {place} que guarde a bagagem depois do check-out ou use um depósito próximo. Recolha-a antes de partir.",
+    "bagsNearStation": "Deixe a bagagem num depósito perto de {place} e recolha-a antes do check-in.",
+    "storageNear": "Depósito de bagagem próximo: {name} ({distance})",
+    "website": "site",
+    "findStorage": "Encontrar depósito de bagagem próximo",
+    "storageNote": "Os serviços e preços dos depósitos variam: confirme o horário antes de ir.",
+    "checkInFrom": "Check-in a partir das {time}",
+    "checkOutBy": "Check-out até às {time}",
+    "toPoint": "até {place}",
+    "fromPoint": "a partir de {place}",
+    "takeFrom": "Apanhe o {service} em {place}"
+  },
+  "travelEnd": {
+    "how": "Como?",
+    "modes": {
+      "plane": "Avião",
+      "train": "Comboio",
+      "bus": "Autocarro",
+      "car": "Carro",
+      "other": "Outro"
+    },
+    "timeHint": "Formato 24 h, p. ex. 09:30",
+    "quickAirports": "Aeroportos com ligações verificadas",
+    "place": {
+      "plane": "Aeroporto",
+      "train": "Estação",
+      "bus": "Terminal ou paragem de autocarro",
+      "car": "Local",
+      "other": "Local"
+    },
+    "found": "Encontrado: o plano começa aqui.",
+    "placeHint": "Comece a escrever e escolha da lista.",
+    "title": "Chegada e partida",
+    "arriving": "Chegada",
+    "leaving": "Partida",
+    "checkIn": "Check-in",
+    "checkOut": "Check-out",
+    "default": "hora habitual",
+    "notSet": "Não indicado",
+    "addForGuidance": "Indique como e quando chega para ver como sair do aeroporto ou da estação e um plano para a bagagem.",
+    "edit": "Editar",
+    "arrivalLegend": "Como chega",
+    "departureLegend": "Como parte",
+    "arrivalTime": "Hora de chegada",
+    "departureTime": "Hora de partida",
+    "sameWay": "Parto da mesma forma (mesmo aeroporto ou estação)",
+    "replanNote": "Ao guardar, a viagem é replaneada. As paragens bloqueadas mantêm-se.",
+    "save": "Guardar e replanear",
+    "cancel": "Cancelar",
+    "checkInHint": "Da sua reserva. Normalmente 14:00–16:00.",
+    "checkOutHint": "Da sua reserva. Normalmente 10:00–11:00."
   }
 }

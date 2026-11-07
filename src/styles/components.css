@@ -3365,3 +3365,193 @@ html[lang="zh"] .hero__tagline {
   inline-size: 14px;
   block-size: 14px;
 }
+
+/* ═════════ Round 2: address search, dates, logistics ═════════ */
+.addr-search {
+  position: relative;
+}
+.addr-search__box {
+  position: relative;
+}
+.addr-search__box .input {
+  padding-inline-start: 38px;
+}
+.addr-search__icon {
+  position: absolute;
+  inset-inline-start: 12px;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+  inline-size: 16px;
+  block-size: 16px;
+  color: var(--color-text-subtle);
+  pointer-events: none;
+}
+.addr-search__spin {
+  position: absolute;
+  inset-inline-end: 12px;
+  inset-block-start: 50%;
+  margin-block-start: -8px;
+  inline-size: 16px;
+  block-size: 16px;
+}
+.addr-search__pop {
+  position: absolute;
+  z-index: 40;
+  inset-inline: 0;
+  inset-block-start: calc(100% - 2px);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--r-md);
+  box-shadow: var(--sh-md);
+  overflow: hidden;
+}
+.addr-search__list {
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  max-block-size: 280px;
+  overflow-y: auto;
+}
+.addr-search__list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 10px;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  font-size: var(--fs-sm);
+  line-height: 1.35;
+}
+.addr-search__list li svg {
+  flex: none;
+  inline-size: 15px;
+  block-size: 15px;
+  margin-block-start: 2px;
+  color: var(--color-primary);
+}
+.addr-search__list li:hover,
+.addr-search__list li.is-active {
+  background: var(--tp-blue-50);
+}
+.addr-search__note {
+  margin: 0;
+  padding: 8px 12px;
+}
+.addr-search__attr {
+  margin: 0;
+  padding: 4px 12px 6px;
+  font-size: 11px;
+  color: var(--color-text-subtle);
+  border-block-start: 1px solid var(--color-border);
+}
+
+.date-input {
+  position: relative;
+}
+.date-input__face {
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+.date-input__native {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  opacity: 0;
+  cursor: pointer;
+  border: 0;
+}
+.date-input:focus-within .date-input__face {
+  border-color: var(--color-focus);
+  box-shadow: var(--sh-focus);
+}
+
+.pick-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-block-size: 36px;
+  padding: 6px 12px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--r-pill);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+}
+.pick-chip[aria-pressed="true"] {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+.pick-chip[aria-pressed="true"] .muted {
+  color: inherit;
+  opacity: 0.85;
+}
+.travel-end {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.stop--logistics .stop__card {
+  background: var(--color-surface-tint);
+  border-style: dashed;
+}
+.stop__marker--logistics {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  border: 1px solid var(--color-border-strong);
+}
+.stop__title--static {
+  margin: 0;
+  cursor: default;
+}
+.logi {
+  display: grid;
+  gap: 6px;
+  margin-block-start: 4px;
+}
+.logi__inline {
+  display: inline;
+  inline-size: 14px;
+  block-size: 14px;
+  vertical-align: -2px;
+  margin-inline-end: 4px;
+}
+.logi__transfers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.logi__transfers li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  font-size: var(--fs-sm);
+}
+.logi__transfers li > svg {
+  inline-size: 15px;
+  block-size: 15px;
+  color: var(--color-primary);
+}
+.kv {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 12px;
+  margin: 0;
+}
+.kv dt {
+  color: var(--color-text-muted);
+}
+.kv dd {
+  margin: 0;
+}
+.logi__transfers li > span {
+  flex: 1 1 220px;
+  min-inline-size: 0;
+}

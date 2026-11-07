@@ -800,7 +800,8 @@
       "from": "前往{place}市中心"
     },
     "ticketsOfficial": "门票和开放时间 · 官方网站",
-    "officialSite": "官方网站"
+    "officialSite": "官方网站",
+    "typical": "常规"
   },
   "map": {
     "label": "行程地图",
@@ -1414,7 +1415,9 @@
     "dates": "{from} – {to}",
     "showArea": "在地图上显示",
     "areaNote": "此建议基于您计划景点的位置，并非对该区域的评价。价格和空房情况请查看预订网站。",
-    "cityOnly": "我们在{city}标注的景点还不够，暂时无法推荐具体区域——住在靠近公共交通的市中心是稳妥的选择。"
+    "cityOnly": "我们在{city}标注的景点还不够，暂时无法推荐具体区域——住在靠近公共交通的市中心是稳妥的选择。",
+    "addressHint": "输入街道和门牌号，例如 Via Noale 7, Milano，然后选择一个建议。",
+    "pinFound": "已在地图上找到：每天将从这里出发并回到这里。"
   },
   "journey": {
     "title": {
@@ -1426,7 +1429,10 @@
     "estimate": "预计 {time}",
     "checkNote": "并非实时时刻表——出行前请核实时间、票价和余票。",
     "googleMaps": "在 Google 地图中查看路线",
-    "distance": "约 {km} 公里"
+    "distance": "约 {km} 公里",
+    "stations": "从{from}到{to}",
+    "fromStation": "从{from}出发",
+    "toStation": "到{to}"
   },
   "upload": {
     "label": "照片（可选）",
@@ -1707,5 +1713,97 @@
     "confirmMarkVerified": "将 {email} 标记为已验证？请仅在确认该地址属于此人时操作。",
     "emailOffUsers": "尚未设置邮件发送（Resend），会员收不到验证邮件和重置密码邮件。在此期间，你可以在这里将账户标记为已验证。",
     "emailOffDashboard": "尚未设置邮件发送：验证邮件和重置密码邮件无法送达。请连接 Resend（见 docs/DEPLOYMENT.md）。在此期间，可在“用户”中将会员标记为已验证。"
+  },
+  "geo": {
+    "noResults": "未找到该地址。请加上城市名，或在地图上放置标记。",
+    "unavailable": "地址搜索暂不可用。你可以在地图上放置标记。",
+    "attribution": "搜索：© OpenStreetMap 贡献者"
+  },
+  "logistics": {
+    "yourStay": "你的住处",
+    "leave": "从{place}出发",
+    "backAt": "回到{place}",
+    "checkIn": "在{place}办理入住",
+    "collectAndCheckIn": "取回行李并在{place}办理入住",
+    "checkOut": "从{place}退房",
+    "dropBags": "寄存行李",
+    "collectBags": "取回行李",
+    "arriveAt": "到达{place}",
+    "headTo": "前往{place}",
+    "beAtBy": "{time}前到达{place}",
+    "arrivalAt": {
+      "plane": "航班 {time} 降落",
+      "train": "列车 {time} 到达",
+      "bus": "大巴 {time} 到达",
+      "car": "{time} 到达",
+      "other": "{time} 到达"
+    },
+    "exitTime": "取行李出站约需 {duration}",
+    "departureAt": {
+      "plane": "你的航班 {time} 起飞。",
+      "train": "你的列车 {time} 发车。",
+      "bus": "你的大巴 {time} 发车。",
+      "car": "{time} 出发。",
+      "other": "{time} 出发。"
+    },
+    "airportEarly": "我们按起飞前 2 小时到达机场来安排。请以航空公司的建议为准。",
+    "typicalOne": "通常 {time}",
+    "typicalRange": "通常 {from}–{to} 分钟",
+    "officialTimes": "时刻与购票（官方）",
+    "transferNote": "运营方公布的常规行程时间。请在其官网查看当天时刻和票价。",
+    "noVerifiedTransfer": "我们暂无此机场经核实的交通信息，请使用实时路线。",
+    "liveDirections": "实时路线（Google 地图）",
+    "bagsBeforeCheckIn": "可请{place}在入住前代为保管行李（很多住处都可以），或使用附近的行李寄存。",
+    "bagsAfterCheckOut": "可请{place}在退房后代为保管行李，或使用附近的行李寄存。离开前记得取回。",
+    "bagsNearStation": "把行李寄存在{place}附近，入住前再取回。",
+    "storageNear": "附近的行李寄存：{name}（{distance}）",
+    "website": "网站",
+    "findStorage": "查找附近的行李寄存",
+    "storageNote": "寄存服务和价格各不相同，请提前确认营业时间。",
+    "checkInFrom": "{time} 起可入住",
+    "checkOutBy": "{time} 前退房",
+    "toPoint": "至{place}",
+    "fromPoint": "自{place}",
+    "takeFrom": "在{place}乘坐 {service}"
+  },
+  "travelEnd": {
+    "how": "交通方式",
+    "modes": {
+      "plane": "飞机",
+      "train": "火车",
+      "bus": "大巴",
+      "car": "汽车",
+      "other": "其他"
+    },
+    "timeHint": "24 小时制，例如 09:30",
+    "quickAirports": "有核实交通信息的机场",
+    "place": {
+      "plane": "机场",
+      "train": "车站",
+      "bus": "汽车站或站点",
+      "car": "地点",
+      "other": "地点"
+    },
+    "found": "已找到：行程将从这里开始。",
+    "placeHint": "开始输入并从列表中选择。",
+    "title": "抵达与离开",
+    "arriving": "抵达",
+    "leaving": "离开",
+    "checkIn": "入住时间",
+    "checkOut": "退房时间",
+    "default": "常规时间",
+    "notSet": "未设置",
+    "addForGuidance": "填写抵达方式和时间，即可获得从机场或车站出发的路线以及行李安排。",
+    "edit": "编辑",
+    "arrivalLegend": "如何抵达",
+    "departureLegend": "如何离开",
+    "arrivalTime": "抵达时间",
+    "departureTime": "出发时间",
+    "sameWay": "以相同方式离开（同一机场或车站）",
+    "replanNote": "保存后将重新规划行程，已锁定的站点会保留。",
+    "save": "保存并重新规划",
+    "cancel": "取消",
+    "checkInHint": "以预订为准，通常 14:00–16:00。",
+    "checkOutHint": "以预订为准，通常 10:00–11:00。"
   }
 }

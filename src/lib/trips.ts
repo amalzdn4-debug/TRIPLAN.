@@ -3,15 +3,16 @@ import { and, asc, desc, eq, inArray, ne, sql, gt, lt } from "drizzle-orm";
 import { getDb, schema } from "@/db";
 import { MAX_TRIP_DAYS } from "@/config/site";
 import { getActiveSubscriptions, isAdminUser, type Entitlement } from "@/lib/entitlements";
-import { buildDay, buildItinerary, buildPlan, enumerateDates, scheduleDay, scorePlace, dayStartTime } from "@/lib/itinerary/engine";
+import { buildDay, buildItinerary, buildPlan, enumerateDates, scheduleDay, scorePlace, dayStartTime, toHHMM } from "@/lib/itinerary/engine";
 import { customOption, layoutDays, segmentsFor, suggestSplit, type SplitOption, type BaseInfo, type NearbyWithId, type SplitSuggestion, type TripSegment } from "@/lib/itinerary/split";
 import { getDestinationCards, getNearby } from "@/lib/destinations";
 import { accommodationLinks, type OutboundLink } from "@/lib/links";
 import { withPartners } from "@/lib/affiliates";
 import { generateWithAI } from "@/lib/itinerary/ai";
 import { refineLegs } from "@/lib/itinerary/routing";
-import { haversineMeters } from "@/lib/geo";
-import type { CandidatePlace, IntercityDetails, PlannedDay, PlannedStop, TripPreferences } from "@/lib/itinerary/types";
+import { haversineMeters, type LatLng } from "@/lib/geo";
+import { applyLogistics, applyLogisticsAt, arrivalReadyMinutes, insertionIndex, pinLogistics, staysFor, type LogisticsContext, type Station } from "@/lib/itinerary/logistics";
+import type { BookedStay, CandidatePlace, IntercityDetails, PlannedDay, PlannedStop, StopDetails, TravelEnd, TripPreferences } from "@/lib/itinerary/types";
 import { FREE_TRIPS_INCLUDED } from "@/config/site";
 
 export class NeedsPaymentError extends Error {
@@ -55,6 +56,8 @@ export interface StopView {
   officialUrl: string | null;
   /** Usually needs a ticket / has opening hours worth checking (museums, palaces, theatres…). */
   ticketed: boolean;
+  /** Accommodation/airport/station/luggage steps added by the planner (null for sights and meals). */
+  logistics: Omit<StopDetails, "intercity"> | null;
 }
 
 export interface DayView {
@@ -123,6 +126,7 @@ function toStopView(s: typeof schema.itineraryStops.$inferSelect): StopView {
     intercity: s.details?.intercity ?? null,
     officialUrl: null,
     ticketed: false,
+    logistics: s.details?.role ? (({ intercity: _i, ...rest }) => rest)(s.details) : null,
   };
 }
 
@@ -273,6 +277,8 @@ export interface NearbyChoice {
 
 export interface StayArea {
   destinationId: string;
+  /** Destination slug (to save a booked stay for this city). */
+  slug: string | null;
   city: string;
   /** The neighbourhood closest to the planned sights overall (from the places data), if known. */
   area: string | null;
@@ -329,6 +335,7 @@ export async function getTripPlanning(trip: TripView, locale: string): Promise<T
     const city = nameOf(destId);
     if (!city) continue;
     const seg = segments?.find((x) => x.destinationId === destId);
+    if (seg && prefs.stays?.[seg.slug]?.name) continue; // already booked in this city
     let area: string | null = null;
     let lat = seg?.lat ?? NaN;
     let lng = seg?.lng ?? NaN;
@@ -373,7 +380,7 @@ export async function getTripPlanning(trip: TripView, locale: string): Promise<T
       lng: Number(lng.toFixed(5)),
       locale,
     });
-    stayAreas.push({ destinationId: destId, city, area, lat, lng, sights: near, checkIn, checkOut, links });
+    stayAreas.push({ destinationId: destId, slug: seg?.slug ?? trip.destinationSlug, city, area, lat, lng, sights: near, checkIn, checkOut, links });
   }
   return { suggestion: suggestion ? { ...suggestion, baseName: ctx!.base.name } : null, nearby, stayAreas };
 }
@@ -429,20 +436,51 @@ async function claimEntitlement(userId: string): Promise<{ entitlement: Entitlem
   throw new NeedsPaymentError(subs.length ? "period_limit" : "limit");
 }
 
+/** Stations, stays and editor-added luggage storage for a trip's destinations. */
+async function logisticsFor(prefs: TripPreferences, baseId: string | null): Promise<{ ctx: LogisticsContext; centre: LatLng | null }> {
+  const ids = [...new Set([baseId, ...(prefs.segments ?? []).map((s) => s.destinationId)].filter(Boolean) as string[])];
+  const stations: Record<string, Station> = {};
+  const luggage: NonNullable<LogisticsContext["luggage"]> = {};
+  let centre: LatLng | null = prefs.segments?.[0] ? { lat: prefs.segments[0].lat, lng: prefs.segments[0].lng } : null;
+  if (ids.length) {
+    const db = await getDb();
+    const rows = await db
+      .select({ destinationId: schema.places.destinationId, kind: schema.places.kind, name: schema.places.name, lat: schema.places.lat, lng: schema.places.lng, popularity: schema.places.popularity, details: schema.places.details, url: schema.places.websiteUrl })
+      .from(schema.places)
+      .where(and(inArray(schema.places.destinationId, ids), inArray(schema.places.kind, ["transport_hub", "luggage_storage"])));
+    // The main station = the most widely covered railway hub of each destination.
+    for (const r of rows.filter((x) => x.kind === "transport_hub" && (x.details as { hub?: string })?.hub === "rail").sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0))) {
+      stations[r.destinationId] ??= { name: r.name, lat: r.lat, lng: r.lng };
+    }
+    for (const r of rows.filter((x) => x.kind === "luggage_storage")) (luggage[r.destinationId] ??= []).push({ name: r.name, lat: r.lat, lng: r.lng, url: r.url && /^https:\/\//.test(r.url) ? r.url : null });
+    if (!centre && baseId) {
+      const [c] = await db.select({ lat: schema.cities.lat, lng: schema.cities.lng }).from(schema.destinations).innerJoin(schema.cities, eq(schema.cities.id, schema.destinations.cityId)).where(eq(schema.destinations.id, baseId));
+      if (c) centre = { lat: c.lat, lng: c.lng };
+    }
+  }
+  return { ctx: { prefs, stays: staysFor(prefs, baseId), stations, baseDestinationId: baseId, luggage }, centre };
+}
+
+/** Adds the travel logistics, then refines legs with a routing provider when configured. */
+async function finishDays(days: PlannedDay[], ctx: LogisticsContext, prefs: TripPreferences): Promise<PlannedDay[]> {
+  const withLogistics = applyLogistics(days, ctx);
+  return Promise.all(withLogistics.map(async (d) => ({ ...d, stops: scheduleDay(await refineLegs(d.stops), d.startTime, prefs.transport) })));
+}
+
 async function generateDays(prefs: TripPreferences, destinationId: string | null, locale: string, locked: Record<number, PlannedStop[]> = {}): Promise<{ days: PlannedDay[]; source: "ai" | "rules" }> {
+  const { ctx, centre } = await logisticsFor(prefs, destinationId);
+  const timing = { arrivalReady: centre ? arrivalReadyMinutes(prefs, ctx.stays[destinationId ?? ""] ?? null, centre) : null };
   if (isMultiCity(prefs)) {
     // Multi-city trips use the rules engine: it knows the journeys between places and never invents them.
     const segments = prefs.segments!;
     const dates = tripDates(prefs);
-    const days = buildPlan({ prefs, slots: layoutDays(segments, dates.length), dates, places: await placesBySegment(segments), locked });
-    const refined = await Promise.all(days.map(async (d) => ({ ...d, stops: scheduleDay(await refineLegs(d.stops), d.startTime, prefs.transport) })));
-    return { days: refined, source: "rules" };
+    const days = buildPlan({ prefs, slots: layoutDays(segments, dates.length), dates, places: await placesBySegment(segments), locked, timing });
+    return { days: await finishDays(days, ctx, prefs), source: "rules" };
   }
   const places = await getCandidatePlaces(destinationId);
   const ai = await generateWithAI(prefs, places, MAX_TRIP_DAYS, locale);
-  const days = ai ?? buildItinerary(prefs, places, MAX_TRIP_DAYS);
-  const refined = await Promise.all(days.map(async (d) => ({ ...d, stops: scheduleDay(await refineLegs(d.stops), d.startTime, prefs.transport) })));
-  return { days: refined, source: ai ? "ai" : "rules" };
+  const days = ai ?? buildItinerary(prefs, places, MAX_TRIP_DAYS, timing);
+  return { days: await finishDays(days, ctx, prefs), source: ai ? "ai" : "rules" };
 }
 
 function stopRow(tripId: string, dayId: string, s: PlannedStop, position: number) {
@@ -549,7 +587,7 @@ async function loadDayStops(dayId: string, tripId: string) {
 }
 
 function rowToPlanned(s: typeof schema.itineraryStops.$inferSelect): PlannedStop {
-  const { intercity: _i, officialUrl: _o, ticketed: _t, ...v } = toStopView(s);
+  const { intercity: _i, officialUrl: _o, ticketed: _t, logistics: _l, ...v } = toStopView(s);
   return { ...v, id: s.id, details: s.details ?? null };
 }
 
@@ -588,7 +626,8 @@ export async function reorderStops(userId: string, tripId: string, dayId: string
   const byId = new Map(stops.map((s) => [s.id, s]));
   const ordered = orderedIds.map((id) => byId.get(id)).filter(Boolean) as (typeof stops)[number][];
   for (const s of stops) if (!orderedIds.includes(s.id)) ordered.push(s); // never drop stops on a malformed request
-  await rescheduleAndSave(tripId, dayId, prefs, ordered.map(rowToPlanned), day.startTime);
+  // Leaving/returning to the accommodation, check-in and the like stay where they are.
+  await rescheduleAndSave(tripId, dayId, prefs, pinLogistics(stops.map(rowToPlanned), ordered.map(rowToPlanned)), day.startTime);
 }
 
 /** Moves a stop to another day (appended before dinner if present). */
@@ -596,13 +635,12 @@ export async function moveStopToDay(userId: string, tripId: string, stopId: stri
   const { prefs } = await assertOwner(tripId, userId);
   const db = await getDb();
   const [stop] = await db.select().from(schema.itineraryStops).where(and(eq(schema.itineraryStops.id, stopId), eq(schema.itineraryStops.tripId, tripId)));
-  if (!stop || stop.dayId === toDayId) return;
+  if (!stop || stop.dayId === toDayId || stop.details?.role || stop.details?.intercity) return;
   const target = await loadDayStops(toDayId, tripId);
   const source = await loadDayStops(stop.dayId, tripId);
   const targetStops = target.stops.map(rowToPlanned);
-  const dinnerIdx = targetStops.findIndex((s) => s.mealType === "dinner");
   const moved = { ...rowToPlanned(stop), id: undefined };
-  targetStops.splice(dinnerIdx >= 0 ? dinnerIdx : targetStops.length, 0, moved);
+  targetStops.splice(insertionIndex(targetStops), 0, moved);
   await db.delete(schema.itineraryStops).where(eq(schema.itineraryStops.id, stopId));
   await rescheduleAndSave(tripId, toDayId, prefs, targetStops, target.day.startTime);
   await rescheduleAndSave(tripId, source.day.id, prefs, source.stops.filter((s) => s.id !== stopId).map(rowToPlanned), source.day.startTime);
@@ -612,7 +650,7 @@ export async function removeStop(userId: string, tripId: string, stopId: string)
   const { prefs } = await assertOwner(tripId, userId);
   const db = await getDb();
   const [stop] = await db.select().from(schema.itineraryStops).where(and(eq(schema.itineraryStops.id, stopId), eq(schema.itineraryStops.tripId, tripId)));
-  if (!stop) return;
+  if (!stop || stop.details?.role) return; // logistics stops are part of the plan's structure
   const { day, stops } = await loadDayStops(stop.dayId, tripId);
   await rescheduleAndSave(tripId, day.id, prefs, stops.filter((s) => s.id !== stopId).map(rowToPlanned), day.startTime);
 }
@@ -656,8 +694,7 @@ export async function addStop(
   }
   if (!newStop) return;
   const planned = stops.map(rowToPlanned);
-  const dinnerIdx = planned.findIndex((s) => s.mealType === "dinner");
-  planned.splice(dinnerIdx >= 0 ? dinnerIdx : planned.length, 0, newStop);
+  planned.splice(insertionIndex(planned), 0, newStop);
   await rescheduleAndSave(tripId, dayId, prefs, planned, day.startTime);
 }
 
@@ -707,9 +744,11 @@ export async function regenerateDay(userId: string, tripId: string, dayId: strin
   const locked = stops.filter((s) => s.locked && s.kind !== "transport").map(rowToPlanned);
 
   let planned: PlannedDay;
+  const { ctx, centre } = await logisticsFor(prefs, tripDestination);
+  const ready = day.dayIndex === 0 && centre ? arrivalReadyMinutes(prefs, ctx.stays[tripDestination ?? ""] ?? null, centre) : null;
   const slot = isMultiCity(prefs) ? layoutDays(prefs.segments!, tripDates(prefs).length)[day.dayIndex] : undefined;
   if (slot && slot.segment.destinationId === destinationId) {
-    planned = buildPlan({ prefs, slots: [{ ...slot, index: 0 }], dates: [day.date ?? ""], places: { [slot.segment.slug]: pool }, locked: { 0: locked } })[0];
+    planned = buildPlan({ prefs, slots: [{ ...slot, index: 0 }], dates: [day.date ?? ""], places: { [slot.segment.slug]: pool }, locked: { 0: locked }, timing: { arrivalReady: ready } })[0];
   } else {
     const scores = new Map(places.map((p, i) => [p.id, scorePlace(p, prefs, (places.length - i) / places.length)]));
     planned = buildDay({
@@ -720,9 +759,16 @@ export async function regenerateDay(userId: string, tripId: string, dayId: strin
       scores,
       lockedStops: locked,
       start: prefs.accommodation?.lat != null && prefs.accommodation?.lng != null ? { lat: prefs.accommodation.lat, lng: prefs.accommodation.lng } : null,
+      ...(ready != null ? { startAt: toHHMM(Math.min(ready, 22 * 60)), targetDelta: ready >= 17 * 60 ? -9 : ready >= 14 * 60 ? -2 : ready >= 12 * 60 ? -1 : 0 } : {}),
     }).day;
   }
-  const refined = scheduleDay(await refineLegs(planned.stops), day.startTime || dayStartTime(prefs), prefs.transport);
+  // Re-add the day's logistics in the context of the whole trip (first/last day, travel days…).
+  const allDays = await db.select().from(schema.itineraryDays).where(eq(schema.itineraryDays.tripId, tripId)).orderBy(asc(schema.itineraryDays.dayIndex));
+  const shell: PlannedDay[] = allDays.map((d) => ({ dayIndex: d.dayIndex, date: d.date, title: d.title, startTime: d.startTime, stops: [], destinationId: d.destinationId, kind: d.kind }));
+  const at = shell.findIndex((d) => d.dayIndex === day.dayIndex);
+  shell[at] = { ...planned, destinationId: day.destinationId, kind: day.kind };
+  planned = applyLogisticsAt(shell, at, ctx);
+  const refined = scheduleDay(await refineLegs(planned.stops), planned.startTime || dayStartTime(prefs), prefs.transport);
   await db.transaction(async (tx) => {
     await tx
       .delete(schema.itineraryStops)
@@ -734,7 +780,7 @@ export async function regenerateDay(userId: string, tripId: string, dayId: strin
       if (s.id) await tx.update(schema.itineraryStops).set(row).where(eq(schema.itineraryStops.id, s.id));
       else await tx.insert(schema.itineraryStops).values(row);
     }
-    await tx.update(schema.itineraryDays).set({ title: planned.title.slice(0, 200) }).where(eq(schema.itineraryDays.id, dayId));
+    await tx.update(schema.itineraryDays).set({ title: planned.title.slice(0, 200), startTime: planned.startTime }).where(eq(schema.itineraryDays.id, dayId));
     await tx.update(schema.trips).set({ updatedAt: new Date() }).where(eq(schema.trips.id, tripId));
   });
 }
@@ -787,6 +833,8 @@ async function restructureTrip(tripId: string, tripDestination: string | null, n
 /** Single-destination generation that keeps locked stops on their days. */
 async function generateSingleWithLocked(prefs: TripPreferences, destinationId: string | null, locale: string, locked: Record<number, PlannedStop[]>) {
   if (!Object.keys(locked).length) return generateDays(prefs, destinationId, locale);
+  const { ctx, centre } = await logisticsFor(prefs, destinationId);
+  const ready = centre ? arrivalReadyMinutes(prefs, ctx.stays[destinationId ?? ""] ?? null, centre) : null;
   const places = await getCandidatePlaces(destinationId);
   const lockedIds = new Set(Object.values(locked).flat().map((s) => s.placeId).filter(Boolean));
   const dates = tripDates(prefs);
@@ -795,11 +843,12 @@ async function generateSingleWithLocked(prefs: TripPreferences, destinationId: s
   let remaining = places.filter((p) => !lockedIds.has(p.id));
   const days: PlannedDay[] = [];
   for (let i = 0; i < dates.length; i++) {
-    const { day, used } = buildDay({ dayIndex: i, date: dates[i], prefs, pool: remaining, scores, lockedStops: locked[i] ?? [], start, isArrivalDay: i === 0 && dates.length > 1 && Boolean(prefs.departureTime), isDepartureDay: i === dates.length - 1 && dates.length > 1 && Boolean(prefs.returnTime) });
+    const arrival = i === 0 && ready != null ? { startAt: toHHMM(Math.min(ready, 22 * 60)), targetDelta: ready >= 17 * 60 ? -9 : ready >= 14 * 60 ? -2 : ready >= 12 * 60 ? -1 : 0 } : {};
+    const { day, used } = buildDay({ dayIndex: i, date: dates[i], prefs, pool: remaining, scores, lockedStops: locked[i] ?? [], start, isArrivalDay: i === 0 && dates.length > 1 && Boolean(prefs.departureTime), isDepartureDay: i === dates.length - 1 && dates.length > 1 && Boolean(prefs.returnTime), ...arrival });
     remaining = remaining.filter((p) => !used.includes(p.id));
-    days.push({ ...day, stops: scheduleDay(await refineLegs(day.stops), day.startTime, prefs.transport) });
+    days.push(day);
   }
-  return { days, source: "rules" as const };
+  return { days: await finishDays(days, ctx, prefs), source: "rules" as const };
 }
 
 export type SplitChoice = { optionId: string } | { slug: string; type: "stay" | "day_trip" };
@@ -842,6 +891,36 @@ export async function setAccommodation(userId: string, tripId: string, acc: Trip
   await restructureTrip(tripId, destinationId, { ...prefs, accommodation: { ...prefs.accommodation, ...acc } }, locale);
 }
 
+/** Saves (or clears) a booked stay in another city of a multi-city trip, then re-plans. */
+export async function setStay(userId: string, tripId: string, slug: string, stay: BookedStay | null, locale: string) {
+  const { prefs, destinationId } = await assertOwner(tripId, userId);
+  if (!prefs.segments?.some((x) => x.slug === slug)) throw new Error("not_found");
+  const stays = { ...(prefs.stays ?? {}) };
+  if (stay) stays[slug] = stay;
+  else delete stays[slug];
+  await restructureTrip(tripId, destinationId, { ...prefs, stays }, locale);
+}
+
+export interface LogisticsPatch {
+  arrival: TravelEnd | null;
+  departure: TravelEnd | null;
+  arrivalTime: string | null;
+  departureTime: string | null;
+  checkInTime: string | null;
+  checkOutTime: string | null;
+}
+
+/** Arrival/departure and check-in/out times, editable after the trip was created. Re-plans the trip. */
+export async function setLogistics(userId: string, tripId: string, patch: LogisticsPatch, locale: string) {
+  const { prefs, destinationId } = await assertOwner(tripId, userId);
+  await restructureTrip(
+    tripId,
+    destinationId,
+    { ...prefs, arrival: patch.arrival, departure: patch.departure, departureTime: patch.arrivalTime, returnTime: patch.departureTime, checkInTime: patch.checkInTime, checkOutTime: patch.checkOutTime },
+    locale,
+  );
+}
+
 export async function duplicateTrip(userId: string, tripId: string, copyLabel: string) {
   const src = await getTrip(tripId, userId);
   if (!src) throw new Error("not_found");
@@ -877,7 +956,7 @@ export async function duplicateTrip(userId: string, tripId: string, copyLabel: s
       startTime: d.startTime,
       destinationId: d.destinationId === src.destinationId ? null : d.destinationId,
       kind: d.kind,
-      stops: d.stops.map(({ intercity, officialUrl: _o, ticketed: _t, ...s }) => ({ ...s, id: undefined, details: intercity ? { intercity } : null })),
+      stops: d.stops.map(({ intercity, officialUrl: _o, ticketed: _t, logistics, ...s }) => ({ ...s, id: undefined, details: intercity || logistics ? { ...(logistics ?? {}), ...(intercity ? { intercity } : {}) } : null })),
     })),
   );
   return copy.id;

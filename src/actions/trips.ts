@@ -7,9 +7,9 @@ import { getDb, schema } from "@/db";
 import { redirect } from "@/i18n/navigation";
 import { getCurrentUser } from "@/lib/auth/session";
 import { rateLimit } from "@/lib/rate-limit";
-import { detailedTripSchema, fastTripSchema, flattenErrors, formToObject, type ActionState } from "@/lib/validation";
+import { detailedTripSchema, fastTripSchema, flattenErrors, formToObject, logisticsSchema, type ActionState } from "@/lib/validation";
 import * as trips from "@/lib/trips";
-import type { TripPreferences } from "@/lib/itinerary/types";
+import type { TravelEnd, TripPreferences } from "@/lib/itinerary/types";
 
 const ARRAY_KEYS = ["interests", "foodPrefs", "accommodationTypes"];
 
@@ -22,6 +22,18 @@ async function resolveDestination(slug: string) {
     .where(and(eq(schema.destinations.slug, slug), eq(schema.destinations.published, true)))
     .limit(1);
   return rows[0] ?? null;
+}
+
+/** Arrival/departure points and accommodation times from the detailed planner. */
+function travelEnds(v: { arrivalMode?: TravelEnd["mode"]; arrivalPlace?: string; arrivalLat?: number | null; arrivalLng?: number | null; departureMode?: TravelEnd["mode"] | "same"; departurePlace?: string; departureLat?: number | null; departureLng?: number | null; checkInTime?: string; checkOutTime?: string }) {
+  const end = (mode: TravelEnd["mode"] | undefined, name: string | undefined, lat: number | null | undefined, lng: number | null | undefined): TravelEnd | null => {
+    if (!mode) return null;
+    const located = (mode === "plane" || mode === "train" || mode === "bus") && lat != null && lng != null;
+    return { mode, name: located ? (name || null) : null, lat: located ? lat : null, lng: located ? lng : null };
+  };
+  const arrival = end(v.arrivalMode, v.arrivalPlace, v.arrivalLat, v.arrivalLng);
+  const departure = v.departureMode && v.departureMode !== "same" ? end(v.departureMode, v.departurePlace, v.departureLat, v.departureLng) : arrival;
+  return { arrival, departure, checkInTime: v.checkInTime || null, checkOutTime: v.checkOutTime || null };
 }
 
 export async function createTripAction(mode: "fast" | "detailed", _prev: ActionState, fd: FormData): Promise<ActionState> {
@@ -80,6 +92,7 @@ export async function createTripAction(mode: "fast" | "detailed", _prev: ActionS
       lng: v.accommodationLng ?? null,
       types: v.accommodationTypes ?? [],
     },
+    ...(mode === "detailed" ? travelEnds(v) : {}),
   };
 
   const tp = await getTranslations({ locale, namespace: "planner" });
@@ -267,6 +280,38 @@ export async function setAccommodationAction(tripId: string, input: { status: "b
   const acc = status === "booked" ? { status, name, address, lat: lat != null && lng != null ? lat : null, lng: lat != null && lng != null ? lng : null } : { status, name: null, address: null, lat: null, lng: null };
   return withUser(async (uid) => {
     await trips.setAccommodation(uid, tripId, acc, locale);
+    return freshWithPlanning(uid, tripId, locale);
+  });
+}
+
+export async function setStayAction(tripId: string, slug: string, input: { name?: string | null; address?: string | null; lat?: number | null; lng?: number | null } | null) {
+  const locale = await getLocale();
+  let stay: { name: string; address: string | null; lat: number | null; lng: number | null } | null = null;
+  if (input) {
+    const name = String(input.name ?? "").trim().slice(0, 140);
+    if (!name) throw new Error("invalid");
+    const lat = input.lat != null && Number.isFinite(+input.lat) && Math.abs(+input.lat) <= 90 ? +input.lat : null;
+    const lng = input.lng != null && Number.isFinite(+input.lng) && Math.abs(+input.lng) <= 180 ? +input.lng : null;
+    stay = { name, address: String(input.address ?? "").trim().slice(0, 240) || null, lat: lat != null && lng != null ? lat : null, lng: lat != null && lng != null ? lng : null };
+  }
+  return withUser(async (uid) => {
+    await trips.setStay(uid, tripId, String(slug).slice(0, 80), stay, locale);
+    return freshWithPlanning(uid, tripId, locale);
+  });
+}
+
+export async function setLogisticsAction(tripId: string, input: unknown) {
+  const locale = await getLocale();
+  const parsed = logisticsSchema.safeParse(input);
+  if (!parsed.success) throw new Error("invalid");
+  const v = parsed.data;
+  const clean = (e: typeof v.arrival): TravelEnd | null => {
+    if (!e) return null;
+    const located = (e.mode === "plane" || e.mode === "train" || e.mode === "bus") && e.lat != null && e.lng != null;
+    return { mode: e.mode, name: located ? e.name || null : null, lat: located ? e.lat! : null, lng: located ? e.lng! : null };
+  };
+  return withUser(async (uid) => {
+    await trips.setLogistics(uid, tripId, { arrival: clean(v.arrival), departure: clean(v.departure), arrivalTime: v.arrivalTime || null, departureTime: v.departureTime || null, checkInTime: v.checkInTime || null, checkOutTime: v.checkOutTime || null }, locale);
     return freshWithPlanning(uid, tripId, locale);
   });
 }

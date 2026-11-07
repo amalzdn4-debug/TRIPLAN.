@@ -800,7 +800,8 @@
       "from": "Into {place}"
     },
     "ticketsOfficial": "Tickets & opening hours · official website",
-    "officialSite": "Official website"
+    "officialSite": "Official website",
+    "typical": "typical"
   },
   "map": {
     "label": "Itinerary map",
@@ -1663,7 +1664,9 @@
     "dates": "{from} – {to}",
     "showArea": "Show on map",
     "areaNote": "Suggested from where your planned sights are — not a rating of the area. Prices and availability are on the booking sites.",
-    "cityOnly": "We don't have enough sights mapped in {city} yet to suggest an area — a central stay near public transport is a safe choice."
+    "cityOnly": "We don't have enough sights mapped in {city} yet to suggest an area — a central stay near public transport is a safe choice.",
+    "addressHint": "Type the street and number, e.g. Via Noale 7, Milano, then pick a suggestion.",
+    "pinFound": "Found on the map: days will start and end here."
   },
   "journey": {
     "title": {
@@ -1675,7 +1678,10 @@
     "estimate": "Estimated {time}",
     "checkNote": "Not a live timetable — check times, fares and availability before you travel.",
     "googleMaps": "Directions in Google Maps",
-    "distance": "about {km} km"
+    "distance": "about {km} km",
+    "stations": "From {from} to {to}",
+    "fromStation": "From {from}",
+    "toStation": "To {to}"
   },
   "upload": {
     "label": "Photos (optional)",
@@ -1707,5 +1713,97 @@
       "verifyEmailFirst": "Verify your email address to upload photos.",
       "forbidden": "Upload refused."
     }
+  },
+  "geo": {
+    "noResults": "No matching address found. Try adding the city, or place the pin on the map.",
+    "unavailable": "Address search isn't available right now. You can place the pin on the map instead.",
+    "attribution": "Search: © OpenStreetMap contributors"
+  },
+  "logistics": {
+    "yourStay": "your accommodation",
+    "leave": "Leave {place}",
+    "backAt": "Back at {place}",
+    "checkIn": "Check in at {place}",
+    "collectAndCheckIn": "Collect your bags and check in at {place}",
+    "checkOut": "Check out of {place}",
+    "dropBags": "Leave your bags",
+    "collectBags": "Collect your bags",
+    "arriveAt": "Arrive at {place}",
+    "headTo": "Head to {place}",
+    "beAtBy": "Be at {place} by {time}",
+    "arrivalAt": {
+      "plane": "Flight lands at {time}",
+      "train": "Train arrives at {time}",
+      "bus": "Bus arrives at {time}",
+      "car": "Arriving at {time}",
+      "other": "Arriving at {time}"
+    },
+    "exitTime": "allow about {duration} to get out with your bags",
+    "departureAt": {
+      "plane": "Your flight leaves at {time}.",
+      "train": "Your train leaves at {time}.",
+      "bus": "Your bus leaves at {time}.",
+      "car": "Leaving at {time}.",
+      "other": "Leaving at {time}."
+    },
+    "airportEarly": "We plan to be at the airport 2 hours before departure. Check your airline's advice.",
+    "typicalOne": "typically {time}",
+    "typicalRange": "typically {from}–{to} min",
+    "officialTimes": "Times & tickets (official)",
+    "transferNote": "Typical journey times from the operator. Check today's timetable and fares on their website.",
+    "noVerifiedTransfer": "We don't have verified transfer details for this airport yet: use the live directions.",
+    "liveDirections": "Live directions (Google Maps)",
+    "bagsBeforeCheckIn": "Ask {place} to keep your bags until check-in (many places do), or use luggage storage nearby.",
+    "bagsAfterCheckOut": "Ask {place} to keep your bags after check-out, or use luggage storage nearby. Collect them before you leave.",
+    "bagsNearStation": "Leave your bags at a luggage storage near {place}, then collect them before check-in.",
+    "storageNear": "Luggage storage nearby: {name} ({distance})",
+    "website": "website",
+    "findStorage": "Find luggage storage nearby",
+    "storageNote": "Storage services and prices vary: check opening hours before you go.",
+    "checkInFrom": "Check-in from {time}",
+    "checkOutBy": "Check-out by {time}",
+    "toPoint": "to {place}",
+    "fromPoint": "from {place}",
+    "takeFrom": "Take the {service} from {place}"
+  },
+  "travelEnd": {
+    "how": "How?",
+    "modes": {
+      "plane": "Plane",
+      "train": "Train",
+      "bus": "Bus or coach",
+      "car": "Car",
+      "other": "Other"
+    },
+    "timeHint": "24-hour time, e.g. 09:30",
+    "quickAirports": "Airports with verified transfer details",
+    "place": {
+      "plane": "Airport",
+      "train": "Station",
+      "bus": "Bus station or stop",
+      "car": "Place",
+      "other": "Place"
+    },
+    "found": "Found: the plan will start here.",
+    "placeHint": "Start typing and pick from the list.",
+    "title": "Arrival & departure",
+    "arriving": "Arriving",
+    "leaving": "Leaving",
+    "checkIn": "Check-in",
+    "checkOut": "Check-out",
+    "default": "usual time",
+    "notSet": "Not set",
+    "addForGuidance": "Add how and when you arrive to get airport or station directions and a plan for your luggage.",
+    "edit": "Edit",
+    "arrivalLegend": "Getting there",
+    "departureLegend": "Leaving",
+    "arrivalTime": "Arrival time",
+    "departureTime": "Departure time",
+    "sameWay": "I leave the same way (same airport or station)",
+    "replanNote": "Saving re-plans the trip. Locked stops are kept.",
+    "save": "Save and re-plan",
+    "cancel": "Cancel",
+    "checkInHint": "From your booking. Usually 14:00–16:00.",
+    "checkOutHint": "From your booking. Usually 10:00–11:00."
   }
 }

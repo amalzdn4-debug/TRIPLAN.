@@ -32,6 +32,16 @@ export function formatDate(iso: string | null | undefined, locale: string, opts:
   return new Intl.DateTimeFormat(intlLocale(locale), { ...opts, timeZone: "UTC" }).format(new Date(Date.UTC(y, m - 1, d)));
 }
 
+/** A timestamp (Date or ISO string) as a date, or date + time, in the user's language — English uses day/month/year. */
+export function formatDateTime(value: Date | string, locale: string, opts: Intl.DateTimeFormatOptions = { dateStyle: "medium" }): string {
+  const d = typeof value === "string" ? new Date(value) : value;
+  try {
+    return new Intl.DateTimeFormat(intlLocale(locale), opts).format(d);
+  } catch {
+    return d.toISOString().slice(0, 10);
+  }
+}
+
 export function formatTime(hhmm: string | null | undefined, locale: string, pref: "auto" | "12h" | "24h" = "auto"): string {
   if (!hhmm) return "";
   const [h, m] = hhmm.split(":").map(Number);

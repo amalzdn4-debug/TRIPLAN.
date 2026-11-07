@@ -69,12 +69,34 @@ const base = {
   transport: z.enum(TRANSPORT_PREFS).default("public"),
 };
 
+/** "HH:MM" (24 h) or empty. */
+const clockTime = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, E.invalid).or(z.literal("")).default("");
+
+/** Arrival/departure end point and accommodation times, as edited in the trip workspace. */
+export const travelEndSchema = z
+  .object({
+    mode: z.enum(["plane", "train", "bus", "car", "other"]),
+    name: z.string().trim().max(160).nullable().optional(),
+    lat: z.number().min(-90).max(90).nullable().optional(),
+    lng: z.number().min(-180).max(180).nullable().optional(),
+  })
+  .nullable();
+
+export const logisticsSchema = z.object({
+  arrival: travelEndSchema,
+  departure: travelEndSchema,
+  arrivalTime: clockTime,
+  departureTime: clockTime,
+  checkInTime: clockTime,
+  checkOutTime: clockTime,
+});
+
 export const fastTripSchema = dateRange(base);
 
 export const detailedTripSchema = dateRange({
   ...base,
-  departureTime: z.string().regex(/^\d{2}:\d{2}$/, E.invalid).or(z.literal("")).default(""),
-  returnTime: z.string().regex(/^\d{2}:\d{2}$/, E.invalid).or(z.literal("")).default(""),
+  departureTime: clockTime,
+  returnTime: clockTime,
   companions: z.enum(["solo", "couple", "family", "friends", "business"]).default("couple"),
   budgetPerPerson: optionalNumber,
   budgetAccommodation: optionalNumber,
@@ -92,6 +114,17 @@ export const detailedTripSchema = dateRange({
   dayLength: z.enum(["full", "flexible"]).default("flexible"),
   activityBalance: z.enum(["more_activities", "balanced", "more_free_time"]).default("balanced"),
   walking: z.enum(["low", "medium", "high"]).default("medium"),
+  // Arrival / departure (airport or station from the address search) and accommodation times.
+  arrivalMode: z.enum(["plane", "train", "bus", "car", "other"]).default("plane"),
+  arrivalPlace: text(160).optional().default(""),
+  arrivalLat: optionalCoord(-90, 90),
+  arrivalLng: optionalCoord(-180, 180),
+  departureMode: z.enum(["same", "plane", "train", "bus", "car", "other"]).default("same"),
+  departurePlace: text(160).optional().default(""),
+  departureLat: optionalCoord(-90, 90),
+  departureLng: optionalCoord(-180, 180),
+  checkInTime: clockTime,
+  checkOutTime: clockTime,
   participants: z.array(z.object({ name: text(80), isChild: z.boolean().default(false) })).max(20).default([]),
 });
 

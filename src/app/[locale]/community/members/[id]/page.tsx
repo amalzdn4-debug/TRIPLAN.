@@ -1,10 +1,11 @@
 import { notFound } from "next/navigation";
-import { getFormatter, getTranslations, setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { getMemberProfile } from "@/lib/community";
 import { getCurrentUser } from "@/lib/auth/session";
 import { Avatar, PostCard } from "@/components/community/PostCard";
 import { Icon } from "@/components/ui/Icon";
+import { formatDateTime } from "@/lib/format";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; id: string }> }) {
   const { locale, id } = await params;
@@ -18,7 +19,6 @@ export default async function MemberPage({ params }: { params: Promise<{ locale:
   const { locale, id } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("community");
-  const format = await getFormatter();
   const m = await getMemberProfile(id);
   if (!m) notFound();
   const me = await getCurrentUser();
@@ -31,7 +31,7 @@ export default async function MemberPage({ params }: { params: Promise<{ locale:
             <h1>{m.name || t("member")}</h1>
             <p className="small muted" style={{ margin: 0 }}>
               {m.homeCity ? <><Icon name="home" style={{ display: "inline", inlineSize: 14, verticalAlign: -2 }} /> {m.homeCity} · </> : null}
-              {t("memberSince", { date: format.dateTime(new Date(m.memberSince), { month: "long", year: "numeric" }) })} · {t("postsN", { n: m.posts.length })} · {t("commentsN", { n: m.commentCount })}
+              {t("memberSince", { date: formatDateTime(m.memberSince, locale, { month: "long", year: "numeric" }) })} · {t("postsN", { n: m.posts.length })} · {t("commentsN", { n: m.commentCount })}
             </p>
             {m.bio ? <p className="lead" style={{ marginBlockStart: 12 }}>{m.bio}</p> : null}
             {me?.id === m.id ? <Link href="/account" className="btn btn--sm" style={{ marginBlockStart: 12 }}><Icon name="edit" />{t("editProfile")}</Link> : null}

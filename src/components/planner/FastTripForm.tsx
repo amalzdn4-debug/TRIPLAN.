@@ -9,6 +9,7 @@ import { ChipGroup, ChoiceCards, Counter } from "./Inputs";
 import { useDraft } from "./useDraft";
 import { CURRENCIES, todayPlus, type PlannerDestination } from "./shared";
 import type { ActionState } from "@/lib/validation";
+import { DateInput } from "./TimeDate";
 
 const action = createTripAction.bind(null, "fast");
 
@@ -62,10 +63,10 @@ export function FastTripForm({ destinations, defaults, aiEnabled }: { destinatio
       {selected && selected.placeCount === 0 ? <Notice tone="warning">{t("limitedData", { city: selected.city })}</Notice> : null}
       <div className="form-row">
         <Field label={t("arrivalDate")} name="startDate" error={err("startDate")}>
-          {(p) => <input {...p} className="input" type="date" value={v.startDate} min={todayPlus(0)} onChange={(e) => update("startDate", e.target.value)} required />}
+          {(p) => <DateInput {...p} value={v.startDate} min={todayPlus(0)} onChange={(x) => update("startDate", x)} required />}
         </Field>
         <Field label={t("departureDate")} name="endDate" error={err("endDate")}>
-          {(p) => <input {...p} className="input" type="date" value={v.endDate} min={v.startDate} onChange={(e) => update("endDate", e.target.value)} required />}
+          {(p) => <DateInput {...p} value={v.endDate} min={v.startDate} onChange={(x) => update("endDate", x)} required />}
         </Field>
         <Counter label={t("adults")} name="adults" value={v.adults} min={1} max={20} onChange={(n) => update("adults", n)} />
         <Counter label={t("children")} name="children" value={v.children} min={0} max={20} onChange={(n) => update("children", n)} />

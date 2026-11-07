@@ -224,17 +224,30 @@ function mealStop(mealType: NonNullable<PlannedStop["mealType"]>, near: Candidat
 export function scheduleDay(stops: PlannedStop[], startTime: string, transport: TripPreferences["transport"]): PlannedStop[] {
   let cursor = toMinutes(startTime);
   const out = stops.map((s) => ({ ...s }));
+  // A journey stop without a known station sits at the destination centre: the transfer to/from the
+  // station is a fixed estimate. With a known station it is a normal leg to real coordinates.
+  const unplacedJourney = (s: PlannedStop | undefined) => Boolean(s?.details?.intercity && !s.details.intercity.fromStation);
   out.forEach((stop, i) => {
+    const notBefore = stop.details?.notBefore;
+    if (notBefore && cursor < toMinutes(notBefore)) cursor = toMinutes(notBefore);
     if (stop.mealType === "lunch" && cursor < toMinutes("12:00") && toMinutes("12:00") - cursor <= 60) cursor = toMinutes("12:00");
     if (stop.mealType === "dinner" && cursor < toMinutes("19:00")) cursor = toMinutes("19:00");
     stop.startTime = toHHMM(cursor);
     cursor += stop.durationMin;
     const next = out[i + 1];
+    const fixed = stop.details?.fixedLeg;
     const transferMode = (s: PlannedStop) => s.details?.intercity?.mode ?? "train";
-    if (next && (next.kind === "transport" || stop.kind === "transport")) {
+    if (next && fixed) {
+      // A verified typical time (e.g. the airport train) or "already there" (0).
+      stop.travelMode = fixed.mode;
+      stop.travelMinutes = fixed.minutes;
+      stop.travelMeters = null;
+      stop.travelSource = "estimate";
+      cursor += fixed.minutes;
+    } else if (next && (unplacedJourney(next) || unplacedJourney(stop))) {
       // Getting to the station/airport before an intercity leg, or from it afterwards (estimate).
-      const minutes = next.kind === "transport" ? STATION_TRANSFER_MIN[transferMode(next)] : Math.min(30, STATION_TRANSFER_MIN[transferMode(stop)]);
-      stop.travelMode = transferMode(next.kind === "transport" ? next : stop) === "car" ? "driving" : "transit";
+      const minutes = unplacedJourney(next) ? STATION_TRANSFER_MIN[transferMode(next)] : Math.min(30, STATION_TRANSFER_MIN[transferMode(stop)]);
+      stop.travelMode = transferMode(unplacedJourney(next) ? next : stop) === "car" ? "driving" : "transit";
       stop.travelMinutes = minutes;
       stop.travelMeters = null;
       stop.travelSource = "estimate";
@@ -390,7 +403,18 @@ function dayTargets(prefs: TripPreferences, n: number, flags: { arrival: boolean
   return Array.from({ length: n }, (_, i) => Math.max(1, base - ((flags.arrival && i === 0) || (flags.departure && i === n - 1 && n > 1) ? 1 : 0)));
 }
 
-export function buildItinerary(prefs: TripPreferences, places: CandidatePlace[], maxDays: number): PlannedDay[] {
+/** When the traveller is free on arrival day (minutes after midnight) — computed by the logistics module. */
+export interface PlanTiming {
+  arrivalReady?: number | null;
+}
+
+/** Sights on the arrival day depend on when the traveller is actually free in the city. */
+function arrivalAdjust(ready: number | null | undefined): { startAt?: string; targetDelta?: number } {
+  if (ready == null) return {};
+  return { startAt: toHHMM(Math.min(ready, 22 * 60)), targetDelta: ready >= 17 * 60 ? -9 : ready >= 14 * 60 ? -2 : ready >= 12 * 60 ? -1 : 0 };
+}
+
+export function buildItinerary(prefs: TripPreferences, places: CandidatePlace[], maxDays: number, timing: PlanTiming = {}): PlannedDay[] {
   const dates = enumerateDates(prefs.startDate, prefs.endDate, maxDays);
   const scores = new Map(places.map((p, i) => [p.id, scorePlace(p, prefs, (places.length - i) / places.length)]));
   const start = prefs.accommodation.lat != null && prefs.accommodation.lng != null ? { lat: prefs.accommodation.lat, lng: prefs.accommodation.lng } : null;
@@ -410,6 +434,7 @@ export function buildItinerary(prefs: TripPreferences, places: CandidatePlace[],
       start,
       isArrivalDay: arrival && i === 0,
       isDepartureDay: departure && i === dates.length - 1,
+      ...(i === 0 ? arrivalAdjust(timing.arrivalReady) : {}),
     });
     remaining = remaining.filter((p) => !used.includes(p.id));
     return day;
@@ -441,10 +466,11 @@ export interface PlanInput {
   places: Record<string, CandidatePlace[]>;
   /** Locked stops per day index (kept on regeneration). */
   locked?: Record<number, PlannedStop[]>;
+  timing?: PlanTiming;
 }
 
 /** Builds a multi-city itinerary: stays, travel days between stays and day trips from the base. */
-export function buildPlan({ prefs, slots, dates, places, locked = {} }: PlanInput): PlannedDay[] {
+export function buildPlan({ prefs, slots, dates, places, locked = {}, timing = {} }: PlanInput): PlannedDay[] {
   const base = slots[0]?.segment;
   const accommodation = prefs.accommodation.lat != null && prefs.accommodation.lng != null ? { lat: prefs.accommodation.lat, lng: prefs.accommodation.lng } : null;
   const remaining: Record<string, CandidatePlace[]> = Object.fromEntries(Object.entries(places).map(([k, v]) => [k, v.slice()]));
@@ -519,6 +545,7 @@ export function buildPlan({ prefs, slots, dates, places, locked = {} }: PlanInpu
       isArrivalDay: isFirst && slots.length > 1 && Boolean(prefs.departureTime),
       isDepartureDay: isLast && Boolean(prefs.returnTime),
       placeName: seg.name,
+      ...(isFirst ? arrivalAdjust(timing.arrivalReady) : {}),
     });
     take(seg.slug, used);
     return { ...day, destinationId: seg.destinationId, kind: "normal" as const };

@@ -1,12 +1,13 @@
-import { getFormatter, getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { getUsage } from "@/lib/entitlements";
 import { Notice } from "@/components/ui/Form";
+import { formatDateTime } from "@/lib/format";
 
 /** Tells the traveller up-front how this trip will be covered — never a surprise charge. */
 export async function EntitlementBanner({ userId }: { userId: string }) {
   const t = await getTranslations("planner");
-  const format = await getFormatter();
+  const locale = await getLocale();
   const u = await getUsage(userId);
   if (u.admin) return <Notice tone="success">{t("coveredByAdmin")}</Notice>;
   const sub = u.subscription;
@@ -21,7 +22,7 @@ export async function EntitlementBanner({ userId }: { userId: string }) {
   if (u.credits > 0) return <Notice>{t("coveredByCredit", { n: u.credits })}</Notice>;
   return (
     <Notice tone="warning">
-      {sub ? t("periodUsedUp", { total: sub.tripsIncluded ?? 0, date: format.dateTime(sub.currentPeriodEnd ?? new Date(), { dateStyle: "medium" }) }) : t("needsPurchase")} <Link href="/pricing">{t("seePlans")}</Link>
+      {sub ? t("periodUsedUp", { total: sub.tripsIncluded ?? 0, date: formatDateTime(sub.currentPeriodEnd ?? new Date(), locale) }) : t("needsPurchase")} <Link href="/pricing">{t("seePlans")}</Link>
     </Notice>
   );
 }

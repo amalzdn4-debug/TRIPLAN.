@@ -129,6 +129,13 @@ Add each variable in **Vercel → Settings → Environment Variables** (Producti
 | Affiliate commissions | Acceptance into each programme (Booking.com, GetYourGuide, Viator…) | None. Managed in **/admin/affiliates** (see below). The old `*_AFFILIATE_ID` variables are no longer used; delete them if you added any. |
 | Footer social links | Real accounts only | `NEXT_PUBLIC_SOCIAL_INSTAGRAM`, `…_YOUTUBE`, `…_LINKEDIN`, `…_X` |
 
+### Address search, airports and luggage (no setup needed)
+
+- **Address search** (accommodation, airports, stations) uses Photon with OpenStreetMap data — free for fair use, no key. The site calls it from the server with a cache and a per-visitor limit; results are credited "© OpenStreetMap contributors". If traffic grows, set `GEOCODER_URL` to your own or a paid Photon instance.
+- **Airport transfers** with typical times (Malpensa Express, Leonardo Express…) are in `src/data/airport-transfers.ts`, each with a link to the operator's official page and the month it was checked. Re-check them a couple of times a year; other airports get distance and live Google Maps directions instead.
+- **Main railway stations** come from the destination import (Wikidata). Cities not imported yet fall back to an estimated transfer.
+- **Luggage storage**: the plan links to a live map search and suggests asking the accommodation. To name a specific storage you've checked, add a place of type "luggage storage" in **Admin → Destinations → (city)**; it's shown when within about 1.2 km.
+
 ### Emails with Resend (verification, password reset, contact form)
 
 Until this is set up the site says so honestly: members see "email verification isn't available yet, write to us", and the admin dashboard and **/admin/users** show a warning. Meanwhile you can verify people by hand with **Mark email as verified** in /admin/users (also for your own account).

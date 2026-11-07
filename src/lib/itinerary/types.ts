@@ -53,6 +53,31 @@ export interface TripPreferences {
   segments?: import("./split").TripSegment[];
   /** The traveller's answer to the stay-length suggestion, so it isn't shown again. */
   splitDecision?: "accepted" | "declined" | null;
+  /** How the traveller reaches the destination (time = departureTime above, the arrival time). */
+  arrival?: TravelEnd | null;
+  /** How they leave at the end (time = returnTime above). Defaults to the arrival point. */
+  departure?: TravelEnd | null;
+  /** Accommodation check-in / check-out times ("HH:MM"). Defaults: 15:00 / 10:00. */
+  checkInTime?: string | null;
+  checkOutTime?: string | null;
+  /** Booked accommodation in the other cities of a multi-city trip, keyed by destination slug. */
+  stays?: Record<string, BookedStay> | null;
+}
+
+export interface BookedStay {
+  name: string;
+  address?: string | null;
+  lat?: number | null;
+  lng?: number | null;
+}
+
+/** Where a trip starts or ends: an airport, a station, or simply by car. */
+export interface TravelEnd {
+  mode: "plane" | "train" | "bus" | "car" | "other";
+  /** Airport or station picked in the address search (null for car/other). */
+  name?: string | null;
+  lat?: number | null;
+  lng?: number | null;
 }
 
 export interface CandidatePlace extends LatLng {
@@ -80,6 +105,9 @@ export interface IntercityDetails {
   distanceKm: number;
   /** "out" / "back" for day trips, "onward" for moving to the next stay. */
   direction: "onward" | "out" | "back";
+  /** Departure / arrival stations when known (imported from Wikidata). The stop then sits at the departure station. */
+  fromStation?: string | null;
+  toStation?: string | null;
 }
 
 export interface PlannedStop {
@@ -107,7 +135,57 @@ export interface PlannedStop {
   travelMeters?: number | null;
   travelSource?: "provider" | "estimate" | null;
   /** Extra structured data, e.g. { intercity: IntercityDetails }. */
-  details?: { intercity?: IntercityDetails } | null;
+  details?: StopDetails | null;
+}
+
+/**
+ * Logistics stops added around the sights: leaving/returning to the accommodation, check-in and
+ * check-out, luggage storage, airport/station arrival and departure. They keep their place when
+ * the traveller reorders the day.
+ */
+export type LogisticsRole =
+  | "day_start"
+  | "day_end"
+  | "check_in"
+  | "check_out"
+  | "luggage_drop"
+  | "luggage_pickup"
+  | "arrival"
+  | "arrival_point"
+  | "departure_point"
+  | "departure"
+  | "station_arrival";
+
+export interface TransferOptionView {
+  mode: "train" | "metro" | "tram" | "bus" | "boat";
+  service: string;
+  to: string;
+  minutes: [number, number];
+  url: string;
+}
+
+export interface StopDetails {
+  intercity?: IntercityDetails;
+  role?: LogisticsRole;
+  /** The stop can't start before this time ("HH:MM"), e.g. check-in. */
+  notBefore?: string | null;
+  /** A known travel time to the next stop (e.g. a verified airport train), instead of an estimate. */
+  fixedLeg?: { minutes: number; mode: import("@/lib/geo").TravelMode; label?: string | null } | null;
+  /** Verified airport transfer options shown on an arrival/departure stop. */
+  transfers?: TransferOptionView[] | null;
+  /** Where the traveller has to be by ("HH:MM"), e.g. 2 h before a flight. */
+  deadline?: string | null;
+  /** Arrival/departure clock time given by the traveller ("HH:MM"). */
+  at?: string | null;
+  travelMode?: TravelEnd["mode"];
+  /** Live directions (Google Maps) for an arrival/departure transfer. */
+  directionsUrl?: string | null;
+  /** Map search for luggage storage near this point. */
+  luggageUrl?: string | null;
+  /** A luggage-storage place an editor added near this point. */
+  storage?: { name: string; url: string | null; meters: number } | null;
+  /** The accommodation's name is known (booked) — otherwise the UI says "your accommodation". */
+  booked?: boolean;
 }
 
 export interface PlannedDay {

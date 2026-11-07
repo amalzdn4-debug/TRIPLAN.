@@ -1,7 +1,8 @@
 "use client";
 
 import { useActionState, useState, useTransition } from "react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { formatDateTime } from "@/lib/format";
 import { Link } from "@/i18n/navigation";
 import { Icon } from "@/components/ui/Icon";
 import { Field, FormMessage, SubmitButton, useFieldError } from "@/components/ui/Form";
@@ -47,7 +48,7 @@ export function Comments({ postId, comments, signedIn, canComment, verified, ema
 
 function CommentItem({ comment, signedIn }: { comment: CommentView; signedIn: boolean }) {
   const t = useTranslations("community");
-  const format = useFormatter();
+  const locale = useLocale();
   const [pending, start] = useTransition();
   const [reporting, setReporting] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
@@ -60,7 +61,7 @@ function CommentItem({ comment, signedIn }: { comment: CommentView; signedIn: bo
         <p className="small" style={{ margin: 0 }}>
           <bdi><Link href={`/community/members/${comment.authorId}`} className="post__author">{comment.author || t("member")}</Link></bdi>
           {" · "}
-          <bdi><time dateTime={comment.createdAt}>{format.dateTime(new Date(comment.createdAt), { dateStyle: "medium", timeStyle: "short" })}</time></bdi>
+          <bdi><time dateTime={comment.createdAt}>{formatDateTime(comment.createdAt, locale, { dateStyle: "medium", timeStyle: "short" })}</time></bdi>
         </p>
         <p dir="auto" style={{ margin: 0, whiteSpace: "pre-wrap" }}>{comment.body}</p>
         <div className="cluster" style={{ gap: 6 }}>

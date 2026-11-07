@@ -39,6 +39,19 @@ export function LocationPicker({ center, value, onChange }: { center: { lat: num
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [center.lat, center.lng]);
 
+  // A point chosen elsewhere (e.g. the address search) moves the pin and the view.
+  useEffect(() => {
+    const m = map.current;
+    if (!m || !value) return;
+    loadLeaflet().then((L) => {
+      if (!map.current) return;
+      const icon = L.divIcon({ className: "", html: '<div class="tp-marker tp-marker--home"><span>★</span></div>', iconSize: [30, 30], iconAnchor: [15, 30] });
+      if (marker.current) marker.current.setLatLng([value.lat, value.lng]);
+      else marker.current = L.marker([value.lat, value.lng], { icon }).addTo(m);
+      if (!m.getBounds().pad(-0.2).contains([value.lat, value.lng])) m.setView([value.lat, value.lng], Math.max(m.getZoom(), 15));
+    });
+  }, [value?.lat, value?.lng]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <div>
       <div ref={el} style={{ blockSize: 260, borderRadius: 12, overflow: "hidden", border: "1px solid var(--color-border)" }} role="application" aria-label={t("pickOnMap")} />

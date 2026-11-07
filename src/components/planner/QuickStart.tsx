@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Icon } from "@/components/ui/Icon";
 import { todayPlus } from "./shared";
+import { DateInput } from "./TimeDate";
 
 /** "Where to?" — preferences entered here survive the sign-in step via the URL. */
 export function QuickStart({ destinations }: { destinations: { slug: string; city: string; country: string }[] }) {
@@ -36,11 +37,11 @@ export function QuickStart({ destinations }: { destinations: { slug: string; cit
       </div>
       <div className="field" style={{ flex: "1 1 150px" }}>
         <label htmlFor="qs-start">{t("from")}</label>
-        <input id="qs-start" className="input" type="date" min={todayPlus(0)} value={start} onChange={(e) => setStart(e.target.value)} />
+        <DateInput id="qs-start" min={todayPlus(0)} value={start} onChange={setStart} />
       </div>
       <div className="field" style={{ flex: "1 1 150px" }}>
         <label htmlFor="qs-end">{t("to")}</label>
-        <input id="qs-end" className="input" type="date" min={start} value={end} onChange={(e) => setEnd(e.target.value)} />
+        <DateInput id="qs-end" min={start} value={end} onChange={setEnd} />
       </div>
       <button type="submit" className="btn btn--primary btn--lg" style={{ flex: "1 1 160px" }}>
         {t("start")}

@@ -11,6 +11,8 @@ import { restaurantSearchUrl, type OutboundLink } from "@/lib/links";
 import { OutboundLinks, PartnerDisclosure } from "@/components/ui/OutboundLinks";
 import type { DayView, StayArea, StopView, TripPlanning, TripView } from "@/lib/trips";
 import { AccommodationPanel, JourneyDetails, MODE_ICON as JOURNEY_ICON, RouteSummary, SplitSuggestionCard } from "./PlanPanels";
+import { LogisticsBody, ROLE_ICON, useLogisticsLabel } from "./LogisticsStop";
+import { TravelPanel } from "./TravelPanel";
 import type { MapStop } from "@/components/map/TripMap";
 import {
   addCustomStopAction,
@@ -25,6 +27,8 @@ import {
   declineSplitAction,
   resetSplitAction,
   setAccommodationAction,
+  setStayAction,
+  setLogisticsAction,
   reorderStopsAction,
   replaceStopAction,
   toggleLockAction,
@@ -66,6 +70,8 @@ export function TripWorkspace({
 }) {
   const t = useTranslations("itinerary");
   const locale = useLocale();
+  const logisticsLabel = useLogisticsLabel();
+  const atStay = (s: StopView) => Boolean(s.logistics && s.kind === "accommodation");
   const [trip, setTrip] = useState(initialTrip);
   const [planning, setPlanning] = useState(initialPlanning);
   const [area, setArea] = useState<{ lat: number; lng: number; label: string } | null>(null);
@@ -86,7 +92,9 @@ export function TripWorkspace({
   // The booked accommodation is in the main destination: it starts and ends the days spent there.
   const onBaseDay = !day || !segments || (day.destinationId === trip.destinationId && day.kind !== "day_trip");
   const savedHome = prefs?.accommodation?.status === "booked" && prefs?.accommodation?.lat != null && prefs?.accommodation?.lng != null ? { lat: Number(prefs.accommodation.lat), lng: Number(prefs.accommodation.lng), label: prefs.accommodation.name || t("accommodation") } : null;
-  const home = onBaseDay ? savedHome : null;
+  const stayStop = day?.stops.find((s) => s.logistics && s.kind === "accommodation" && s.lat != null && s.lng != null && s.logistics.booked);
+  const home = stayStop ? { lat: stayStop.lat!, lng: stayStop.lng!, label: stayStop.title || t("accommodation") } : onBaseDay ? savedHome : null;
+  const hasLogistics = Boolean(day?.stops.some((s) => s.logistics));
   const daySeg = segmentOf(day);
   const dayCenter = daySeg ? { lat: daySeg.lat, lng: daySeg.lng } : center;
   const dayPlaceName = daySeg?.name ?? trip.destinationName;
@@ -129,20 +137,21 @@ export function TripWorkspace({
   const numbering = useMemo(() => {
     const m = new Map<string, number>();
     let n = 0;
-    for (const s of day?.stops ?? []) if (s.lat != null && s.lng != null) m.set(s.id, ++n);
+    for (const s of day?.stops ?? []) if (s.lat != null && s.lng != null && !atStay(s)) m.set(s.id, ++n);
     return m;
   }, [day]);
 
   const mapStops: MapStop[] = useMemo(
     () =>
       (day?.stops ?? [])
-        .filter((s) => s.lat != null && s.lng != null)
+        .filter((s) => s.lat != null && s.lng != null && !atStay(s))
         .map((s) => ({ id: s.id, n: numbering.get(s.id)!, lat: s.lat!, lng: s.lng!, title: stopLabel(s), kind: s.kind, time: s.startTime ? formatTime(s.startTime, locale, timeFormat) : null })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [day, numbering, locale, timeFormat],
   );
 
   function stopLabel(s: StopView): string {
+    if (s.logistics) return logisticsLabel(s, day?.stops ?? [], timeFormat);
     if ((s.kind === "meal" || s.kind === "break") && s.mealType && !s.placeId) return s.title ? t("mealNear", { meal: t(`meals.${s.mealType}`), place: s.title }) : t(`meals.${s.mealType}`);
     if (s.kind === "meal" && s.mealType) return `${t(`meals.${s.mealType}`)} · ${s.title}`;
     if (s.kind === "break" && !s.mealType) return s.title ? t("freeTimeNear", { place: s.title }) : t("freeTime");
@@ -197,8 +206,27 @@ export function TripWorkspace({
     const mode = chooseMode(prefs.transport, haversineMeters(home, to));
     return { mode, ...estimateLeg(home, to, mode) };
   };
-  const fromHome = day?.kind === "travel" ? null : homeLeg(located[0]);
-  const backHome = day?.kind === "travel" ? null : homeLeg(located[located.length - 1]);
+  // Older trips (planned before logistics stops existed) still show the estimated first/last legs.
+  const fromHome = day?.kind === "travel" || hasLogistics ? null : homeLeg(located[0]);
+  const backHome = day?.kind === "travel" || hasLogistics ? null : homeLeg(located[located.length - 1]);
+
+  /** "12 min · 900 m · approx." under a stop: how to get to the next one. */
+  function legLine(s: StopView, i: number) {
+    if (!day || s.travelMinutes == null || !s.travelMode || i >= day.stops.length - 1 || s.travelMinutes <= 0) return null;
+    const next = day.stops[i + 1];
+    const journey = s.kind === "transport" && s.intercity ? s.intercity : null;
+    const fixedLabel = s.logistics?.fixedLeg?.label;
+    if (!fixedLabel && !((s.travelMeters ?? 0) >= 40 || journey || next?.intercity)) return null;
+    return (
+      <p className="leg">
+        <Icon name={MODE_ICON[s.travelMode]} />
+        {fixedLabel ? <bdi>{fixedLabel}</bdi> : next?.intercity && !next.intercity.fromStation ? t(`transfer.to_${next.intercity.mode}`) : journey && !next?.logistics ? t("transfer.from", { place: journey.to }) : t(`modes.${s.travelMode}`)}{" "}
+        · {formatDuration(s.travelMinutes, locale)}
+        {s.travelMeters ? ` · ${formatDistance(s.travelMeters, locale, units)}` : ""}
+        {s.travelSource === "estimate" ? ` · ${fixedLabel ? t("typical") : t("approx")}` : ""}
+      </p>
+    );
+  }
 
   if (!trip.days.length) {
     return (
@@ -251,6 +279,9 @@ export function TripWorkspace({
           {segments ? <RouteSummary segments={segments} busy={pending} onReset={() => run(() => resetSplitAction(trip.id), t("reorganized"))} /> : null}
           <AccommodationPanel
             accommodation={prefs.accommodation}
+            stays={prefs.stays ?? null}
+            segments={segments}
+            onSaveStay={(slug, st) => run(() => setStayAction(trip.id, slug, st), t("reorganized"))}
             stayAreas={planning.stayAreas}
             baseName={trip.destinationName}
             center={center}
@@ -262,6 +293,14 @@ export function TripWorkspace({
               setArea({ lat: a.lat, lng: a.lng, label: a.area ? `${a.area}, ${a.city}` : a.city });
               if (window.matchMedia("(max-width: 980px)").matches) setShowMap(true);
             }}
+          />
+          <TravelPanel
+            prefs={prefs}
+            destinationSlug={trip.destinationSlug}
+            center={center}
+            busy={pending}
+            timeFormat={timeFormat}
+            onSave={(v) => run(() => setLogisticsAction(trip.id, v), t("reorganized"))}
           />
           <div className="cluster" style={{ gap: 8 }}>
             <label className="visually-hidden" htmlFor="trip-status">{t("status")}</label>
@@ -343,6 +382,31 @@ export function TripWorkspace({
                 const label = stopLabel(s);
                 const mealUrl = isMealLike && !s.placeId ? restaurantSearchUrl({ mealType: s.mealType, foodPrefs: prefs?.foodPrefs, near: s.lat != null ? { lat: s.lat, lng: s.lng! } : null, area: s.title, city: dayPlaceName }) : null;
                 const journey = s.kind === "transport" && s.intercity ? s.intercity : null;
+                if (s.logistics) {
+                  return (
+                    <li key={s.id} data-stop={s.id} className={`stop stop--logistics ${selected === s.id ? "is-selected" : ""}`}>
+                      <div className="stop__time">{s.startTime ? formatTime(s.startTime, locale, timeFormat) : ""}</div>
+                      <div>
+                        <div className="stop__card">
+                          <div className="stop__row">
+                            {s.lat != null && !atStay(s) ? (
+                              <button type="button" className="stop__marker stop__marker--logistics" onClick={() => setSelected(s.id)} aria-label={t("showOnMap")}>
+                                <Icon name={s.logistics.role === "arrival" || s.logistics.role === "departure" ? (s.logistics.travelMode === "train" ? "train" : s.logistics.travelMode === "bus" ? "bus" : "plane") : ROLE_ICON[s.logistics.role!]} />
+                              </button>
+                            ) : (
+                              <span className="stop__marker stop__marker--logistics" aria-hidden><Icon name={ROLE_ICON[s.logistics.role!]} /></span>
+                            )}
+                            <div className="stop__main">
+                              <p className="stop__title stop__title--static">{label}</p>
+                              <LogisticsBody stop={s} dayStops={day.stops} timeFormat={timeFormat} units={units} />
+                            </div>
+                          </div>
+                        </div>
+                        {legLine(s, i)}
+                      </div>
+                    </li>
+                  );
+                }
                 return (
                   <li
                     key={s.id}
@@ -438,19 +502,7 @@ export function TripWorkspace({
                           </span>
                         </div>
                       </div>
-                      {s.travelMinutes != null && s.travelMode && i < day.stops.length - 1 && ((s.travelMeters ?? 0) >= 40 || journey || day.stops[i + 1]?.intercity) ? (
-                        <p className="leg">
-                          <Icon name={MODE_ICON[s.travelMode]} />
-                          {day.stops[i + 1]?.intercity
-                            ? t(`transfer.to_${day.stops[i + 1].intercity!.mode}`)
-                            : journey
-                              ? t("transfer.from", { place: journey.to })
-                              : t(`modes.${s.travelMode}`)}{" "}
-                          · {formatDuration(s.travelMinutes, locale)}
-                          {s.travelMeters ? ` · ${formatDistance(s.travelMeters, locale, units)}` : ""}
-                          {s.travelSource === "estimate" ? ` · ${t("approx")}` : ""}
-                        </p>
-                      ) : null}
+                      {legLine(s, i)}
                     </div>
                   </li>
                 );
