@@ -801,7 +801,14 @@
     },
     "ticketsOfficial": "Bilhetes e horários · site oficial",
     "officialSite": "Site oficial",
-    "typical": "habitual"
+    "typical": "habitual",
+    "live": {
+      "show": "Mostrar tempos do Google Maps",
+      "shown": "Tempos do Google Maps mostrados",
+      "note": "Tempos de viagem do Google Maps, obtidos agora e não guardados. As horas desta lista são atualizadas; o plano mantém as nossas estimativas.",
+      "limit": "Os tempos do Google Maps não estão disponíveis de momento (limite mensal atingido). São mostradas estimativas; cada trajeto pode continuar a ser aberto no Google Maps.",
+      "unavailable": "Não foi possível carregar os tempos do Google Maps agora. São mostradas estimativas."
+    }
   },
   "map": {
     "label": "Mapa do roteiro",
@@ -1712,7 +1719,9 @@
     "markVerified": "Marcar e-mail como verificado",
     "confirmMarkVerified": "Marcar {email} como verificado? Faça-o apenas se souber que o endereço pertence a esta pessoa.",
     "emailOffUsers": "O envio de e-mails ainda não está configurado (Resend), por isso os membros não recebem e-mails de verificação nem de reposição de palavra-passe. Entretanto, pode marcar contas como verificadas aqui.",
-    "emailOffDashboard": "O envio de e-mails ainda não está configurado: os e-mails de verificação e de reposição não são entregues. Ligue o Resend (ver docs/DEPLOYMENT.md). Entretanto, marque os membros como verificados em Utilizadores."
+    "emailOffDashboard": "O envio de e-mails ainda não está configurado: os e-mails de verificação e de reposição não são entregues. Ligue o Resend (ver docs/DEPLOYMENT.md). Entretanto, marque os membros como verificados em Utilizadores.",
+    "routesUsage": "Tempos do Google Maps este mês: {used} de {limit} pedidos",
+    "routesLimitReached": "Limite atingido: são mostradas estimativas"
   },
   "geo": {
     "noResults": "Não foi encontrado nenhum endereço. Acrescente a cidade ou coloque o marcador no mapa.",

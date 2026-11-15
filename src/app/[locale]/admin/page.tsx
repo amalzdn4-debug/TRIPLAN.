@@ -7,6 +7,7 @@ import { CommandButton } from "@/components/admin/AdminForms";
 import { features, stripeMode } from "@/lib/env";
 import { formatCents, formatDate } from "@/lib/format";
 import { Notice } from "@/components/ui/Form";
+import { routesUsage } from "@/lib/live-routes";
 
 export default async function AdminDashboard({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -41,10 +42,11 @@ export default async function AdminDashboard({ params }: { params: Promise<{ loc
     { name: "Stripe", on: features.stripe() },
     { name: "Email (Resend)", on: features.email() },
     { name: "Google sign-in", on: features.googleAuth() },
-    { name: "Google Routes", on: features.googleRoutes() },
+    { name: "Google Maps (Routes)", on: features.googleRoutes() },
     { name: t("integrationNames.uploads"), on: features.uploads() },
     { name: t("integrationNames.cron"), on: Boolean(process.env.CRON_SECRET) },
   ];
+  const routes = await routesUsage().catch(() => null);
   return (
     <AdminShell current="/admin" title={t("sections.dashboard")}>
       {!features.email() ? <Notice tone="warning">{t("emailOffDashboard")}</Notice> : null}
@@ -62,6 +64,12 @@ export default async function AdminDashboard({ params }: { params: Promise<{ loc
       <div className="card">
         <h2 style={{ fontSize: "var(--fs-lg)" }}>{t("integrations")}</h2>
         <div className="cluster">{integrations.map((i) => <span key={i.name} className={`badge ${i.on ? "badge--blue" : "badge--alert"}`}>{i.name}: {i.on ? t("configured") : t("notConfigured")}</span>)}</div>
+        {features.googleRoutes() && routes ? (
+          <p className="small" style={{ margin: 0 }}>
+            {t("routesUsage", { used: routes.used, limit: routes.limit })}
+            {routes.used >= routes.limit ? <> <span className="badge badge--alert">{t("routesLimitReached")}</span></> : null}
+          </p>
+        ) : null}
       </div>
       <div>
         <h2 style={{ fontSize: "var(--fs-lg)" }}>{t("inbox")}</h2>

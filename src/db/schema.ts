@@ -625,3 +625,15 @@ export type Destination = typeof destinations.$inferSelect;
 export type HeroSlide = typeof heroSlides.$inferSelect;
 export type CommunityPost = typeof communityPosts.$inferSelect;
 export type SubscriptionPlan = typeof subscriptionPlans.$inferSelect;
+
+/** Monthly call counts for paid third-party APIs (e.g. Google Maps Routes). Counts only, never content. */
+export const apiUsage = pgTable(
+  "api_usage",
+  {
+    service: text("service").notNull(),
+    month: text("month").notNull(),
+    calls: integer("calls").notNull().default(0),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.service, t.month] })],
+);

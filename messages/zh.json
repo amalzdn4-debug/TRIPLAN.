@@ -801,7 +801,14 @@
     },
     "ticketsOfficial": "门票和开放时间 · 官方网站",
     "officialSite": "官方网站",
-    "typical": "常规"
+    "typical": "常规",
+    "live": {
+      "show": "显示 Google Maps 用时",
+      "shown": "已显示 Google Maps 用时",
+      "note": "交通用时来自 Google Maps，刚刚获取，不会保存。此列表中的时间已更新；行程本身仍使用我们的估算。",
+      "limit": "目前无法提供 Google Maps 用时（已达本月上限）。显示的是估算值；每段路程仍可在 Google Maps 中打开。",
+      "unavailable": "暂时无法加载 Google Maps 用时，显示的是估算值。"
+    }
   },
   "map": {
     "label": "行程地图",
@@ -1712,7 +1719,9 @@
     "markVerified": "标记邮箱为已验证",
     "confirmMarkVerified": "将 {email} 标记为已验证？请仅在确认该地址属于此人时操作。",
     "emailOffUsers": "尚未设置邮件发送（Resend），会员收不到验证邮件和重置密码邮件。在此期间，你可以在这里将账户标记为已验证。",
-    "emailOffDashboard": "尚未设置邮件发送：验证邮件和重置密码邮件无法送达。请连接 Resend（见 docs/DEPLOYMENT.md）。在此期间，可在“用户”中将会员标记为已验证。"
+    "emailOffDashboard": "尚未设置邮件发送：验证邮件和重置密码邮件无法送达。请连接 Resend（见 docs/DEPLOYMENT.md）。在此期间，可在“用户”中将会员标记为已验证。",
+    "routesUsage": "本月 Google Maps 用时请求：{used} / {limit}",
+    "routesLimitReached": "已达上限：显示估算值"
   },
   "geo": {
     "noResults": "未找到该地址。请加上城市名，或在地图上放置标记。",

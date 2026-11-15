@@ -9,8 +9,9 @@ import { getDestinationCards, getNearby } from "@/lib/destinations";
 import { accommodationLinks, type OutboundLink } from "@/lib/links";
 import { withPartners } from "@/lib/affiliates";
 import { generateWithAI } from "@/lib/itinerary/ai";
-import { refineLegs } from "@/lib/itinerary/routing";
 import { haversineMeters, type LatLng } from "@/lib/geo";
+import { liveLegs, MAX_LEGS_PER_DAY, type LiveResult } from "@/lib/live-routes";
+import { legsToCheck } from "@/lib/itinerary/live-legs";
 import { applyLogistics, applyLogisticsAt, arrivalReadyMinutes, insertionIndex, pinLogistics, staysFor, type LogisticsContext, type Station } from "@/lib/itinerary/logistics";
 import type { BookedStay, CandidatePlace, IntercityDetails, PlannedDay, PlannedStop, StopDetails, TravelEnd, TripPreferences } from "@/lib/itinerary/types";
 import { FREE_TRIPS_INCLUDED } from "@/config/site";
@@ -461,10 +462,12 @@ async function logisticsFor(prefs: TripPreferences, baseId: string | null): Prom
   return { ctx: { prefs, stays: staysFor(prefs, baseId), stations, baseDestinationId: baseId, luggage }, centre };
 }
 
-/** Adds the travel logistics, then refines legs with a routing provider when configured. */
+/**
+ * Adds the travel logistics. Only our own estimates are stored: Google Maps times are fetched live
+ * on request and never saved (Google's terms don't allow storing them).
+ */
 async function finishDays(days: PlannedDay[], ctx: LogisticsContext, prefs: TripPreferences): Promise<PlannedDay[]> {
-  const withLogistics = applyLogistics(days, ctx);
-  return Promise.all(withLogistics.map(async (d) => ({ ...d, stops: scheduleDay(await refineLegs(d.stops), d.startTime, prefs.transport) })));
+  return applyLogistics(days, ctx).map((d) => ({ ...d, stops: scheduleDay(d.stops, d.startTime, prefs.transport) }));
 }
 
 async function generateDays(prefs: TripPreferences, destinationId: string | null, locale: string, locked: Record<number, PlannedStop[]> = {}): Promise<{ days: PlannedDay[]; source: "ai" | "rules" }> {
@@ -601,7 +604,7 @@ async function dayDestination(dayId: string, tripId: string, fallback: string | 
 /** Recomputes times & legs for a day after any edit, then writes positions/times back. */
 async function rescheduleAndSave(tripId: string, dayId: string, prefs: TripPreferences, ordered: PlannedStop[], startTime: string) {
   const cleared = ordered.map((s) => ({ ...s, travelSource: null, travelMinutes: null, travelMeters: null, travelMode: null }));
-  const scheduled = scheduleDay(await refineLegs(scheduleDay(cleared, startTime, prefs.transport)), startTime, prefs.transport);
+  const scheduled = scheduleDay(cleared, startTime, prefs.transport);
   const db = await getDb();
   await db.transaction(async (tx) => {
     const keepIds = scheduled.map((s) => s.id).filter(Boolean) as string[];
@@ -768,7 +771,7 @@ export async function regenerateDay(userId: string, tripId: string, dayId: strin
   const at = shell.findIndex((d) => d.dayIndex === day.dayIndex);
   shell[at] = { ...planned, destinationId: day.destinationId, kind: day.kind };
   planned = applyLogisticsAt(shell, at, ctx);
-  const refined = scheduleDay(await refineLegs(planned.stops), planned.startTime || dayStartTime(prefs), prefs.transport);
+  const refined = scheduleDay(planned.stops, planned.startTime || dayStartTime(prefs), prefs.transport);
   await db.transaction(async (tx) => {
     await tx
       .delete(schema.itineraryStops)
@@ -889,6 +892,16 @@ export async function resetSplit(userId: string, tripId: string, locale: string)
 export async function setAccommodation(userId: string, tripId: string, acc: TripPreferences["accommodation"], locale: string) {
   const { prefs, destinationId } = await assertOwner(tripId, userId);
   await restructureTrip(tripId, destinationId, { ...prefs, accommodation: { ...prefs.accommodation, ...acc } }, locale);
+}
+
+/**
+ * Live Google Maps times for one day of the user's own trip. Returned to the browser only — never
+ * stored (Google's terms). Counted against the monthly limit.
+ */
+export async function getLiveDayRoutes(userId: string, tripId: string, dayId: string): Promise<LiveResult> {
+  await assertOwner(tripId, userId);
+  const { stops } = await loadDayStops(dayId, tripId);
+  return liveLegs(legsToCheck(stops.map((s) => ({ id: s.id, lat: s.lat, lng: s.lng, travelMode: s.travelMode, travelMeters: s.travelMeters, details: s.details })), MAX_LEGS_PER_DAY));
 }
 
 /** Saves (or clears) a booked stay in another city of a multi-city trip, then re-plans. */

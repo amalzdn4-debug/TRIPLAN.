@@ -3555,3 +3555,15 @@ html[lang="zh"] .hero__tagline {
   flex: 1 1 220px;
   min-inline-size: 0;
 }
+.google-credit {
+  font-family: Roboto, Arial, sans-serif;
+  font-weight: 500;
+  color: #5f6368;
+  white-space: nowrap;
+}
+.leg--live {
+  color: var(--color-text);
+}
+.live-note {
+  margin-block: 4px 0;
+}

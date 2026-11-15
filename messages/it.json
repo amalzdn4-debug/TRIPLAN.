@@ -801,7 +801,14 @@
     },
     "ticketsOfficial": "Biglietti e orari · sito ufficiale",
     "officialSite": "Sito ufficiale",
-    "typical": "tipico"
+    "typical": "tipico",
+    "live": {
+      "show": "Mostra tempi di Google Maps",
+      "shown": "Tempi di Google Maps mostrati",
+      "note": "Tempi di viaggio da Google Maps, appena richiesti e non salvati. Gli orari di questo elenco sono aggiornati; il piano mantiene le nostre stime.",
+      "limit": "I tempi di Google Maps non sono disponibili al momento (limite mensile raggiunto). Vengono mostrate le stime; ogni tratto si può comunque aprire in Google Maps.",
+      "unavailable": "Non è stato possibile caricare i tempi di Google Maps ora. Vengono mostrate le stime."
+    }
   },
   "map": {
     "label": "Mappa dell'itinerario",
@@ -1712,7 +1719,9 @@
     "markVerified": "Segna email come verificata",
     "confirmMarkVerified": "Segnare {email} come verificata? Fallo solo se sai che l'indirizzo appartiene a questa persona.",
     "emailOffUsers": "L'invio di email non è ancora configurato (Resend), quindi i membri non ricevono le email di verifica o di reimpostazione password. Nel frattempo puoi segnare gli account come verificati qui.",
-    "emailOffDashboard": "L'invio di email non è ancora configurato: le email di verifica e di reimpostazione password non vengono recapitate. Collega Resend (vedi docs/DEPLOYMENT.md). Nel frattempo segna i membri come verificati in Utenti."
+    "emailOffDashboard": "L'invio di email non è ancora configurato: le email di verifica e di reimpostazione password non vengono recapitate. Collega Resend (vedi docs/DEPLOYMENT.md). Nel frattempo segna i membri come verificati in Utenti.",
+    "routesUsage": "Tempi Google Maps questo mese: {used} di {limit} richieste",
+    "routesLimitReached": "Limite raggiunto: si mostrano le stime"
   },
   "geo": {
     "noResults": "Nessun indirizzo trovato. Prova ad aggiungere la città o posiziona il segnaposto sulla mappa.",

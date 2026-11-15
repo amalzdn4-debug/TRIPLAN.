@@ -7,6 +7,8 @@ import { Link } from "@/i18n/navigation";
 import { Icon } from "@/components/ui/Icon";
 import { formatDate, formatDistance, formatDuration, formatMoney, formatTime } from "@/lib/format";
 import { chooseMode, estimateLeg, googleMapsDirectionsUrl, googleMapsPlaceUrl, haversineMeters } from "@/lib/geo";
+import { scheduleDay } from "@/lib/itinerary/engine";
+import type { PlannedStop } from "@/lib/itinerary/types";
 import { restaurantSearchUrl, type OutboundLink } from "@/lib/links";
 import { OutboundLinks, PartnerDisclosure } from "@/components/ui/OutboundLinks";
 import type { DayView, StayArea, StopView, TripPlanning, TripView } from "@/lib/trips";
@@ -29,6 +31,7 @@ import {
   setAccommodationAction,
   setStayAction,
   setLogisticsAction,
+  liveDayRoutesAction,
   reorderStopsAction,
   replaceStopAction,
   toggleLockAction,
@@ -59,6 +62,7 @@ export function TripWorkspace({
   externalLinks,
   timeFormat,
   units,
+  googleTimes = false,
 }: {
   initialTrip: TripView;
   initialPlanning: TripPlanning;
@@ -67,6 +71,8 @@ export function TripWorkspace({
   externalLinks: OutboundLink[];
   timeFormat: "auto" | "12h" | "24h";
   units: "metric" | "imperial";
+  /** Google Maps Routes is configured: offer "Show Google Maps times" (live, never stored). */
+  googleTimes?: boolean;
 }) {
   const t = useTranslations("itinerary");
   const locale = useLocale();
@@ -81,12 +87,44 @@ export function TripWorkspace({
   const [toast, setToast] = useState<string | null>(null);
   const [pending, start] = useTransition();
   const [dragId, setDragId] = useState<string | null>(null);
+  /** Live Google Maps legs for the open day: kept in memory only, dropped on any change. */
+  const [live, setLive] = useState<{ dayId: string; sig: string; legs: Record<string, { minutes: number; meters: number | null }> } | null>(null);
+  const [liveNote, setLiveNote] = useState<"limit" | "unavailable" | null>(null);
+  const [liveLoading, setLiveLoading] = useState(false);
   const [overId, setOverId] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [title, setTitle] = useState(trip.title);
   const listRef = useRef<HTMLDivElement>(null);
   const day: DayView | undefined = trip.days[Math.min(dayIdx, trip.days.length - 1)];
   const prefs = trip.preferences;
+  const daySig = day ? day.stops.map((s) => `${s.id}:${s.durationMin}`).join("|") : "";
+  const liveLegs = live && day && live.dayId === day.id && live.sig === daySig ? live.legs : null;
+  /** Start times recomputed with the live legs — shown in the list only, never on the map. */
+  const liveTimes = useMemo(() => {
+    if (!liveLegs || !day) return null;
+    const planned: PlannedStop[] = day.stops.map((s) => ({
+      kind: s.kind, mealType: s.mealType, title: s.title, lat: s.lat, lng: s.lng, durationMin: s.durationMin, locked: s.locked,
+      travelMode: s.travelMode, travelMinutes: liveLegs[s.id]?.minutes ?? s.travelMinutes, travelMeters: liveLegs[s.id]?.meters ?? s.travelMeters,
+      travelSource: liveLegs[s.id] ? "provider" : s.travelSource, details: s.logistics ? { ...s.logistics, ...(s.intercity ? { intercity: s.intercity } : {}) } : s.intercity ? { intercity: s.intercity } : null,
+    }));
+    const sch = scheduleDay(planned, day.startTime, trip.preferences.transport);
+    return new Map(day.stops.map((s, i) => [s.id, sch[i].startTime ?? s.startTime]));
+  }, [liveLegs, day, trip.preferences.transport]);
+  const shownTime = (s: StopView) => liveTimes?.get(s.id) ?? s.startTime;
+  async function loadLive() {
+    if (!day) return;
+    setLiveLoading(true);
+    setLiveNote(null);
+    try {
+      const res = await liveDayRoutesAction(trip.id, day.id);
+      if (res.status === "ok") setLive({ dayId: day.id, sig: daySig, legs: Object.fromEntries(res.legs.map((l) => [l.stopId, { minutes: l.minutes, meters: l.meters }])) });
+      else setLiveNote(res.status === "limit" ? "limit" : "unavailable");
+    } catch {
+      setLiveNote("unavailable");
+    } finally {
+      setLiveLoading(false);
+    }
+  }
   const segments = (prefs?.segments?.length ?? 0) > 1 ? prefs.segments! : null;
   const segmentOf = (d: DayView | undefined) => segments?.find((x) => x.destinationId === d?.destinationId) ?? null;
   // The booked accommodation is in the main destination: it starts and ends the days spent there.
@@ -212,18 +250,22 @@ export function TripWorkspace({
 
   /** "12 min · 900 m · approx." under a stop: how to get to the next one. */
   function legLine(s: StopView, i: number) {
-    if (!day || s.travelMinutes == null || !s.travelMode || i >= day.stops.length - 1 || s.travelMinutes <= 0) return null;
+    if (!day || i >= day.stops.length - 1) return null;
+    const lv = liveLegs?.[s.id];
+    const minutes = lv?.minutes ?? s.travelMinutes;
+    const meters = lv ? lv.meters : s.travelMeters;
+    if (minutes == null || !s.travelMode || minutes <= 0) return null;
     const next = day.stops[i + 1];
     const journey = s.kind === "transport" && s.intercity ? s.intercity : null;
     const fixedLabel = s.logistics?.fixedLeg?.label;
-    if (!fixedLabel && !((s.travelMeters ?? 0) >= 40 || journey || next?.intercity)) return null;
+    if (!fixedLabel && !lv && !((meters ?? 0) >= 40 || journey || next?.intercity)) return null;
     return (
-      <p className="leg">
+      <p className={`leg ${lv ? "leg--live" : ""}`}>
         <Icon name={MODE_ICON[s.travelMode]} />
         {fixedLabel ? <bdi>{fixedLabel}</bdi> : next?.intercity && !next.intercity.fromStation ? t(`transfer.to_${next.intercity.mode}`) : journey && !next?.logistics ? t("transfer.from", { place: journey.to }) : t(`modes.${s.travelMode}`)}{" "}
-        · {formatDuration(s.travelMinutes, locale)}
-        {s.travelMeters ? ` · ${formatDistance(s.travelMeters, locale, units)}` : ""}
-        {s.travelSource === "estimate" ? ` · ${fixedLabel ? t("typical") : t("approx")}` : ""}
+        · {formatDuration(minutes, locale)}
+        {meters ? ` · ${formatDistance(meters, locale, units)}` : ""}
+        {lv ? <> · <span className="google-credit">Google Maps</span></> : s.travelSource === "estimate" ? ` · ${fixedLabel ? t("typical") : t("approx")}` : ""}
       </p>
     );
   }
@@ -365,8 +407,16 @@ export function TripWorkspace({
                     <Icon name="route" />{t("openInMaps")}
                   </a>
                 ) : null}
+                {googleTimes ? (
+                  <button type="button" className="btn btn--sm" disabled={liveLoading || Boolean(liveLegs)} aria-pressed={Boolean(liveLegs)} onClick={loadLive}>
+                    {liveLoading ? <span className="spinner" /> : <Icon name="clock" />}
+                    {liveLegs ? t("live.shown") : t("live.show")}
+                  </button>
+                ) : null}
               </div>
             </div>
+            {liveLegs ? <p className="small muted live-note" role="status">{t("live.note")}</p> : null}
+            {liveNote ? <p className="small muted live-note" role="status">{t(`live.${liveNote}`)}</p> : null}
             <p className="small muted">{t("dragHint")}</p>
             {fromHome ? (
               <p className="leg leg--home">
@@ -385,7 +435,7 @@ export function TripWorkspace({
                 if (s.logistics) {
                   return (
                     <li key={s.id} data-stop={s.id} className={`stop stop--logistics ${selected === s.id ? "is-selected" : ""}`}>
-                      <div className="stop__time">{s.startTime ? formatTime(s.startTime, locale, timeFormat) : ""}</div>
+                      <div className="stop__time">{shownTime(s) ? formatTime(shownTime(s)!, locale, timeFormat) : ""}</div>
                       <div>
                         <div className="stop__card">
                           <div className="stop__row">
@@ -419,7 +469,7 @@ export function TripWorkspace({
                     onDrop={(e) => { e.preventDefault(); onDrop(s.id); }}
                     onDragEnd={() => { setDragId(null); setOverId(null); }}
                   >
-                    <div className="stop__time">{s.startTime ? formatTime(s.startTime, locale, timeFormat) : ""}</div>
+                    <div className="stop__time">{shownTime(s) ? formatTime(shownTime(s)!, locale, timeFormat) : ""}</div>
                     <div>
                       <div className="stop__card">
                         <div className="stop__row">

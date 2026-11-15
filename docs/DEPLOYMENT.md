@@ -124,10 +124,27 @@ Add each variable in **Vercel → Settings → Environment Variables** (Producti
 | Contact for Wikimedia's API policy | An email address that you read | `WIKIMEDIA_CONTACT` (falls back to `CONTACT_INBOX`) |
 | "Continue with Google" | Google Cloud project with an OAuth client | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` |
 | AI-assisted itineraries | Anthropic API key | `ANTHROPIC_API_KEY` (optional `AI_MODEL`) |
-| Real travel times on legs | Google Maps Platform key with **Routes API** enabled and restricted to it | `GOOGLE_MAPS_API_KEY` |
+| "Show Google Maps times" button on trip days | Google Cloud project with billing + **Routes API** key (see below) | `GOOGLE_MAPS_API_KEY`, optional `GOOGLE_ROUTES_MONTHLY_LIMIT` (default 9500) |
 | Map tiles for real traffic | A tile provider (e.g. MapTiler, Stadia Maps). OpenStreetMap's free tiles are for light use only | `NEXT_PUBLIC_MAP_TILE_URL`, `NEXT_PUBLIC_MAP_TILE_ATTRIBUTION` |
 | Affiliate commissions | Acceptance into each programme (Booking.com, GetYourGuide, Viator…) | None. Managed in **/admin/affiliates** (see below). The old `*_AFFILIATE_ID` variables are no longer used; delete them if you added any. |
 | Footer social links | Real accounts only | `NEXT_PUBLIC_SOCIAL_INSTAGRAM`, `…_YOUTUBE`, `…_LINKEDIN`, `…_X` |
+
+### Google Maps travel times (optional)
+
+How it works: on any trip day, members can press **Show Google Maps times**. The site asks Google for each leg of that day (about 8 requests), shows the times in the list with the "Google Maps" credit, and **never stores them** — Google's terms forbid storing Routes results and showing them on a non-Google map, so the OpenStreetMap map keeps our own estimates. Each request is counted; at `GOOGLE_ROUTES_MONTHLY_LIMIT` (default 9,500, just under Google's 10,000 free requests a month) the button says the limit is reached and estimates are shown. Admin → Dashboard shows this month's count.
+
+1. Go to console.cloud.google.com and create a project (e.g. "TRIPLAN").
+2. **Billing**: link a billing account (Google requires a card even for the free allowance).
+3. **APIs & Services → Library**: search **Routes API** → **Enable**. Enable nothing else.
+4. **APIs & Services → Credentials → Create credentials → API key**. Open the new key:
+   - **API restrictions → Restrict key → Routes API** only. Save.
+   - Application restrictions: leave **None** (the key is only used by our server; Vercel's addresses change). Keep the key secret.
+5. **Billing → Budgets & alerts**: create a budget of e.g. €5 with email alerts. (Alerts warn you; the site's own monthly limit is what actually stops requests.)
+6. Optional extra safety: **APIs & Services → Routes API → Quotas** — lower the per-minute request quota (e.g. 60).
+7. Vercel → Settings → Environments → **Production**: add `GOOGLE_MAPS_API_KEY` (mark **Sensitive**). Optionally `GOOGLE_ROUTES_MONTHLY_LIMIT` (e.g. `9500`; set higher only if you accept paying about $5 per 1,000 requests beyond the free 10,000). **Redeploy**.
+8. Check: open a trip day → **Show Google Maps times**. Admin → Dashboard shows the count.
+
+The Terms and Privacy pages already reference Google's terms and privacy policy, as Google requires.
 
 ### Address search, airports and luggage (no setup needed)
 

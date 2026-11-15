@@ -801,7 +801,14 @@
     },
     "ticketsOfficial": "Billets et horaires · site officiel",
     "officialSite": "Site officiel",
-    "typical": "habituel"
+    "typical": "habituel",
+    "live": {
+      "show": "Afficher les temps Google Maps",
+      "shown": "Temps Google Maps affichés",
+      "note": "Temps de trajet fournis par Google Maps, obtenus à l'instant et non enregistrés. Les horaires de cette liste sont mis à jour ; le programme garde nos estimations.",
+      "limit": "Les temps Google Maps ne sont pas disponibles pour le moment (limite mensuelle atteinte). Les estimations sont affichées ; chaque trajet peut toujours s'ouvrir dans Google Maps.",
+      "unavailable": "Impossible de charger les temps Google Maps pour le moment. Les estimations sont affichées."
+    }
   },
   "map": {
     "label": "Carte de l'itinéraire",
@@ -1712,7 +1719,9 @@
     "markVerified": "Marquer l'e-mail comme vérifié",
     "confirmMarkVerified": "Marquer {email} comme vérifié ? Faites-le seulement si vous savez que l'adresse appartient à cette personne.",
     "emailOffUsers": "L'envoi d'e-mails n'est pas encore configuré (Resend) : les membres ne reçoivent ni e-mail de vérification ni e-mail de réinitialisation. En attendant, vous pouvez marquer les comptes comme vérifiés ici.",
-    "emailOffDashboard": "L'envoi d'e-mails n'est pas encore configuré : les e-mails de vérification et de réinitialisation ne sont pas envoyés. Connectez Resend (voir docs/DEPLOYMENT.md). En attendant, marquez les membres comme vérifiés dans Utilisateurs."
+    "emailOffDashboard": "L'envoi d'e-mails n'est pas encore configuré : les e-mails de vérification et de réinitialisation ne sont pas envoyés. Connectez Resend (voir docs/DEPLOYMENT.md). En attendant, marquez les membres comme vérifiés dans Utilisateurs.",
+    "routesUsage": "Temps Google Maps ce mois-ci : {used} requêtes sur {limit}",
+    "routesLimitReached": "Limite atteinte : estimations affichées"
   },
   "geo": {
     "noResults": "Aucune adresse trouvée. Ajoutez la ville ou placez le repère sur la carte.",

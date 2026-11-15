@@ -315,3 +315,15 @@ export async function setLogisticsAction(tripId: string, input: unknown) {
     return freshWithPlanning(uid, tripId, locale);
   });
 }
+
+/** "Show Google Maps times" for a day: live, rate-limited, never stored. */
+export async function liveDayRoutesAction(tripId: string, dayId: string): Promise<import("@/lib/live-routes").LiveResult> {
+  const user = await getCurrentUser();
+  if (!user) return { status: "unavailable" };
+  if (!(await rateLimit("live-routes", 30, 60 * 60_000, user.id))) return { status: "limit" };
+  try {
+    return await trips.getLiveDayRoutes(user.id, String(tripId), String(dayId));
+  } catch {
+    return { status: "unavailable" };
+  }
+}

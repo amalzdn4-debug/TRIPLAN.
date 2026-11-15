@@ -7,6 +7,7 @@ import { getDb, schema } from "@/db";
 import { accommodationLinks, activityLinks, flightLinks, luggageLinks, transportLinks } from "@/lib/links";
 import { withPartners } from "@/lib/affiliates";
 import { TripWorkspace } from "@/components/itinerary/TripWorkspace";
+import { features } from "@/lib/env";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; id: string }> }) {
   const { locale } = await params;
@@ -61,6 +62,7 @@ export default async function TripPage({ params }: { params: Promise<{ locale: s
       externalLinks={links}
       timeFormat={prefs?.timeFormat ?? "auto"}
       units={prefs?.units ?? "metric"}
+      googleTimes={features.googleRoutes()}
     />
   );
 }

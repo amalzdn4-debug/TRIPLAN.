@@ -12,7 +12,7 @@ export interface LegalDoc {
 export const LEGAL: Record<"privacy" | "terms" | "cookies" | "subscriptions", LegalDoc> = {
   privacy: {
     title: "Privacy Policy",
-    updated: "2026-11-02",
+    updated: "2026-11-15",
     sections: [
       { heading: "Who we are", body: ["TRIPLAN is operated by [Company legal name], [registered address], [company registration number] (\"we\", \"us\"). For privacy questions contact [privacy contact email]. If required, our Data Protection Officer is [name/contact]."] },
       { heading: "What we collect", body: [
@@ -32,6 +32,8 @@ export const LEGAL: Record<"privacy" | "terms" | "cookies" | "subscriptions", Le
       { heading: "Sensitive information", body: ["Dietary notes may reveal health or religious information. Only enter what you want used for planning. You can edit or delete it at any time; it is used solely to tailor your itinerary."] },
       { heading: "Processors and sharing", body: [
         "We use service providers to run TRIPLAN: hosting and photo storage [hosting provider, e.g. Vercel incl. Vercel Blob], database [database provider], email delivery [email provider], payments (Stripe), and — if enabled — an AI model provider (Anthropic) to draft itineraries from your trip preferences. Map tiles are loaded from [map tile provider]. We do not sell personal data.",
+        "Address search: what you type into an address, airport or station field is sent from our server to the Photon geocoding service (komoot, using OpenStreetMap data) to find matching places. Your IP address is not passed on. Results © OpenStreetMap contributors.",
+        "Google Maps travel times: only when you press \"Show Google Maps times\" on a trip day, our server sends the coordinates of that day's stops (no name, email or account details) to Google Maps Platform to calculate travel times. The results are shown to you and not stored. Google's use of this data is governed by the Google Privacy Policy (https://policies.google.com/privacy).",
         "Photos you add to community posts are public while the post is published. Deleting a post or your account deletes its photos from storage.",
         "When you click an external booking or information link (for example a hotel, flight or activity site), you leave TRIPLAN and that site's own privacy policy applies.",
       ] },
@@ -44,18 +46,22 @@ export const LEGAL: Record<"privacy" | "terms" | "cookies" | "subscriptions", Le
   },
   terms: {
     title: "Terms and Conditions",
-    updated: "2026-11-02",
+    updated: "2026-11-15",
     sections: [
       { heading: "The service", body: ["TRIPLAN helps you plan trips: it organises destinations, suggested places, meals, transport estimates and links to third-party services into an itinerary. TRIPLAN is not a travel agency and does not sell or book flights, accommodation or activities."] },
       { heading: "Accuracy of information", body: [
         "Destination content marked \"sample\" is editorial guidance awaiting verification. Opening hours, prices, availability, accessibility and dietary suitability can change — always confirm with the provider before you travel or book.",
-        "Travel times are estimates unless labelled as provided by a routing service. Cost figures are estimates unless labelled as confirmed.",
+        "Travel times are estimates unless labelled \"Google Maps\" or \"typical\" (typical times published by the transport operator). Cost figures are estimates unless labelled as confirmed.",
         "AI-assisted itineraries are generated from our place database and your preferences and may contain mistakes. You are responsible for checking your plans.",
       ] },
       { heading: "Accounts", body: ["You must provide accurate information, keep your password confidential and be at least 16 years old. We may suspend accounts that abuse the service or violate these terms."] },
       { heading: "Community content", body: ["You keep ownership of what you post and grant us a non-exclusive licence to display it on TRIPLAN. You must only post your own genuine experiences, must not post content that is unlawful, misleading, hateful or promotional, and must only upload images you have the right to share. We may moderate or remove content."] },
       { heading: "Payments", body: ["Paid features are described on the Pricing page and in the Subscription Policy. Prices include applicable taxes unless stated otherwise."] },
       { heading: "Third-party services", body: ["Links to booking and information partners are provided for convenience. Your contract for any booking is with that provider, under their terms."] },
+      { heading: "Maps and travel times", body: [
+        "Travel times labelled \"Google Maps\" are provided by Google Maps Platform. By using them you agree to be bound by the Google Maps/Google Earth Additional Terms of Service (https://maps.google.com/help/terms_maps/) and acknowledge the Google Privacy Policy (https://policies.google.com/privacy).",
+        "Address search results and map data © OpenStreetMap contributors, available under the Open Database Licence.",
+      ] },
       { heading: "Partner and affiliate links", body: ["Links marked \"Partner\" are affiliate links of programmes that have accepted TRIPLAN. If you make a booking through them, TRIPLAN may receive a commission from the partner. This costs you nothing extra. Partners cannot pay to change your itinerary, our destination guides or community content. Other external links are ordinary links and earn TRIPLAN nothing. [List the affiliate programmes TRIPLAN actually participates in once approved.]"] },
       { heading: "Liability", body: ["To the extent permitted by law, TRIPLAN is not liable for losses arising from reliance on travel information, from third-party services, or from events outside our control. Nothing in these terms limits liability that cannot be limited by law, or your statutory consumer rights."] },
       { heading: "Governing law", body: ["These terms are governed by the laws of [jurisdiction]. Consumers may also benefit from the mandatory protections of their country of residence."] },

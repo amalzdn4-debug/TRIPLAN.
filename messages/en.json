@@ -801,7 +801,14 @@
     },
     "ticketsOfficial": "Tickets & opening hours · official website",
     "officialSite": "Official website",
-    "typical": "typical"
+    "typical": "typical",
+    "live": {
+      "show": "Show Google Maps times",
+      "shown": "Google Maps times shown",
+      "note": "Travel times from Google Maps, fetched just now and not saved. Start times in this list are updated; the plan itself keeps our estimates.",
+      "limit": "Google Maps times aren't available at the moment (monthly limit reached). Estimates are shown; each leg can still be opened in Google Maps.",
+      "unavailable": "Google Maps times couldn't be loaded right now. Estimates are shown."
+    }
   },
   "map": {
     "label": "Itinerary map",
@@ -1595,7 +1602,9 @@
     "markVerified": "Mark email as verified",
     "confirmMarkVerified": "Mark {email} as verified? Only do this if you know the address belongs to this person.",
     "emailOffUsers": "Email sending isn't set up yet (Resend), so members don't receive verification or password-reset emails. You can mark accounts as verified here meanwhile.",
-    "emailOffDashboard": "Email sending isn't set up yet: verification and password-reset emails aren't delivered. Connect Resend (see docs/DEPLOYMENT.md). Meanwhile you can mark members as verified in Users."
+    "emailOffDashboard": "Email sending isn't set up yet: verification and password-reset emails aren't delivered. Connect Resend (see docs/DEPLOYMENT.md). Meanwhile you can mark members as verified in Users.",
+    "routesUsage": "Google Maps times this month: {used} of {limit} requests",
+    "routesLimitReached": "Limit reached: estimates shown"
   },
   "media": {
     "photoBy": "Photo:",
