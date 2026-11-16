@@ -41,7 +41,7 @@ export default async function MemberPage({ params }: { params: Promise<{ locale:
       <section className="section section--tight">
         <div className="container container--narrow stack" style={{ gap: 20 }}>
           {m.posts.length ? (
-            m.posts.map((p) => <PostCard key={p.id} post={p} signedIn={!!me} />)
+            m.posts.map((p) => <PostCard key={p.id} post={p} signedIn={!!me} isAdmin={me?.role === "admin"} />)
           ) : (
             <div className="empty">
               <div className="icon-tile"><Icon name="users" /></div>

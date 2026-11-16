@@ -12,3 +12,9 @@ export function todayPlus(days: number) {
   d.setDate(d.getDate() + days);
   return d.toISOString().slice(0, 10);
 }
+
+/** `days` after the given ISO date (UTC-safe). */
+export function todayPlusFrom(iso: string, days: number) {
+  const d = new Date(Date.parse(iso.slice(0, 10) + "T00:00:00Z") + days * 86_400_000);
+  return d.toISOString().slice(0, 10);
+}

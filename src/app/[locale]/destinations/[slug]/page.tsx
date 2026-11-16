@@ -25,6 +25,8 @@ import { PhotoCredit } from "@/components/media/PhotoCredit";
 import { NearbyList } from "@/components/destinations/NearbyList";
 import { formatDuration } from "@/lib/format";
 import type { CreditedImage } from "@/lib/images";
+import { admissionOf } from "@/lib/admission";
+import { AdmissionInfo } from "@/components/ui/AdmissionInfo";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }): Promise<Metadata> {
   const { locale, slug } = await params;
@@ -40,7 +42,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   });
 }
 
-export default async function DestinationPage({ params }: { params: Promise<{ locale: string; slug: string }> }) {
+export default async function DestinationPage({ params, searchParams }: { params: Promise<{ locale: string; slug: string }>; searchParams?: Promise<{ admission?: string }> }) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
   const d = await getDestinationDetail(slug, locale);
@@ -71,7 +73,11 @@ export default async function DestinationPage({ params }: { params: Promise<{ lo
   const image = images[0];
   const gallery = images.slice(1, 6);
   const localName = (p: { name: string; details: unknown }) => ((p.details as { names?: Record<string, string> })?.names?.[locale] ?? p.name);
-  const attractions = d.places.filter((p) => p.kind === "attraction" || p.kind === "activity");
+  const allAttractions = d.places.filter((p) => p.kind === "attraction" || p.kind === "activity");
+  // "Free to visit" filter: only places whose free admission is known (verified or a public space).
+  const onlyFree = (await searchParams)?.admission === "free";
+  const freeCount = allAttractions.filter((p) => admissionOf(p.details)?.type === "free").length;
+  const attractions = onlyFree ? allAttractions.filter((p) => admissionOf(p.details)?.type === "free") : allAttractions;
   const hubs = d.places.filter((p) => p.kind === "transport_hub");
   const restaurants = d.places.filter((p) => p.kind === "restaurant");
   const luggage = d.places.filter((p) => p.kind === "luggage_storage");
@@ -170,6 +176,12 @@ export default async function DestinationPage({ params }: { params: Promise<{ lo
 
           <section className="dest-section" id="attractions">
             <h2><Icon name="ticket" />{t("nav.attractions")}</h2>
+            {freeCount > 0 ? (
+              <nav className="cluster" aria-label={t("admissionFilter")} style={{ gap: 6, marginBlockEnd: 12 }}>
+                <Link href={`/destinations/${slug}#attractions`} className={`pick-chip`} aria-current={!onlyFree ? "true" : undefined}>{t("filterAll", { n: allAttractions.length })}</Link>
+                <Link href={`/destinations/${slug}?admission=free#attractions`} className="pick-chip" aria-current={onlyFree ? "true" : undefined}>{t("filterFree", { n: freeCount })}</Link>
+              </nav>
+            ) : null}
             {attractions.length ? (
               <ul className="place-list">
                 {attractions.slice(0, 16).map((p, i) => (
@@ -192,9 +204,12 @@ export default async function DestinationPage({ params }: { params: Promise<{ lo
                         <a className="small" href={googleMapsPlaceUrl(p.name, city)} target="_blank" rel="noopener noreferrer">{t("openMap")}</a>
                         {p.websiteUrl && /^https:\/\//.test(p.websiteUrl) ? (
                           <a className="small" href={p.websiteUrl} target="_blank" rel="noopener noreferrer">
-                            {(p.details as { ticketed?: boolean } | null)?.ticketed || p.tags.includes("museums") ? t("ticketsOfficial") : t("officialSite")}
+                            {admissionOf(p.details) && admissionOf(p.details)!.type !== "free" ? t("ticketsOfficial") : t("hoursAdmissionOfficial")}
                           </a>
                         ) : null}
+                      </div>
+                      <div className="small">
+                        <AdmissionInfo admission={admissionOf(p.details)} />
                         {p.imageUrl && p.imageCredit ? <span className="small muted">{t("photoBy")} {p.imageCredit}, {p.imageLicense}</span> : null}
                       </div>
                     </div>
@@ -333,7 +348,7 @@ export default async function DestinationPage({ params }: { params: Promise<{ lo
             <p className="small muted">{t("communityNote")}</p>
             {posts.length ? (
               <div className="grid" style={{ gap: 16 }}>
-                {posts.map((p) => <PostCard key={p.id} post={p} signedIn={!!user} />)}
+                {posts.map((p) => <PostCard key={p.id} post={p} signedIn={!!user} isAdmin={user?.role === "admin"} />)}
               </div>
             ) : (
               <div className="empty">

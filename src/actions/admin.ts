@@ -183,6 +183,54 @@ export async function savePlaceAction(_prev: ActionState, fd: FormData): Promise
   return { ok: true, message: "saved" };
 }
 
+const admissionSchema = z
+  .object({
+    placeId: z.string().uuid(),
+    type: z.enum(["unknown", "free", "paid", "optional", "conditional"]),
+    priceAmount: z.preprocess((v) => (v === "" || v == null ? null : Number(v)), z.number().min(0).max(10000).nullable()),
+    priceCurrency: z.string().trim().toUpperCase().regex(/^[A-Z]{3}$/).or(z.literal("")).default(""),
+    note: z.string().trim().max(200).optional().default(""),
+    freeWhen: z.string().trim().max(200).optional().default(""),
+    bookingRequired: z.preprocess((v) => v === "on" || v === "true", z.boolean()).default(false),
+    source: z.string().trim().max(500).optional().default(""),
+  })
+  .superRefine((v, ctx) => {
+    if (v.type === "unknown") return;
+    // Nothing is shown as confirmed without the official page it comes from.
+    if (!/^https:\/\/\S+$/.test(v.source)) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["source"], message: "notHttps" });
+    if (v.priceAmount != null && !v.priceCurrency) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["priceCurrency"], message: "required" });
+    if (v.type === "conditional" && !v.freeWhen) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["freeWhen"], message: "required" });
+  });
+
+/** Admission for a place (free / paid / optional extras / free on certain days), with its official source. */
+export async function saveAdmissionAction(_prev: ActionState, fd: FormData): Promise<ActionState> {
+  await admin();
+  const raw = formToObject(fd);
+  const parsed = admissionSchema.safeParse(raw);
+  if (!parsed.success) return { ok: false, errors: flattenErrors(parsed.error), values: raw };
+  const v = parsed.data;
+  const db = await getDb();
+  const [p] = await db.select({ details: schema.places.details }).from(schema.places).where(eq(schema.places.id, v.placeId));
+  if (!p) return { ok: false, message: "notFound" };
+  const { admission: _old, ...rest } = (p.details ?? {}) as Record<string, unknown>;
+  const admission =
+    v.type === "unknown"
+      ? undefined
+      : {
+          type: v.type,
+          price: v.type !== "free" && v.priceAmount != null ? { amount: v.priceAmount, currency: v.priceCurrency } : null,
+          note: v.note || null,
+          freeWhen: v.type === "conditional" ? v.freeWhen : null,
+          bookingRequired: v.bookingRequired,
+          source: v.source,
+          checked: new Date().toISOString().slice(0, 7),
+        };
+  await db.update(schema.places).set({ details: admission ? { ...rest, admission } : rest, updatedAt: new Date() }).where(eq(schema.places.id, v.placeId));
+  revalidateTag("destinations");
+  revalidatePath("/[locale]/admin/destinations/[id]", "page");
+  return { ok: true, message: "saved" };
+}
+
 export async function placeCommandAction(id: string, command: "verify" | "unverify" | "delete") {
   await admin();
   const db = await getDb();

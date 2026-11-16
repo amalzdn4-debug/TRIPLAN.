@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "TRIPLAN — Plan less. Explore more.",
+    "title": "TriPlan — Plan less. Explore more.",
     "description": "Plan your whole journey in one place: daily itineraries, interactive maps, meals, transport, luggage storage and trusted booking links for destinations worldwide."
   },
   "common": {
@@ -9,9 +9,11 @@
     "save": "Save",
     "saved": "Saved",
     "partner": "Partner",
-    "partnerDisclosure": "Links marked “Partner” are affiliate links: if you book through them, TRIPLAN may earn a commission at no extra cost to you. Partners can't pay to change your itinerary or our recommendations.",
+    "partnerDisclosure": "Links marked “Partner” are affiliate links: if you book through them, TriPlan may earn a commission at no extra cost to you. Partners can't pay to change your itinerary or our recommendations.",
     "loading": "Loading…",
-    "contactUs": "Contact us"
+    "contactUs": "Contact us",
+    "pickTime": "Choose a time",
+    "timeInvalid": "Enter a time like 09:30 (24-hour)."
   },
   "nav": {
     "home": "Home",
@@ -38,12 +40,12 @@
     "skip": "Skip to content"
   },
   "footer": {
-    "about": "Triplan brings flights, stays, food, transport and daily plans together in one calm, organised place — for any destination in the world.",
+    "about": "TriPlan brings flights, stays, food, transport and daily plans together in one calm, organised place — for any destination in the world.",
     "product": "Product",
-    "company": "Triplan",
+    "company": "TriPlan",
     "legal": "Legal",
     "pricing": "Pricing",
-    "aboutLink": "About Triplan",
+    "aboutLink": "About TriPlan",
     "reviews": "Reviews & opinions",
     "faq": "FAQ",
     "contact": "Contact",
@@ -61,7 +63,7 @@
     "necessary": "Strictly necessary",
     "necessaryHint": "sign-in, language and this choice. Always on.",
     "analytics": "Analytics",
-    "analyticsHint": "anonymous usage statistics to improve Triplan.",
+    "analyticsHint": "anonymous usage statistics to improve TriPlan.",
     "acceptAll": "Accept all",
     "necessaryOnly": "Necessary only",
     "customize": "Customise",
@@ -87,7 +89,7 @@
       "explore": "Explore Destinations"
     },
     "quick": {
-      "label": "What Triplan covers",
+      "label": "What TriPlan covers",
       "flights": "Flights",
       "hotels": "Hotels",
       "restaurants": "Restaurants",
@@ -96,15 +98,15 @@
       "transport": "Transport"
     },
     "how": {
-      "eyebrow": "How Triplan works",
+      "eyebrow": "How TriPlan works",
       "title": "Three steps from idea to itinerary",
-      "lead": "Tell us the essentials. Triplan does the organising — you stay in control of every detail.",
+      "lead": "Tell us the essentials. TriPlan does the organising — you stay in control of every detail.",
       "tell": {
         "title": "Tell us about your trip",
         "body": "Where, when, who's coming, your budget and what you love — in under two minutes."
       },
       "organize": {
-        "title": "Let Triplan organise it",
+        "title": "Let TriPlan organise it",
         "body": "Get a realistic day-by-day plan with meals, breaks and travel times between nearby stops."
       },
       "explore": {
@@ -115,7 +117,7 @@
     "everything": {
       "eyebrow": "Everything for your journey",
       "title": "One place for every part of the trip",
-      "lead": "Triplan connects the pieces travellers usually juggle across a dozen tabs.",
+      "lead": "TriPlan connects the pieces travellers usually juggle across a dozen tabs.",
       "flights": {
         "title": "Flights",
         "body": "Record your times and search trusted flight engines with your dates pre-filled."
@@ -177,7 +179,7 @@
       }
     },
     "why": {
-      "eyebrow": "Why Triplan?",
+      "eyebrow": "Why TriPlan?",
       "title": "Less planning time. More time to enjoy it.",
       "time": {
         "title": "Saves hours",
@@ -203,7 +205,7 @@
     "community": {
       "eyebrow": "Community recommendations",
       "title": "Hidden gems from fellow travellers",
-      "lead": "Real experiences shared by Triplan members — clearly marked as personal opinions.",
+      "lead": "Real experiences shared by TriPlan members — clearly marked as personal opinions.",
       "all": "Visit the community",
       "emptyTitle": "Be the first to share",
       "emptyBody": "The community is just getting started. Share a hidden gem, a tip or a favourite place.",
@@ -295,7 +297,7 @@
   "destinations": {
     "eyebrow": "Destinations",
     "title": "All destinations",
-    "lead": "Every destination Triplan supports, grouped by region. New places are added regularly.",
+    "lead": "Every destination TriPlan supports, grouped by region. New places are added regularly.",
     "jump": "Jump to region"
   },
   "destination": {
@@ -332,7 +334,7 @@
     "duration": "Suggested stay",
     "budgetLevel": "Budget level",
     "climate": "Climate",
-    "budgetNote": "Budget level is a general indication. Triplan shows prices only where reliable data exists, and always labels estimates.",
+    "budgetNote": "Budget level is a general indication. TriPlan shows prices only where reliable data exists, and always labels estimates.",
     "openMap": "View on map",
     "noAttractions": "Curated places for this destination are coming soon. You can still plan a trip and add your own stops.",
     "noNeighborhoods": "Neighbourhood guide coming soon.",
@@ -356,19 +358,19 @@
     },
     "website": "Website",
     "dietNote": "Dietary labels appear only when verified. Always confirm halal status, allergens and ingredients directly with the restaurant.",
-    "stayIntro": "Compare accommodation on trusted booking sites. Triplan doesn't show third-party prices or availability.",
+    "stayIntro": "Compare accommodation on trusted booking sites. TriPlan doesn't show third-party prices or availability.",
     "flights": "Flights",
-    "externalNote": "External links open the partner's site. Prices and availability are shown there, not by Triplan.",
+    "externalNote": "External links open the partner's site. Prices and availability are shown there, not by TriPlan.",
     "transportIntro": "Check local public transport, transfers and car rental options:",
     "moreInfo": "More information",
     "luggageIntro": "Store your bags near stations, airports and sights before check-in or after checkout.",
     "book": "Book",
-    "availabilityNote": "Availability and prices are shown by each provider. Triplan never displays live availability it can't verify.",
+    "availabilityNote": "Availability and prices are shown by each provider. TriPlan never displays live availability it can't verify.",
     "activitiesIntro": "Find tours, tickets and experiences from trusted partners and official sites.",
-    "communityNote": "Personal opinions from Triplan members — not verified facts.",
+    "communityNote": "Personal opinions from TriPlan members — not verified facts.",
     "noPosts": "No community posts about {city} yet.",
     "sharePost": "Share a recommendation",
-    "asideTitle": "Plan {city} with Triplan",
+    "asideTitle": "Plan {city} with TriPlan",
     "asideBody": "Get a day-by-day plan with meals, map and travel times in minutes.",
     "fastCta": "Fast Trip",
     "detailedCta": "Detailed Trip",
@@ -384,7 +386,11 @@
       "bus": "Bus station"
     },
     "ticketsOfficial": "Tickets & opening hours · official website",
-    "officialSite": "Official website"
+    "officialSite": "Official website",
+    "filterAll": "All ({n})",
+    "filterFree": "Free to visit ({n})",
+    "admissionFilter": "Filter by admission",
+    "hoursAdmissionOfficial": "Opening hours & admission · official website"
   },
   "planIntro": {
     "eyebrow": "Plan a trip",
@@ -411,8 +417,8 @@
     "detailedPoint3": "Review everything before generating",
     "detailedCta": "Start a Detailed Trip",
     "servicesEyebrow": "Services",
-    "servicesTitle": "How Triplan handles each part of your trip",
-    "servicesLead": "Here's exactly what Triplan does itself and where it hands you off to trusted providers.",
+    "servicesTitle": "How TriPlan handles each part of your trip",
+    "servicesLead": "Here's exactly what TriPlan does itself and where it hands you off to trusted providers.",
     "services": {
       "flights": {
         "title": "Flights",
@@ -529,7 +535,7 @@
     },
     "dietaryNotes": "Allergies or dietary restrictions",
     "dietaryHint": "Only add what you'd like used for planning. You can change it any time.",
-    "halalNote": "Triplan shows halal or dietary labels only when they've been verified. Always confirm with the restaurant.",
+    "halalNote": "TriPlan shows halal or dietary labels only when they've been verified. Always confirm with the restaurant.",
     "optional": "Optional",
     "limitedData": "Curated places for {city} are still being added. Your plan will include meals and free time — you can add your own stops.",
     "aiNote": "Your itinerary is drafted with AI from places in our database. Always double-check details before you go.",
@@ -583,7 +589,7 @@
       "budgetActivities": "Activities",
       "budgetTransport": "Transport"
     },
-    "budgetDisclaimer": "Your budget guides suggestions. Triplan shows costs only where reliable data exists and labels them as estimates.",
+    "budgetDisclaimer": "Your budget guides suggestions. TriPlan shows costs only where reliable data exists and labels them as estimates.",
     "accommodationQuestion": "Do you already have accommodation?",
     "accommodationOptions": {
       "booked": "Yes, it's booked",
@@ -646,7 +652,28 @@
     "rhythm": "Daily rhythm",
     "coveredByMonthly": "This trip is included in your Monthly plan ({left} of {total} trips left this billing month).",
     "periodUsedUp": "You've used the {total} trips in your plan for this billing month (more on {date}). You can buy a single extra trip — you won't be charged without confirming.",
-    "coveredByAdmin": "Admin account: unlimited trips for testing. This trip isn't counted."
+    "coveredByAdmin": "Admin account: unlimited trips for testing. This trip isn't counted.",
+    "tripLength": "How long?",
+    "tripLengthOptions": {
+      "one": "1 day",
+      "multi": "Several days"
+    },
+    "tripLengthHints": {
+      "one": "A full day: the best sights, grouped by area, with meals and breaks",
+      "multi": "Choose arrival and departure dates"
+    },
+    "tripDate": "Date",
+    "suggestNearby": "Suggest nearby cities and destinations",
+    "suggestNearbyHint": "We'll show places worth a day trip or a few nights (train, bus or ferry times and distances). Nothing is added unless you accept it.",
+    "admissionPreference": "Paid or free?",
+    "admissionOptions": {
+      "any": "Include paid experiences",
+      "prefer_free": "Prefer free activities"
+    },
+    "admissionHints": {
+      "any": "Museums, tours and tickets as they fit your interests",
+      "prefer_free": "Free places first where we know they're free; paid ones only when they stand out"
+    }
   },
   "trips": {
     "title": "My Trips",
@@ -717,7 +744,7 @@
       "luggage": "Luggage storage",
       "transport": "Transport"
     },
-    "externalNote": "These open partner websites. Triplan doesn't show their prices or availability.",
+    "externalNote": "These open partner websites. TriPlan doesn't show their prices or availability.",
     "days": "Days",
     "dayN": "Day {n}",
     "regenerateDay": "Regenerate day",
@@ -808,7 +835,11 @@
       "note": "Travel times from Google Maps, fetched just now and not saved. Start times in this list are updated; the plan itself keeps our estimates.",
       "limit": "Google Maps times aren't available at the moment (monthly limit reached). Estimates are shown; each leg can still be opened in Google Maps.",
       "unavailable": "Google Maps times couldn't be loaded right now. Estimates are shown."
-    }
+    },
+    "openInMapsPart": "Open in Google Maps ({n}/{total})",
+    "oneDay": "1 day",
+    "suggestNearbyOn": "Suggest nearby cities",
+    "hoursAdmissionOfficial": "Opening hours & admission · official website"
   },
   "map": {
     "label": "Itinerary map",
@@ -818,10 +849,10 @@
   "community": {
     "eyebrow": "Community",
     "title": "Traveller recommendations",
-    "lead": "Hidden gems, tips and honest reviews shared by Triplan members.",
+    "lead": "Hidden gems, tips and honest reviews shared by TriPlan members.",
     "opinionNotice": "Community posts are personal opinions and experiences, not verified facts.",
     "opinion": "Opinion",
-    "opinionHint": "Shared by a traveller — not verified by Triplan",
+    "opinionHint": "Shared by a traveller — not verified by TriPlan",
     "types": {
       "recommendation": "Recommendation",
       "hidden_gem": "Hidden gem",
@@ -877,7 +908,7 @@
     "guideline2": "Be respectful — no hate, harassment or personal data.",
     "guideline3": "No advertising or affiliate spam.",
     "guideline4": "Only upload photos you have the right to share.",
-    "member": "Triplan member",
+    "member": "TriPlan member",
     "deleted": "Post deleted.",
     "statusBanner": {
       "pending": "Only you can see this post while it's waiting for review.",
@@ -913,17 +944,19 @@
     "memberSince": "Member since {date}",
     "postsN": "{n, plural, =0 {No posts} one {# post} other {# posts}}",
     "editProfile": "Edit profile",
-    "memberNoPosts": "This member hasn't shared any posts yet."
+    "memberNoPosts": "This member hasn't shared any posts yet.",
+    "adminDelete": "Delete (admin)",
+    "confirmAdminDelete": "Delete this post permanently, with its photos, comments and likes? This cannot be undone."
   },
   "reviews": {
     "eyebrow": "Reviews & opinions",
-    "title": "What travellers say about Triplan",
-    "lead": "Reviews from verified Triplan members. Every review is checked by a moderator before it's published — we never publish fake reviews.",
+    "title": "What travellers say about TriPlan",
+    "lead": "Reviews from verified TriPlan members. Every review is checked by a moderator before it's published — we never publish fake reviews.",
     "average": "Average rating {avg}/5 from {count, plural, one {# review} other {# reviews}}",
-    "anonymous": "Triplan member",
+    "anonymous": "TriPlan member",
     "ratingLabel": "Rated {n} out of 5",
     "emptyTitle": "No reviews published yet",
-    "emptyBody": "Triplan is new. Reviews will appear here as members share their experience.",
+    "emptyBody": "TriPlan is new. Reviews will appear here as members share their experience.",
     "formTitle": "Write a review",
     "rating": "Rating",
     "body": "Your review",
@@ -934,7 +967,7 @@
     "signIn": "Sign in"
   },
   "auth": {
-    "visualEyebrow": "TRIPLAN",
+    "visualEyebrow": "TriPlan",
     "visualTitle": "Plan less. Explore more.",
     "loginTitle": "Welcome back",
     "loginLead": "Sign in to see and edit your trips.",
@@ -952,7 +985,7 @@
     "forgot": "Forgot your password?",
     "loginCta": "Log in",
     "signupCta": "Create account",
-    "noAccount": "New to Triplan?",
+    "noAccount": "New to TriPlan?",
     "signupLink": "Create an account",
     "haveAccount": "Already have an account?",
     "loginLink": "Log in",
@@ -999,7 +1032,7 @@
     "confirmPassword": "Confirm new password",
     "updatePassword": "Update password",
     "privacyTitle": "Your data",
-    "privacyBody": "Download a copy of everything Triplan stores about you, in a machine-readable format.",
+    "privacyBody": "Download a copy of everything TriPlan stores about you, in a machine-readable format.",
     "export": "Download my data",
     "deleteTitle": "Delete account",
     "deleteBody": "This permanently deletes your account, trips, posts and saved items, and cancels any active subscription. This can't be undone.",
@@ -1055,7 +1088,7 @@
       "refunded": "Refunded"
     },
     "noPayments": "No payments yet.",
-    "cardNote": "Payments are processed securely by Stripe. Triplan never stores your card details.",
+    "cardNote": "Payments are processed securely by Stripe. TriPlan never stores your card details.",
     "planNames": {
       "annual": "Annual",
       "monthly": "Monthly",
@@ -1138,9 +1171,9 @@
     "currentPlan": "Your current plan"
   },
   "about": {
-    "eyebrow": "About Triplan",
+    "eyebrow": "About TriPlan",
     "title": "A smarter, calmer way to travel",
-    "lead": "Triplan exists to turn the scattered work of planning a trip into one clear, beautiful plan you can trust.",
+    "lead": "TriPlan exists to turn the scattered work of planning a trip into one clear, beautiful plan you can trust.",
     "mission": {
       "title": "Mission",
       "body": "Help every traveller organise their entire journey — flights, stays, food, transport and daily plans — in one place."
@@ -1174,7 +1207,7 @@
       "title": "Openness",
       "body": "We link to the best providers rather than hiding them, so you can book with confidence."
     },
-    "nameTitle": "Why “Triplan”?",
+    "nameTitle": "Why “TriPlan”?",
     "nameBody": "Trip + Plan. One word for the whole journey — from the first idea to the last evening.",
     "cta": "Plan a trip",
     "contact": "Contact us"
@@ -1197,8 +1230,8 @@
     "planning": {
       "q1": "What's the difference between Fast Trip and Detailed Trip?",
       "a1": "Fast Trip asks only the essentials and creates a first itinerary in moments. Detailed Trip lets you set budgets, accommodation, food needs, daily rhythm and walking preferences across seven short steps. Both can be edited afterwards.",
-      "q2": "How does Triplan build an itinerary?",
-      "a2": "Triplan groups places that are close together on the same day, orders them to keep travel short, and adds breakfast, lunch, a coffee break and dinner near your stops. If AI is enabled, it drafts the plan using only places from our database.",
+      "q2": "How does TriPlan build an itinerary?",
+      "a2": "TriPlan groups places that are close together on the same day, orders them to keep travel short, and adds breakfast, lunch, a coffee break and dinner near your stops. If AI is enabled, it drafts the plan using only places from our database.",
       "q3": "Can I change the plan?",
       "a3": "Yes. Drag stops to reorder, remove or add stops, swap an attraction, lock what you want to keep, and regenerate a single day or the whole trip. Locked stops are never changed without your permission."
     },
@@ -1215,10 +1248,10 @@
       "a2": "Yes, from the trip page. Duplicating is useful for trying a variation without losing the original."
     },
     "payments": {
-      "q1": "Is Triplan free?",
+      "q1": "Is TriPlan free?",
       "a1": "Every account includes one free trip plan. You can buy an additional trip or choose the Annual plan for unlimited trips.",
       "q2": "How are payments processed?",
-      "a2": "By Stripe, a leading payment provider. Triplan never sees or stores your full card details.",
+      "a2": "By Stripe, a leading payment provider. TriPlan never sees or stores your full card details.",
       "q3": "Will I be charged automatically?",
       "a3": "Only the Annual plan renews automatically, and you can cancel any time. Single trips are one-off payments."
     },
@@ -1231,12 +1264,12 @@
     "maps": {
       "q1": "Are the travel times accurate?",
       "a1": "Times are labelled “approx.” when they're estimated from distance. When a routing service is configured, real durations are shown instead.",
-      "q2": "Can I navigate with Triplan?",
-      "a2": "Triplan shows your stops on an interactive map and hands off to Google Maps for turn-by-turn navigation."
+      "q2": "Can I navigate with TriPlan?",
+      "a2": "TriPlan shows your stops on an interactive map and hands off to Google Maps for turn-by-turn navigation."
     },
     "bookings": {
-      "q1": "Can I book hotels and flights on Triplan?",
-      "a1": "Triplan links you to trusted providers such as Booking.com, Airbnb, Google Flights and Skyscanner. Bookings and payments happen on their sites.",
+      "q1": "Can I book hotels and flights on TriPlan?",
+      "a1": "TriPlan links you to trusted providers such as Booking.com, Airbnb, Google Flights and Skyscanner. Bookings and payments happen on their sites.",
       "q2": "Why don't you show prices or availability?",
       "a2": "We only display information we can verify. Live prices and availability are shown by each provider."
     },
@@ -1285,7 +1318,7 @@
       "cookies": "Cookie policy",
       "subscriptions": "Subscription & payment policy"
     },
-    "description": "Triplan legal information.",
+    "description": "TriPlan legal information.",
     "updated": "Last updated: {date}",
     "englishNotice": "This legal text is currently provided in English. Translated versions will be published after legal review; the English version prevails."
   },
@@ -1341,15 +1374,15 @@
     "verifyManual": "Email verification isn't available on this site yet. Write to us and we'll verify your account by hand."
   },
   "email": {
-    "footer": "You received this email because of activity on your Triplan account.",
+    "footer": "You received this email because of activity on your TriPlan account.",
     "verify": {
-      "subject": "Confirm your email for Triplan",
+      "subject": "Confirm your email for TriPlan",
       "heading": "Confirm your email",
-      "body": "Welcome to Triplan! Please confirm your email address to finish setting up your account. This link is valid for 48 hours.",
+      "body": "Welcome to TriPlan! Please confirm your email address to finish setting up your account. This link is valid for 48 hours.",
       "cta": "Confirm email"
     },
     "reset": {
-      "subject": "Reset your Triplan password",
+      "subject": "Reset your TriPlan password",
       "heading": "Reset your password",
       "body": "We received a request to reset your password. This link is valid for one hour. If you didn't ask for it, you can ignore this email.",
       "cta": "Choose a new password"
@@ -1513,7 +1546,10 @@
         "partial": "Partly imported",
         "failed": "Failed",
         "skipped": "Skipped"
-      }
+      },
+      "runAll": "Import all remaining",
+      "stop": "Stop after this batch",
+      "runAllNote": "Importing… batch {batches} done. Keep this page open; you can stop at any time."
     },
     "commentsQueue": "Comments to review",
     "tripsPerMonth": "Trips per billing month",
@@ -1523,13 +1559,13 @@
     "testPaymentsExcluded": "{n} Stripe test-mode payments are excluded.",
     "stripeTestMode": "Stripe test mode — no real payments",
     "aff": {
-      "help": "Add a partner programme here only after you have joined it. Partners stay hidden from visitors until you mark them Approved — do that only once the programme has actually accepted TRIPLAN. Commissions are tracked in the partner's own dashboard; TRIPLAN counts clicks only.",
+      "help": "Add a partner programme here only after you have joined it. Partners stay hidden from visitors until you mark them Approved — do that only once the programme has actually accepted TriPlan. Commissions are tracked in the partner's own dashboard; TriPlan counts clicks only.",
       "name": "Name",
       "slug": "Link name (in /api/go/…)",
       "category": "Category",
       "status": "Status",
       "template": "Tracking link",
-      "templateHint": "Paste the https link the programme gave you (with your partner ID). Optional placeholders filled in by TRIPLAN: {list}",
+      "templateHint": "Paste the https link the programme gave you (with your partner ID). Optional placeholders filled in by TriPlan: {list}",
       "website": "Partner website (optional)",
       "order": "Order",
       "notes": "Internal notes (never shown)",
@@ -1539,7 +1575,7 @@
       "total": "All clicks",
       "none": "No partners yet. Nothing affiliate-related is shown on the site.",
       "approve": "Mark approved",
-      "confirmApprove": "Has {name} actually accepted TRIPLAN into its programme? Its links will appear on the site, labelled as partner links.",
+      "confirmApprove": "Has {name} actually accepted TriPlan into its programme? Its links will appear on the site, labelled as partner links.",
       "pause": "Pause",
       "reject": "Mark rejected",
       "markPending": "Mark pending",
@@ -1604,7 +1640,31 @@
     "emailOffUsers": "Email sending isn't set up yet (Resend), so members don't receive verification or password-reset emails. You can mark accounts as verified here meanwhile.",
     "emailOffDashboard": "Email sending isn't set up yet: verification and password-reset emails aren't delivered. Connect Resend (see docs/DEPLOYMENT.md). Meanwhile you can mark members as verified in Users.",
     "routesUsage": "Google Maps times this month: {used} of {limit} requests",
-    "routesLimitReached": "Limit reached: estimates shown"
+    "routesLimitReached": "Limit reached: estimates shown",
+    "admission": {
+      "label": "Admission",
+      "type": "Type",
+      "price": "Adult price (optional)",
+      "currency": "Currency",
+      "freeWhen": "Free when (for 'free on certain days')",
+      "freeWhenHint": "e.g. first Sunday of the month",
+      "note": "Note (optional)",
+      "booking": "Booking required",
+      "source": "Official source (https link)",
+      "help": "Only enter what the official page says, and link it. Nothing is shown as free or paid without a source.",
+      "save": "Save admission",
+      "publicSpace": "public space",
+      "checked": "checked {month}",
+      "types": {
+        "unknown": "Unknown",
+        "free": "Free",
+        "paid": "Paid",
+        "optional": "Free, paid extras",
+        "conditional": "Free on certain days"
+      }
+    },
+    "deletePermanently": "Delete permanently",
+    "confirmDeletePermanently": "Delete this post permanently, with its photos, comments and likes? This cannot be undone."
   },
   "media": {
     "photoBy": "Photo:",
@@ -1814,5 +1874,19 @@
     "cancel": "Cancel",
     "checkInHint": "From your booking. Usually 14:00–16:00.",
     "checkOutHint": "From your booking. Usually 10:00–11:00."
+  },
+  "admission": {
+    "unknown": "Admission: check the official website",
+    "free": "Free entry",
+    "publicSpace": "Free · public space",
+    "paid": "Paid entry",
+    "paidPrice": "Ticket {price}",
+    "optional": "Free entry · paid extras",
+    "optionalPrice": "Free entry · paid extras from {price}",
+    "conditional": "Paid · free {when}",
+    "conditionalPrice": "Ticket {price} · free {when}",
+    "booking": "Booking required",
+    "officialPrices": "prices (official)",
+    "checked": "checked {month}"
   }
 }

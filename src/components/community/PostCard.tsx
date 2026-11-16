@@ -21,7 +21,7 @@ export function Avatar({ name, url }: { name: string; url: string | null }) {
   );
 }
 
-export function PostCard({ post, signedIn, compact = false, full = false }: { post: PostView; signedIn: boolean; compact?: boolean; full?: boolean }) {
+export function PostCard({ post, signedIn, compact = false, full = false, isAdmin = false }: { post: PostView; signedIn: boolean; compact?: boolean; full?: boolean; isAdmin?: boolean }) {
   const t = useTranslations("community");
   const locale = useLocale();
   const router = useRouter();
@@ -163,10 +163,32 @@ export function PostCard({ post, signedIn, compact = false, full = false }: { po
             </button>
           </>
         ) : (
-          <button type="button" className="btn btn--sm btn--ghost" onClick={() => requireAuth() && setReporting((r) => !r)} aria-expanded={reporting}>
-            <Icon name="flag" />
-            {t("report")}
-          </button>
+          <>
+            <button type="button" className="btn btn--sm btn--ghost" onClick={() => requireAuth() && setReporting((r) => !r)} aria-expanded={reporting}>
+              <Icon name="flag" />
+              {t("report")}
+            </button>
+            {isAdmin ? (
+              <button
+                type="button"
+                className="btn btn--sm btn--ghost btn--danger"
+                disabled={pending}
+                onClick={() =>
+                  confirm(t("confirmAdminDelete")) &&
+                  start(async () => {
+                    const r = await deletePostAction(post.id);
+                    if (r.ok) {
+                      if (full) router.push("/community");
+                      else setGone(true);
+                    } else setNotice(t("status.notAllowed"));
+                  })
+                }
+              >
+                <Icon name="trash" />
+                {t("adminDelete")}
+              </button>
+            ) : null}
+          </>
         )}
       </div>
       {reporting ? (

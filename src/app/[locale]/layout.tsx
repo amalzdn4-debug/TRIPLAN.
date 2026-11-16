@@ -26,7 +26,7 @@ export function generateStaticParams() {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#173B67",
+  themeColor: "#0C2039",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -37,12 +37,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const t = await getTranslations({ locale, namespace: "meta" });
   return {
     metadataBase: new URL(siteUrl()),
-    title: { default: t("title"), template: `%s · TRIPLAN` },
+    title: { default: t("title"), template: `%s · TriPlan` },
     description: t("description"),
-    applicationName: "TRIPLAN",
+    applicationName: "TriPlan",
     alternates: alternates(locale, "/"),
-    openGraph: { siteName: "TRIPLAN", images: ["/og.png"], type: "website" },
+    openGraph: { siteName: "TriPlan", images: ["/og.png"], type: "website" },
     twitter: { card: "summary_large_image" },
+    manifest: "/site.webmanifest",
     formatDetection: { telephone: false, address: false, email: false },
   };
 }

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { geocode, photonUrl, toResults } from "@/lib/geocode";
-import { normalizeTime } from "@/lib/time";
+import { maskTime, normalizeTime } from "@/lib/time";
 
 /** Shaped like Photon's GeoJSON response (values written for the test). */
 const viaNoale = { geometry: { coordinates: [9.2235, 45.5065] as [number, number] }, properties: { street: "Via Noale", housenumber: "7", postcode: "20132", city: "Milano", country: "Italia", osm_key: "place", osm_value: "house" } };
@@ -46,5 +46,15 @@ describe("24-hour time field", () => {
     expect(normalizeTime("16:5")).toBe("16:50");
     expect(normalizeTime("25:00")).toBeNull();
     expect(normalizeTime("")).toBe("");
+  });
+  it("adds the colon while typing digits on a numeric keypad", () => {
+    const typed = (keys: string) => keys.split("").reduce((acc, k) => maskTime(acc + k), "");
+    expect(typed("0930")).toBe("09:30");
+    expect(typed("930")).toBe("09:30");
+    expect(typed("1630")).toBe("16:30");
+    expect(typed("16")).toBe("16");
+    expect(maskTime("9.45")).toBe("9:45");
+    expect(maskTime("12:345")).toBe("12:34");
+    expect(maskTime("ab")).toBe("");
   });
 });

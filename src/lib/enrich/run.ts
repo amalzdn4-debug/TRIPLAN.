@@ -9,7 +9,7 @@
 import type { SqlClient } from "@/db/raw";
 import { fetchArticle, SITE_LANGS, cityNameFromTitle } from "./wikipedia";
 import { fetchLicensedImages, type LicensedImage } from "./commons";
-import { ATTRACTION_TYPES, fetchAttractions, fetchHubs, type WikidataPlace, TICKETED_TYPES } from "./wikidata";
+import { ATTRACTION_TYPES, fetchAttractions, fetchHubs, type WikidataPlace } from "./wikidata";
 import { haversineMeters } from "@/lib/geo";
 
 export interface EnrichOptions {
@@ -18,6 +18,8 @@ export interface EnrichOptions {
   limit?: number;
   slugs?: string[];
   log?: (msg: string) => void;
+  /** Destinations imported in parallel (1–3, default 1 — Wikimedia prefers serial requests). */
+  concurrency?: number;
 }
 
 export interface EnrichSummary {
@@ -125,7 +127,8 @@ export async function enrichDestination(db: SqlClient, d: DestRow, log: (m: stri
   );
   const upsert = async (p: WikidataPlace, kind: "attraction" | "transport_hub", extra: Record<string, unknown>, minutes: number | null, tags: string[]) => {
     const img = p.imageFile ? licensed.get(p.imageFile) : undefined;
-    const details = JSON.stringify({ names: p.names, wikidataType: p.typeQid, ...(TICKETED_TYPES.has(p.typeQid) ? { ticketed: true } : {}), ...extra });
+    // No "needs a ticket" guess here: admission is only shown when verified (see src/lib/admission.ts).
+    const details = JSON.stringify({ names: p.names, wikidataType: p.typeQid, ...extra });
     // Same place = same Wikidata item, a similar name within 400 m, or anything of the same kind within 150 m
     // (catches places an editor has renamed).
     const same =
@@ -178,21 +181,28 @@ export async function enrichBatch(db: SqlClient, opts: EnrichOptions): Promise<E
     params,
   );
   const summary: EnrichSummary = { processed: 0, done: 0, partial: 0, failed: 0, remaining: 0, errors: [] };
-  for (const d of rows) {
-    if (Date.now() - started > opts.budgetMs) break;
-    summary.processed++;
-    let status: "done" | "partial" | "failed" = "failed";
-    let errors: string[] = [];
-    try {
-      ({ status, errors } = await enrichDestination(db, { ...d, lat: Number(d.lat), lng: Number(d.lng) }, log));
-    } catch (e) {
-      errors = [(e as Error).message];
+  // One destination at a time by default: Wikimedia asks API clients to send requests in series.
+  // (`concurrency` up to 3 exists for self-hosted mirrors; Wikimedia's general limit is ≤3 concurrent.)
+  const workers = Math.max(1, Math.min(opts.concurrency ?? 1, 3));
+  let next = 0;
+  const worker = async () => {
+    while (next < rows.length && Date.now() - started <= opts.budgetMs) {
+      const d = rows[next++];
+      summary.processed++;
+      let status: "done" | "partial" | "failed" = "failed";
+      let errors: string[] = [];
+      try {
+        ({ status, errors } = await enrichDestination(db, { ...d, lat: Number(d.lat), lng: Number(d.lng) }, log));
+      } catch (e) {
+        errors = [(e as Error).message];
+      }
+      summary[status]++;
+      if (errors.length) summary.errors.push({ slug: d.slug, error: errors.join("; ") });
+      if (status === "failed") log(`  ${d.slug}: FAILED — ${errors.join("; ")}`);
+      await db.query(`UPDATE destinations SET enrichment_status = $2, enrichment_error = $3, enriched_at = now() WHERE id = $1`, [d.id, status, errors.join("; ").slice(0, 1000) || null]);
     }
-    summary[status]++;
-    if (errors.length) summary.errors.push({ slug: d.slug, error: errors.join("; ") });
-    if (status === "failed") log(`  ${d.slug}: FAILED — ${errors.join("; ")}`);
-    await db.query(`UPDATE destinations SET enrichment_status = $2, enrichment_error = $3, enriched_at = now() WHERE id = $1`, [d.id, status, errors.join("; ").slice(0, 1000) || null]);
-  }
+  };
+  await Promise.all(Array.from({ length: workers }, worker));
   const left = await db.query<{ n: number }>(`SELECT count(*)::int AS n FROM destinations WHERE published AND enrichment_status = 'pending'`);
   summary.remaining = Number(left[0]?.n ?? 0);
   return summary;

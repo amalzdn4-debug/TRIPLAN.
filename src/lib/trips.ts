@@ -10,6 +10,7 @@ import { accommodationLinks, type OutboundLink } from "@/lib/links";
 import { withPartners } from "@/lib/affiliates";
 import { generateWithAI } from "@/lib/itinerary/ai";
 import { haversineMeters, type LatLng } from "@/lib/geo";
+import { admissionOf, type Admission } from "@/lib/admission";
 import { liveLegs, MAX_LEGS_PER_DAY, type LiveResult } from "@/lib/live-routes";
 import { legsToCheck } from "@/lib/itinerary/live-legs";
 import { applyLogistics, applyLogisticsAt, arrivalReadyMinutes, insertionIndex, pinLogistics, staysFor, type LogisticsContext, type Station } from "@/lib/itinerary/logistics";
@@ -55,8 +56,10 @@ export interface StopView {
   intercity: IntercityDetails | null;
   /** The place's official website (from Wikidata or an editor), if known. Never invented. */
   officialUrl: string | null;
-  /** Usually needs a ticket / has opening hours worth checking (museums, palaces, theatres…). */
+  /** Admission is known to involve a ticket (paid, optional extras or free only on some days). Never assumed. */
   ticketed: boolean;
+  /** What we know about admission (editor-verified with a source, or a free public space); null = unknown. */
+  admission: Admission | null;
   /** Accommodation/airport/station/luggage steps added by the planner (null for sights and meals). */
   logistics: Omit<StopDetails, "intercity"> | null;
 }
@@ -127,6 +130,7 @@ function toStopView(s: typeof schema.itineraryStops.$inferSelect): StopView {
     intercity: s.details?.intercity ?? null,
     officialUrl: null,
     ticketed: false,
+    admission: null,
     logistics: s.details?.role ? (({ intercity: _i, ...rest }) => rest)(s.details) : null,
   };
 }
@@ -170,21 +174,21 @@ export async function getTrip(tripId: string, userId: string): Promise<TripView 
   const stops = await db.select().from(schema.itineraryStops).where(eq(schema.itineraryStops.tripId, tripId)).orderBy(asc(schema.itineraryStops.position));
   // Official websites and "needs a ticket" hints come from the places themselves, so older trips get them too.
   const placeIds = [...new Set(stops.map((s) => s.placeId).filter(Boolean) as string[])];
-  const placeInfo = new Map<string, { url: string | null; ticketed: boolean }>();
+  const placeInfo = new Map<string, { url: string | null; ticketed: boolean; admission: Admission | null }>();
   if (placeIds.length) {
     const rows = await db
       .select({ id: schema.places.id, url: schema.places.websiteUrl, tags: schema.places.tags, details: schema.places.details })
       .from(schema.places)
       .where(inArray(schema.places.id, placeIds));
     for (const r of rows) {
-      const details = (r.details ?? {}) as { ticketed?: boolean };
-      placeInfo.set(r.id, { url: r.url && /^https:\/\//.test(r.url) ? r.url : null, ticketed: Boolean(details.ticketed) || r.tags.includes("museums") });
+      const admission = admissionOf(r.details);
+      placeInfo.set(r.id, { url: r.url && /^https:\/\//.test(r.url) ? r.url : null, ticketed: Boolean(admission && admission.type !== "free"), admission });
     }
   }
   const view = (s: (typeof stops)[number]): StopView => {
     const v = toStopView(s);
     const info = s.placeId ? placeInfo.get(s.placeId) : undefined;
-    return info ? { ...v, officialUrl: info.url, ticketed: info.ticketed } : v;
+    return info ? { ...v, officialUrl: info.url, ticketed: info.ticketed, admission: info.admission } : v;
   };
   const t = row.t;
   return {
@@ -227,7 +231,7 @@ export async function getCandidatePlaces(destinationId: string | null): Promise<
     .from(schema.places)
     .where(and(eq(schema.places.destinationId, destinationId), inArray(schema.places.kind, ["attraction", "activity"])))
     .orderBy(asc(schema.places.createdAt));
-  return rows.map((p) => ({ id: p.id, name: p.name, kind: p.kind, tags: p.tags, durationMin: p.durationMin, neighborhood: p.neighborhood, lat: p.lat, lng: p.lng, popularity: p.popularity }));
+  return rows.map((p) => ({ id: p.id, name: p.name, kind: p.kind, tags: p.tags, durationMin: p.durationMin, neighborhood: p.neighborhood, lat: p.lat, lng: p.lng, popularity: p.popularity, admission: admissionOf(p.details)?.type ?? null }));
 }
 
 /* ───────────── Multi-city planning ───────────── */
@@ -293,6 +297,8 @@ export interface StayArea {
 }
 
 export interface TripPlanning {
+  /** Nearby suggestions are switched off for this trip (the traveller can switch them on). */
+  nearbyOff?: boolean;
   suggestion: (SplitSuggestion & { baseName: string }) | null;
   /** Practical nearby places the traveller can pick instead of the suggestion. */
   nearby: NearbyChoice[];
@@ -310,7 +316,9 @@ const addDays = (iso: string, n: number) => {
 export async function getTripPlanning(trip: TripView, locale: string): Promise<TripPlanning> {
   const prefs = trip.preferences;
   const ctx = await getPlanningContext(trip.destinationId, locale).catch(() => null);
-  const suggestion = ctx && !prefs.splitDecision && !isMultiCity(prefs) ? suggestSplit(ctx.base, tripDates(prefs).length, prefs.pace, ctx.nearby) : null;
+  // Nearby cities are only suggested when the traveller asked for them (older trips: yes), never for one-day trips.
+  const wantsNearby = prefs.suggestNearby !== false && tripDates(prefs).length > 1;
+  const suggestion = ctx && wantsNearby && !prefs.splitDecision && !isMultiCity(prefs) ? suggestSplit(ctx.base, tripDates(prefs).length, prefs.pace, ctx.nearby) : null;
   const nearby: NearbyChoice[] = (ctx?.nearby ?? [])
     .filter((n) => n.leg.effectiveMinutes <= 330)
     .map((n) => ({ slug: n.slug, destinationId: n.destinationId, city: n.city, countryCode: n.countryCode, summary: n.summary, mode: n.leg.mode, minutes: n.leg.minutes, direct: n.leg.direct, source: n.leg.source, distanceKm: n.leg.distanceKm, suitability: n.suitability }));
@@ -383,7 +391,7 @@ export async function getTripPlanning(trip: TripView, locale: string): Promise<T
     });
     stayAreas.push({ destinationId: destId, slug: seg?.slug ?? trip.destinationSlug, city, area, lat, lng, sights: near, checkIn, checkOut, links });
   }
-  return { suggestion: suggestion ? { ...suggestion, baseName: ctx!.base.name } : null, nearby, stayAreas };
+  return { suggestion: suggestion ? { ...suggestion, baseName: ctx!.base.name } : null, nearby: wantsNearby ? nearby : [], stayAreas, nearbyOff: !wantsNearby && tripDates(prefs).length > 1 };
 }
 
 /** Places for each destination in a multi-city trip, keyed by slug. */
@@ -590,7 +598,7 @@ async function loadDayStops(dayId: string, tripId: string) {
 }
 
 function rowToPlanned(s: typeof schema.itineraryStops.$inferSelect): PlannedStop {
-  const { intercity: _i, officialUrl: _o, ticketed: _t, logistics: _l, ...v } = toStopView(s);
+  const { intercity: _i, officialUrl: _o, ticketed: _t, admission: _a, logistics: _l, ...v } = toStopView(s);
   return { ...v, id: s.id, details: s.details ?? null };
 }
 
@@ -875,6 +883,13 @@ export async function acceptSplit(userId: string, tripId: string, choice: SplitC
 }
 
 /** "Keep my plan": hides the suggestion without changing anything. */
+/** "Suggest nearby cities" switched on or off after creation. Never adds a city by itself. */
+export async function setSuggestNearby(userId: string, tripId: string, on: boolean) {
+  const { prefs } = await assertOwner(tripId, userId);
+  const db = await getDb();
+  await db.update(schema.trips).set({ preferences: { ...prefs, suggestNearby: on, ...(on ? { splitDecision: prefs.splitDecision === "declined" ? null : prefs.splitDecision } : {}) } as unknown as Record<string, unknown>, updatedAt: new Date() }).where(eq(schema.trips.id, tripId));
+}
+
 export async function declineSplit(userId: string, tripId: string) {
   const { prefs } = await assertOwner(tripId, userId);
   const db = await getDb();
@@ -969,7 +984,7 @@ export async function duplicateTrip(userId: string, tripId: string, copyLabel: s
       startTime: d.startTime,
       destinationId: d.destinationId === src.destinationId ? null : d.destinationId,
       kind: d.kind,
-      stops: d.stops.map(({ intercity, officialUrl: _o, ticketed: _t, logistics, ...s }) => ({ ...s, id: undefined, details: intercity || logistics ? { ...(logistics ?? {}), ...(intercity ? { intercity } : {}) } : null })),
+      stops: d.stops.map(({ intercity, officialUrl: _o, ticketed: _t, admission: _a, logistics, ...s }) => ({ ...s, id: undefined, details: intercity || logistics ? { ...(logistics ?? {}), ...(intercity ? { intercity } : {}) } : null })),
     })),
   );
   return copy.id;

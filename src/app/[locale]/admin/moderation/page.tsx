@@ -4,6 +4,7 @@ import { getDb, schema } from "@/db";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { CommandButton } from "@/components/admin/AdminForms";
 import { formatDate } from "@/lib/format";
+import { Icon } from "@/components/ui/Icon";
 
 export default async function AdminModeration({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -44,7 +45,7 @@ export default async function AdminModeration({ params }: { params: Promise<{ lo
             <span className="small">· {slug} · {formatDate(p.createdAt.toISOString(), locale)}</span>
           </div>
           <h3>{p.title}</h3>
-          {p.placeName ? <p className="small muted">📍 {p.placeName}</p> : null}
+          {p.placeName ? <p className="small muted"><Icon name="pin" className="inline-icon" /> {p.placeName}</p> : null}
           <p>{p.body}</p>
           {photoRows.some((x) => x.postId === p.id) ? (
             <div className="post-photos post-photos--admin">
@@ -54,11 +55,12 @@ export default async function AdminModeration({ params }: { params: Promise<{ lo
               ))}
             </div>
           ) : null}
-          {reports.filter((r) => r.postId === p.id).map((r) => <p key={r.id} className="small muted">⚑ {tc(`reasons.${r.reason}`)}{r.details ? `: ${r.details}` : ""}</p>)}
+          {reports.filter((r) => r.postId === p.id).map((r) => <p key={r.id} className="small muted"><Icon name="flag" className="inline-icon" /> {tc(`reasons.${r.reason}`)}{r.details ? `: ${r.details}` : ""}</p>)}
           <div className="cluster">
             <CommandButton cmd={{ type: "post", id: p.id, command: "published" }} label={t("publish")} />
             <CommandButton cmd={{ type: "post", id: p.id, command: "hidden" }} label={t("hide")} />
             <CommandButton cmd={{ type: "post", id: p.id, command: "removed" }} label={t("remove")} danger />
+            <CommandButton cmd={{ type: "post", id: p.id, command: "delete" }} label={t("deletePermanently")} danger confirmText={t("confirmDeletePermanently")} />
           </div>
         </article>
       )) : <p className="muted">{t("queueEmpty")}</p>}
@@ -72,7 +74,7 @@ export default async function AdminModeration({ params }: { params: Promise<{ lo
             <span className="small">· {formatDate(c.createdAt.toISOString(), locale)}</span>
           </div>
           <p>{c.body}</p>
-          {reports.filter((r) => r.commentId === c.id).map((r) => <p key={r.id} className="small muted">⚑ {tc(`reasons.${r.reason}`)}{r.details ? `: ${r.details}` : ""}</p>)}
+          {reports.filter((r) => r.commentId === c.id).map((r) => <p key={r.id} className="small muted"><Icon name="flag" className="inline-icon" /> {tc(`reasons.${r.reason}`)}{r.details ? `: ${r.details}` : ""}</p>)}
           <div className="cluster">
             <CommandButton cmd={{ type: "comment", id: c.id, command: "published" }} label={t("publish")} />
             <CommandButton cmd={{ type: "comment", id: c.id, command: "hidden" }} label={t("hide")} />

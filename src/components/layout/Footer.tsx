@@ -22,7 +22,7 @@ export async function Footer({ signedIn }: { signedIn: boolean }) {
       <div className="container">
         <div className="footer-grid">
           <div className="footer-brand">
-            <Logo kind="stacked" variant="white" height={72} className="footer-logo" />
+            <Logo kind="stacked" variant="dark" height={96} className="footer-logo" />
             <p>{t("about")}</p>
           </div>
           <div>
@@ -57,7 +57,7 @@ export async function Footer({ signedIn }: { signedIn: boolean }) {
           </div>
         </div>
         <div className="footer-bottom">
-          <span>© {year} TRIPLAN. {t("rights")}</span>
+          <span>© {year} TriPlan. {t("rights")}</span>
           <div className="cluster">
             {SOCIAL.length ? (
               <div className="social">

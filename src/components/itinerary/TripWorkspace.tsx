@@ -6,7 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Icon } from "@/components/ui/Icon";
 import { formatDate, formatDistance, formatDuration, formatMoney, formatTime } from "@/lib/format";
-import { chooseMode, estimateLeg, googleMapsDirectionsUrl, googleMapsPlaceUrl, haversineMeters } from "@/lib/geo";
+import { chooseMode, estimateLeg, googleMapsPlaceUrl, googleMapsRouteLinks, haversineMeters, routePoints } from "@/lib/geo";
 import { scheduleDay } from "@/lib/itinerary/engine";
 import type { PlannedStop } from "@/lib/itinerary/types";
 import { restaurantSearchUrl, type OutboundLink } from "@/lib/links";
@@ -15,6 +15,7 @@ import type { DayView, StayArea, StopView, TripPlanning, TripView } from "@/lib/
 import { AccommodationPanel, JourneyDetails, MODE_ICON as JOURNEY_ICON, RouteSummary, SplitSuggestionCard } from "./PlanPanels";
 import { LogisticsBody, ROLE_ICON, useLogisticsLabel } from "./LogisticsStop";
 import { TravelPanel } from "./TravelPanel";
+import { AdmissionInfo } from "@/components/ui/AdmissionInfo";
 import type { MapStop } from "@/components/map/TripMap";
 import {
   addCustomStopAction,
@@ -32,6 +33,7 @@ import {
   setStayAction,
   setLogisticsAction,
   liveDayRoutesAction,
+  setSuggestNearbyAction,
   reorderStopsAction,
   replaceStopAction,
   toggleLockAction,
@@ -232,9 +234,18 @@ export function TripWorkspace({
   }
 
   const usedPlaceIds = new Set(trip.days.flatMap((d) => d.stops.map((s) => s.placeId)).filter(Boolean));
-  const dayRouteUrl = googleMapsDirectionsUrl(
-    [...(home ? [home] : []), ...mapStops.map((s) => ({ lat: s.lat, lng: s.lng }))],
-    prefs?.transport === "driving" ? "driving" : prefs?.transport === "cycling" ? "cycling" : prefs?.transport === "walking" ? "walking" : "transit",
+  // The day's route for Google Maps: accommodation → stops (each once) → accommodation.
+  const routeMode = prefs?.transport === "driving" ? "driving" : prefs?.transport === "cycling" ? "cycling" : prefs?.transport === "walking" ? "walking" : "transit";
+  const dayRouteLinks = googleMapsRouteLinks(
+    routePoints(
+      (day?.stops ?? [])
+        // Days with logistics already contain the accommodation (start, check-in, return) and
+        // airport/station steps in the right order; older trips get the accommodation added at both ends.
+        .filter((s) => s.lat != null && s.lng != null)
+        .map((s) => ({ lat: s.lat!, lng: s.lng!, skip: (s.kind === "meal" || s.kind === "break") && !s.placeId })),
+      hasLogistics ? null : home,
+    ),
+    routeMode,
   );
   const estimateLegs = day?.stops.some((s) => s.travelSource === "estimate");
   // Getting from the accommodation to the first stop of the day, and back after the last (estimates).
@@ -306,7 +317,7 @@ export function TripWorkspace({
           </div>
           <div className="meta-line">
             <span><Icon name="pin" />{trip.destinationName}</span>
-            {trip.startDate ? <span><Icon name="calendar" />{formatDate(trip.startDate, locale)} – {formatDate(trip.endDate, locale)}</span> : null}
+            {trip.startDate ? <span><Icon name="calendar" />{trip.endDate && trip.endDate !== trip.startDate ? <>{formatDate(trip.startDate, locale)} – {formatDate(trip.endDate, locale)}</> : <>{formatDate(trip.startDate, locale)} · {t("oneDay")}</>}</span> : null}
             <span><Icon name="users" />{t("travellers", { n: trip.adults + trip.children })}</span>
             <span className="badge badge--outline">{trip.generationSource === "ai" ? t("sourceAi") : t("sourceRules")}</span>
           </div>
@@ -317,6 +328,11 @@ export function TripWorkspace({
               onAccept={(c) => run(() => acceptSplitAction(trip.id, c), t("reorganized"))}
               onDecline={() => run(() => declineSplitAction(trip.id))}
             />
+          ) : null}
+          {planning.nearbyOff && !segments ? (
+            <button type="button" className="btn btn--sm btn--ghost" style={{ justifySelf: "start" }} disabled={pending} onClick={() => run(() => setSuggestNearbyAction(trip.id, true))}>
+              <Icon name="compass" />{t("suggestNearbyOn")}
+            </button>
           ) : null}
           {segments ? <RouteSummary segments={segments} busy={pending} onReset={() => run(() => resetSplitAction(trip.id), t("reorganized"))} /> : null}
           <AccommodationPanel
@@ -402,11 +418,11 @@ export function TripWorkspace({
                 <button type="button" className="btn btn--sm" disabled={pending} onClick={() => run(() => regenerateDayAction(trip.id, day.id), t("dayRegenerated"))}>
                   <Icon name="shuffle" />{t("regenerateDay")}
                 </button>
-                {dayRouteUrl ? (
-                  <a className="btn btn--sm" href={dayRouteUrl} target="_blank" rel="noopener noreferrer">
-                    <Icon name="route" />{t("openInMaps")}
+                {dayRouteLinks.map((url, k) => (
+                  <a key={url} className="btn btn--sm" href={url} target="_blank" rel="noopener noreferrer">
+                    <Icon name="route" />{dayRouteLinks.length > 1 ? t("openInMapsPart", { n: k + 1, total: dayRouteLinks.length }) : t("openInMaps")}
                   </a>
-                ) : null}
+                ))}
                 {googleTimes ? (
                   <button type="button" className="btn btn--sm" disabled={liveLoading || Boolean(liveLegs)} aria-pressed={Boolean(liveLegs)} onClick={loadLive}>
                     {liveLoading ? <span className="spinner" /> : <Icon name="clock" />}
@@ -487,7 +503,7 @@ export function TripWorkspace({
                                   {formatMoney(s.costMin, s.costCurrency, locale)}–{formatMoney(s.costMax, s.costCurrency, locale)} {s.costBasis === "per_person" ? t("perPerson") : t("total")} · {s.costStatus === "confirmed" ? t("confirmed") : t("estimated")}
                                 </span>
                               ) : s.kind === "attraction" || s.kind === "activity" ? (
-                                <span>{t("costUnknown")}</span>
+                                <AdmissionInfo admission={s.admission} compact={selected !== s.id} />
                               ) : null}
                               {s.locked ? <span className="lock-on"><Icon name="lock" style={{ display: "inline", inlineSize: 12, verticalAlign: -1 }} /> {t("locked")}</span> : null}
                             </div>
@@ -495,7 +511,7 @@ export function TripWorkspace({
                             {s.officialUrl && s.officialUrl !== s.linkUrl ? (
                               <a className="stop__official" href={s.officialUrl} target="_blank" rel="noopener noreferrer">
                                 <Icon name={s.ticketed ? "ticket" : "external"} className={s.ticketed ? undefined : "flip-rtl"} />
-                                {s.ticketed ? t("ticketsOfficial") : t("officialSite")}
+                                {s.ticketed ? t("ticketsOfficial") : t("hoursAdmissionOfficial")}
                               </a>
                             ) : null}
                             {journey && selected !== s.id ? <JourneyDetails info={journey} linkUrl={s.linkUrl} /> : null}

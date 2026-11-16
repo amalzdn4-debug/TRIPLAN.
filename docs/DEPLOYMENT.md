@@ -221,3 +221,22 @@ npm run db:setup                  # creates a local embedded database in ./.data
 npm run dev                       # open http://localhost:3000
 ```
 No PostgreSQL installation is needed locally. To use the real Neon database locally instead, install the Vercel CLI and run `vercel env pull .env.local` (requires the **Development** environment ticked in Step 3).
+
+## Rounds 4–6 notes (November 2026)
+
+- **New dependency:** `lucide-react` (icon set, ISC licence). Vercel installs it automatically from
+  `package.json`; nothing to configure. No new environment variables, keys or services.
+- **No database migration** in Rounds 4–6. Admission information is stored inside the existing
+  `places.details` JSON (`details.admission`), so nothing needs changing in Neon.
+- **Admission (free / paid):** nothing is shown as free or paid unless an admin enters it under
+  *Admin → Destinations → (city) → Admission* with a link to the official page, or the place is a
+  public square, bridge, fountain, statue or historic district. Everything else says
+  "check the official website". Older imported places that had `details.ticketed` are no longer
+  treated as "needs a ticket".
+- **Nearby-city suggestions** are opt-in: the "Suggest nearby cities and destinations" box in the
+  planner, or the button on an existing trip. Suggestions are never added without the user accepting.
+  Trips created before this change keep their suggestions as before.
+- **Admin delete:** admins can permanently delete any community post (from the post, or from
+  *Admin → Moderation*). Photos are removed from Blob storage; comments, likes, saves and reports go
+  with the post. The admin check runs on the server against the user's role in the database.
+- **Logo:** files from the approved TriPlan brand kit, unmodified, in `public/brand/2026/`.

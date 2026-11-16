@@ -80,6 +80,8 @@ export async function createTripAction(mode: "fast" | "detailed", _prev: ActionS
     foodPrefs: v.foodPrefs,
     dietaryNotes: v.dietaryNotes || null,
     transport: v.transport,
+    suggestNearby: v.suggestNearby,
+    admissionPreference: v.admissionPreference,
     morning: v.morning ?? "relaxed",
     dayLength: v.dayLength ?? "flexible",
     activityBalance: v.activityBalance ?? "balanced",
@@ -326,4 +328,12 @@ export async function liveDayRoutesAction(tripId: string, dayId: string): Promis
   } catch {
     return { status: "unavailable" };
   }
+}
+
+export async function setSuggestNearbyAction(tripId: string, on: boolean) {
+  const locale = await getLocale();
+  return withUser(async (uid) => {
+    await trips.setSuggestNearby(uid, tripId, Boolean(on));
+    return freshWithPlanning(uid, tripId, locale);
+  });
 }

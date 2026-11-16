@@ -51,6 +51,10 @@ export interface TripPreferences {
    * entry = the whole trip is spent at the main destination.
    */
   segments?: import("./split").TripSegment[];
+  /** "Prefer free activities" (free places get priority) or "any" (include paid experiences). */
+  admissionPreference?: "any" | "prefer_free";
+  /** "Suggest nearby cities and destinations" was ticked. Undefined on trips made before the option existed (= yes). */
+  suggestNearby?: boolean;
   /** The traveller's answer to the stay-length suggestion, so it isn't shown again. */
   splitDecision?: "accepted" | "declined" | null;
   /** How the traveller reaches the destination (time = departureTime above, the arrival time). */
@@ -91,6 +95,8 @@ export interface CandidatePlace extends LatLng {
   popularity?: number;
   /** Which destination this place belongs to (multi-city trips). */
   destinationSlug?: string;
+  /** Known admission (verified by an editor, or a public space); null/undefined = unknown. */
+  admission?: import("@/lib/admission").AdmissionType | null;
 }
 
 /** Intercity journey shown on a travel stop. Typical times only — never live schedules or prices. */

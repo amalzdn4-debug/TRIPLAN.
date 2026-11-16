@@ -39,7 +39,7 @@ export default async function PostPage({ params }: { params: Promise<{ locale: s
           <Icon name="arrowLeft" className="flip-rtl" style={{ inlineSize: 14, blockSize: 14 }} /> {t("backToCommunity")}
         </Link>
         <Notice>{t("opinionNotice")}</Notice>
-        <PostCard post={post} signedIn={!!user} full />
+        <PostCard post={post} signedIn={!!user} isAdmin={user?.role === "admin"} full />
         <Comments postId={post.id} comments={comments} signedIn={!!user} verified={!!user?.emailVerified} emailAvailable={features.emailDelivery()} canComment={post.status === "published"} />
       </div>
     </section>

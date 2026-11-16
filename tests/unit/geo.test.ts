@@ -50,3 +50,45 @@ describe("geo", () => {
     expect(centroid([])).toBeNull();
   });
 });
+
+import { routePoints, googleMapsRouteLinks } from "@/lib/geo";
+
+describe("Google Maps day route (no duplicates)", () => {
+  const home = { lat: 45.5065, lng: 9.2235 };
+  const sight = (i: number) => ({ lat: 45.46 + i * 0.004, lng: 9.19 + i * 0.003 });
+  const wps = (url: string) => new URL(url).searchParams.get("waypoints")?.split("|") ?? [];
+  it("drops 'lunch near X' points that repeat the sight's position, and merges same-place neighbours", () => {
+    const pts = routePoints([{ ...sight(1) }, { ...sight(1), skip: true }, { ...sight(1) }, { ...sight(2) }], home);
+    expect(pts).toEqual([home, sight(1), sight(2), home]);
+    for (let i = 1; i < pts.length; i++) expect(pts[i]).not.toEqual(pts[i - 1]);
+  });
+  it("starts and ends at the accommodation exactly once each", () => {
+    const pts = routePoints([sight(1), sight(2), sight(3)], home);
+    expect(pts[0]).toEqual(home);
+    expect(pts[pts.length - 1]).toEqual(home);
+    expect(pts.filter((p) => p === home)).toHaveLength(2);
+  });
+  it("public transport with several stops uses walking (Google ignores waypoints in transit mode)", () => {
+    const [url] = googleMapsRouteLinks(routePoints([sight(1), sight(2)], home), "transit");
+    expect(new URL(url).searchParams.get("travelmode")).toBe("walking");
+    expect(wps(url)).toHaveLength(2);
+    const [two] = googleMapsRouteLinks([home, sight(1)], "transit");
+    expect(new URL(two).searchParams.get("travelmode")).toBe("transit");
+  });
+  for (const n of [1, 3, 9, 10, 15]) {
+    it(`${n} stops: every stop appears once, in order, with ≤9 waypoints per link`, () => {
+      const stops = Array.from({ length: n }, (_, i) => sight(i + 1));
+      const links = googleMapsRouteLinks(routePoints(stops, home), "walking");
+      const seq: string[] = [];
+      links.forEach((u, k) => {
+        const q = new URL(u).searchParams;
+        expect(wps(u).length).toBeLessThanOrEqual(9);
+        if (k === 0) seq.push(q.get("origin")!);
+        seq.push(...wps(u), q.get("destination")!);
+        if (k > 0) expect(q.get("origin")).toBe(new URL(links[k - 1]).searchParams.get("destination"));
+      });
+      const fmt = (p: { lat: number; lng: number }) => `${p.lat.toFixed(6)},${p.lng.toFixed(6)}`;
+      expect(seq).toEqual([home, ...stops, home].map(fmt));
+    });
+  }
+});

@@ -4,6 +4,7 @@ import { asc, eq } from "drizzle-orm";
 import { getDb, schema } from "@/db";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { AdminForm, CommandButton } from "@/components/admin/AdminForms";
+import { admissionOf, type Admission } from "@/lib/admission";
 import { DestinationFields } from "../fields";
 import { Link } from "@/i18n/navigation";
 
@@ -32,7 +33,10 @@ export default async function AdminDestination({ params }: { params: Promise<{ l
       <div className="table-wrap"><table className="table"><thead><tr><th>{t("places.name")}</th><th>{t("places.kind")}</th><th>{t("places.coords")}</th><th>{t("status")}</th><th /></tr></thead><tbody>
         {places.map((p) => (
           <tr key={p.id}>
-            <td><strong>{p.name}</strong><br /><span className="small muted">{p.neighborhood} {p.tags.join(", ")}</span></td>
+            <td>
+              <strong>{p.name}</strong><br /><span className="small muted">{p.neighborhood} {p.tags.join(", ")}</span>
+              {p.kind === "attraction" || p.kind === "activity" ? <AdmissionEditor placeId={p.id} admission={admissionOf(p.details)} t={t} /> : null}
+            </td>
             <td>{t(`placeKinds.${p.kind}`)}</td>
             <td className="ltr small">{p.lat.toFixed(4)}, {p.lng.toFixed(4)}</td>
             <td><span className={`badge ${p.verification === "verified" ? "badge--blue" : "badge--outline"}`}>{t(`verificationStates.${p.verification}`)}</span></td>
@@ -75,5 +79,35 @@ export default async function AdminDestination({ params }: { params: Promise<{ l
         </div>
       </AdminForm>
     </AdminShell>
+  );
+}
+
+/** Admission for one place: free / paid / optional extras / free on certain days, with the official source. */
+function AdmissionEditor({ placeId, admission, t }: { placeId: string; admission: Admission | null; t: (k: string, v?: Record<string, string | number>) => string }) {
+  const a = admission?.basis === "editor" ? admission : null;
+  return (
+    <details className="admission-editor">
+      <summary className="small">
+        {t("admission.label")}: {admission ? t(`admission.types.${admission.type}`) : t("admission.types.unknown")}
+        {admission?.basis === "public_space" ? ` (${t("admission.publicSpace")})` : a?.checked ? ` · ${t("admission.checked", { month: a.checked })}` : ""}
+      </summary>
+      <AdminForm kind="admission" submitLabel={t("admission.save")}>
+        <input type="hidden" name="placeId" value={placeId} />
+        <div className="form-row">
+          <div className="field"><label htmlFor={`adm-type-${placeId}`}>{t("admission.type")}</label>
+            <select id={`adm-type-${placeId}`} name="type" className="select" defaultValue={a?.type ?? "unknown"}>
+              {(["unknown", "free", "paid", "optional", "conditional"] as const).map((k) => <option key={k} value={k}>{t(`admission.types.${k}`)}</option>)}
+            </select>
+          </div>
+          <div className="field"><label htmlFor={`adm-price-${placeId}`}>{t("admission.price")}</label><input id={`adm-price-${placeId}`} name="priceAmount" type="number" step="0.01" min={0} className="input" defaultValue={a?.price?.amount ?? ""} /></div>
+          <div className="field"><label htmlFor={`adm-cur-${placeId}`}>{t("admission.currency")}</label><input id={`adm-cur-${placeId}`} name="priceCurrency" className="input ltr" maxLength={3} placeholder="EUR" defaultValue={a?.price?.currency ?? ""} /></div>
+        </div>
+        <div className="field"><label htmlFor={`adm-free-${placeId}`}>{t("admission.freeWhen")}</label><input id={`adm-free-${placeId}`} name="freeWhen" className="input" defaultValue={a?.freeWhen ?? ""} placeholder={t("admission.freeWhenHint")} /></div>
+        <div className="field"><label htmlFor={`adm-note-${placeId}`}>{t("admission.note")}</label><input id={`adm-note-${placeId}`} name="note" className="input" defaultValue={a?.note ?? ""} /></div>
+        <label className="checkbox"><input type="checkbox" name="bookingRequired" defaultChecked={a?.bookingRequired} /><span>{t("admission.booking")}</span></label>
+        <div className="field"><label htmlFor={`adm-src-${placeId}`}>{t("admission.source")}</label><input id={`adm-src-${placeId}`} name="source" className="input ltr" type="url" placeholder="https://" defaultValue={a?.source ?? ""} /></div>
+        <p className="small muted">{t("admission.help")}</p>
+      </AdminForm>
+    </details>
   );
 }

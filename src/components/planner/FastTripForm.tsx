@@ -7,7 +7,7 @@ import { Field, FormMessage, SubmitButton, useFieldError, Notice } from "@/compo
 import { INTERESTS, FOOD_PREFS, TRANSPORT_PREFS, BUDGET_CATEGORIES, TRAVEL_STYLES, type Interest, type FoodPref } from "@/lib/itinerary/types";
 import { ChipGroup, ChoiceCards, Counter } from "./Inputs";
 import { useDraft } from "./useDraft";
-import { CURRENCIES, todayPlus, type PlannerDestination } from "./shared";
+import { CURRENCIES, todayPlus, todayPlusFrom, type PlannerDestination } from "./shared";
 import type { ActionState } from "@/lib/validation";
 import { DateInput } from "./TimeDate";
 
@@ -23,6 +23,9 @@ export function FastTripForm({ destinations, defaults, aiEnabled }: { destinatio
     departureCity: "",
     startDate: todayPlus(30),
     endDate: todayPlus(33),
+    oneDay: false,
+    suggestNearby: false,
+    admissionPreference: "any" as "any" | "prefer_free",
     adults: 2,
     children: 0,
     budgetTotal: "",
@@ -61,13 +64,18 @@ export function FastTripForm({ destinations, defaults, aiEnabled }: { destinatio
         </Field>
       </div>
       {selected && selected.placeCount === 0 ? <Notice tone="warning">{t("limitedData", { city: selected.city })}</Notice> : null}
+      <ChoiceCards legend={t("tripLength")} name="tripLength_ui" options={["one", "multi"] as const} value={v.oneDay ? "one" : "multi"} onChange={(x) => { update("oneDay", x === "one"); if (x === "one") update("endDate", v.startDate); else if (v.endDate === v.startDate) update("endDate", todayPlusFrom(v.startDate, 3)); }} labelFor={(o) => t(`tripLengthOptions.${o}`)} hintFor={(o) => t(`tripLengthHints.${o}`)} />
       <div className="form-row">
-        <Field label={t("arrivalDate")} name="startDate" error={err("startDate")}>
-          {(p) => <DateInput {...p} value={v.startDate} min={todayPlus(0)} onChange={(x) => update("startDate", x)} required />}
+        <Field label={v.oneDay ? t("tripDate") : t("arrivalDate")} name="startDate" error={err("startDate")}>
+          {(p) => <DateInput {...p} value={v.startDate} min={todayPlus(0)} onChange={(x) => { update("startDate", x); if (v.oneDay) update("endDate", x); }} required />}
         </Field>
-        <Field label={t("departureDate")} name="endDate" error={err("endDate")}>
-          {(p) => <DateInput {...p} value={v.endDate} min={v.startDate} onChange={(x) => update("endDate", x)} required />}
-        </Field>
+        {v.oneDay ? (
+          <input type="hidden" name="endDate" value={v.startDate} />
+        ) : (
+          <Field label={t("departureDate")} name="endDate" error={err("endDate")}>
+            {(p) => <DateInput {...p} value={v.endDate} min={v.startDate} onChange={(x) => update("endDate", x)} required />}
+          </Field>
+        )}
         <Counter label={t("adults")} name="adults" value={v.adults} min={1} max={20} onChange={(n) => update("adults", n)} />
         <Counter label={t("children")} name="children" value={v.children} min={0} max={20} onChange={(n) => update("children", n)} />
       </div>
@@ -90,7 +98,14 @@ export function FastTripForm({ destinations, defaults, aiEnabled }: { destinatio
       <ChoiceCards legend={t("budgetCategory")} name="budgetCategory" options={BUDGET_CATEGORIES} value={v.budgetCategory} onChange={(x) => update("budgetCategory", x)} labelFor={(o) => t(`budgetCategories.${o}`)} />
       <ChoiceCards legend={t("pace")} name="pace" options={TRAVEL_STYLES} value={v.pace} onChange={(x) => update("pace", x)} labelFor={(o) => t(`paces.${o}`)} hintFor={(o) => t(`paceHints.${o}`)} />
       <ChipGroup legend={t("interests")} name="interests" options={INTERESTS} value={v.interests} onChange={(x) => update("interests", x)} labelFor={(o) => t(`interestOptions.${o}`)} />
+      <ChoiceCards legend={t("admissionPreference")} name="admissionPreference" options={["any", "prefer_free"] as const} value={v.admissionPreference} onChange={(x) => update("admissionPreference", x)} labelFor={(o) => t(`admissionOptions.${o}`)} hintFor={(o) => t(`admissionHints.${o}`)} />
       <ChoiceCards legend={t("transport")} name="transport" options={TRANSPORT_PREFS} value={v.transport} onChange={(x) => update("transport", x)} labelFor={(o) => t(`transportOptions.${o}`)} />
+      {!v.oneDay ? (
+        <label className="checkbox checkbox--card">
+          <input type="checkbox" name="suggestNearby" checked={v.suggestNearby} onChange={(e) => update("suggestNearby", e.target.checked)} />
+          <span><strong>{t("suggestNearby")}</strong><br /><span className="small muted">{t("suggestNearbyHint")}</span></span>
+        </label>
+      ) : null}
       <ChipGroup legend={t("food")} name="foodPrefs" options={FOOD_PREFS} value={v.foodPrefs} onChange={(x) => update("foodPrefs", x)} labelFor={(o) => t(`foodOptions.${o}`)} />
       <p className="small muted">{aiEnabled ? t("aiNote") : t("rulesNote")}</p>
       <div className="wizard-footer">

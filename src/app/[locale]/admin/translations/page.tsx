@@ -4,6 +4,7 @@ import { getDb, schema } from "@/db";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { AdminForm } from "@/components/admin/AdminForms";
 import { LOCALES, LOCALE_META } from "@/config/locales";
+import { Icon } from "@/components/ui/Icon";
 
 export default async function AdminTranslations({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -26,7 +27,7 @@ export default async function AdminTranslations({ params }: { params: Promise<{ 
       </AdminForm>
       {rows.length ? (
         <div className="table-wrap"><table className="table"><thead><tr><th>{t("key")}</th><th>{t("locale")}</th><th>{t("value")}</th><th>{t("reviewed")}</th></tr></thead><tbody>
-          {rows.map((r) => <tr key={r.id}><td className="ltr">{r.key}</td><td>{r.locale}</td><td lang={r.locale} dir={LOCALE_META[r.locale as keyof typeof LOCALE_META]?.dir}>{r.value}</td><td>{r.reviewed ? "✓" : ""}</td></tr>)}
+          {rows.map((r) => <tr key={r.id}><td className="ltr">{r.key}</td><td>{r.locale}</td><td lang={r.locale} dir={LOCALE_META[r.locale as keyof typeof LOCALE_META]?.dir}>{r.value}</td><td>{r.reviewed ? <Icon name="check" className="inline-icon" title="✓" /> : ""}</td></tr>)}
         </tbody></table></div>
       ) : <p className="muted">{t("noOverrides")}</p>}
     </AdminShell>

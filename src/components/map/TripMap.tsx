@@ -4,6 +4,11 @@ import "leaflet/dist/leaflet.css";
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { loadLeaflet, TILE_ATTRIBUTION, TILE_URL } from "./leaflet";
+import { renderToStaticMarkup } from "react-dom/server";
+import { Icon } from "@/components/ui/Icon";
+
+/** The accommodation marker uses the same icon set as the rest of the site. */
+const HOME_SVG = renderToStaticMarkup(<Icon name="home" width={16} height={16} />);
 
 export interface MapStop {
   id: string;
@@ -95,7 +100,7 @@ export function TripMap({
       return [15 - shift, 30];
     };
     if (home) {
-      const icon = L.divIcon({ className: "", html: `<div class="tp-marker tp-marker--home"><span>★</span></div>`, iconSize: [30, 30], iconAnchor: fan(home.lat, home.lng) });
+      const icon = L.divIcon({ className: "", html: `<div class="tp-marker tp-marker--home"><span>${HOME_SVG}</span></div>`, iconSize: [30, 30], iconAnchor: fan(home.lat, home.lng) });
       L.marker([home.lat, home.lng], { icon, title: home.label, keyboard: true }).bindTooltip(home.label).addTo(layer);
       pts.push([home.lat, home.lng]);
     }

@@ -10,7 +10,7 @@ import { Icon } from "@/components/ui/Icon";
 import { INTERESTS, FOOD_PREFS, TRANSPORT_PREFS, BUDGET_CATEGORIES, TRAVEL_STYLES, type Interest, type FoodPref } from "@/lib/itinerary/types";
 import { ChipGroup, ChoiceCards, Counter } from "./Inputs";
 import { useDraft } from "./useDraft";
-import { CURRENCIES, todayPlus, type PlannerDestination } from "./shared";
+import { CURRENCIES, todayPlus, todayPlusFrom, type PlannerDestination } from "./shared";
 import { DateInput, TimeInput } from "./TimeDate";
 import { TravelEndFields } from "./TravelEndFields";
 import { AddressSearch } from "@/components/map/AddressSearch";
@@ -52,6 +52,9 @@ export function DetailedTripWizard({ destinations, defaults, aiEnabled }: { dest
     endDate: todayPlus(49),
     departureTime: "",
     returnTime: "",
+    oneDay: false,
+    suggestNearby: false,
+    admissionPreference: "any" as "any" | "prefer_free",
     arrivalMode: "plane" as "plane" | "train" | "bus" | "car" | "other",
     arrivalPlace: "",
     arrivalLat: "" as string | number,
@@ -188,14 +191,23 @@ export function DetailedTripWizard({ destinations, defaults, aiEnabled }: { dest
                 </Field>
               </div>
               {dest && dest.placeCount === 0 ? <Notice tone="warning">{t("limitedData", { city: dest.city })}</Notice> : null}
+              <ChoiceCards legend={t("tripLength")} name="tripLength_ui" options={["one", "multi"] as const} value={v.oneDay ? "one" : "multi"} onChange={(x) => { update("oneDay", x === "one"); if (x === "one") update("endDate", v.startDate); else if (v.endDate === v.startDate) update("endDate", todayPlusFrom(v.startDate, 3)); }} labelFor={(o) => t(`tripLengthOptions.${o}`)} hintFor={(o) => t(`tripLengthHints.${o}`)} />
               <div className="form-row">
-                <Field label={t("arrivalDate")} name="startDate" error={fieldErr("startDate")}>
-                  {(p) => <DateInput {...p} min={todayPlus(0)} value={v.startDate} onChange={(x) => update("startDate", x)} />}
+                <Field label={v.oneDay ? t("tripDate") : t("arrivalDate")} name="startDate" error={fieldErr("startDate")}>
+                  {(p) => <DateInput {...p} min={todayPlus(0)} value={v.startDate} onChange={(x) => { update("startDate", x); if (v.oneDay) update("endDate", x); }} />}
                 </Field>
-                <Field label={t("departureDate")} name="endDate" error={fieldErr("endDate")}>
-                  {(p) => <DateInput {...p} min={v.startDate} value={v.endDate} onChange={(x) => update("endDate", x)} />}
-                </Field>
+                {!v.oneDay ? (
+                  <Field label={t("departureDate")} name="endDate" error={fieldErr("endDate")}>
+                    {(p) => <DateInput {...p} min={v.startDate} value={v.endDate} onChange={(x) => update("endDate", x)} />}
+                  </Field>
+                ) : null}
               </div>
+              {!v.oneDay ? (
+                <label className="checkbox checkbox--card">
+                  <input type="checkbox" checked={v.suggestNearby} onChange={(e) => update("suggestNearby", e.target.checked)} />
+                  <span><strong>{t("suggestNearby")}</strong><br /><span className="small muted">{t("suggestNearbyHint")}</span></span>
+                </label>
+              ) : null}
               <TravelEndFields
                 idPrefix="arr"
                 legend={tte("arrivalLegend")}
@@ -360,7 +372,10 @@ export function DetailedTripWizard({ destinations, defaults, aiEnabled }: { dest
           )}
 
           {step === "interests" && (
-            <ChipGroup legend={t("interestsQuestion")} name="interests_ui" options={INTERESTS} value={v.interests} onChange={(x) => update("interests", x)} labelFor={(o) => t(`interestOptions.${o}`)} />
+            <>
+              <ChipGroup legend={t("interestsQuestion")} name="interests_ui" options={INTERESTS} value={v.interests} onChange={(x) => update("interests", x)} labelFor={(o) => t(`interestOptions.${o}`)} />
+              <ChoiceCards legend={t("admissionPreference")} name="admissionPreference_ui" options={["any", "prefer_free"] as const} value={v.admissionPreference} onChange={(x) => update("admissionPreference", x)} labelFor={(o) => t(`admissionOptions.${o}`)} hintFor={(o) => t(`admissionHints.${o}`)} />
+            </>
           )}
 
           {step === "food" && (

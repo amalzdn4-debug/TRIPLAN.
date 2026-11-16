@@ -564,8 +564,11 @@ fieldset > legend {
   flex: none;
 }
 .site-header__brand img {
-  block-size: 30px;
+  block-size: 42px; /* the brand files include clear space: ~24 px tall letters, the brand minimum */
   inline-size: auto;
+}
+.site-header__brand img.logo-mark {
+  block-size: 40px;
 }
 .logo-light,
 .logo-dark {
@@ -575,6 +578,20 @@ fieldset > legend {
 .site-header:not(.site-header--overlay) .logo-light,
 .site-header.is-scrolled .logo-light {
   display: none;
+}
+/* Compact navigation (small phones): the TP. monogram instead of the full wordmark. */
+.site-header__brand .logo-mark {
+  display: none !important;
+}
+@media (max-width: 420px) {
+  .site-header__brand .logo-full {
+    display: none !important;
+  }
+  .site-header--overlay:not(.is-scrolled) .logo-mark.logo-light,
+  .site-header:not(.site-header--overlay) .logo-mark.logo-dark,
+  .site-header.is-scrolled .logo-mark.logo-dark {
+    display: block !important;
+  }
 }
 .main-nav {
   display: flex;
@@ -875,7 +892,8 @@ fieldset > legend {
 }
 /* Stacked lockup in the footer */
 .footer-brand img.footer-logo {
-  block-size: 76px;
+  block-size: 96px;
+  margin-inline-start: -14px; /* align the letters (not the file's clear space) with the text */
 }
 .footer-brand p {
   max-inline-size: 320px;
@@ -948,18 +966,19 @@ fieldset > legend {
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity var(--dur-hero) var(--ease-in-out);
+  transition: opacity 700ms var(--ease-in-out);
+  will-change: opacity;
 }
 .hero__slide.is-active {
   opacity: 1;
 }
 .hero__slide img {
   object-fit: cover;
-  transform: scale(1.04);
-  transition: transform 9s linear;
+  transform: scale(1.02);
+  transition: transform 14s linear;
 }
 .hero__slide.is-active img {
-  transform: scale(1.1);
+  transform: scale(1.07);
 }
 .hero::after {
   content: "";
@@ -3566,4 +3585,107 @@ html[lang="zh"] .hero__tagline {
 }
 .live-note {
   margin-block: 4px 0;
+}
+
+/* ═════════ Round 4: time field ═════════ */
+.time-input__row {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+}
+.time-input__text {
+  flex: 1;
+  min-inline-size: 0;
+}
+.time-input__pick {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  inline-size: 48px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--r-md);
+  background: var(--color-surface);
+  color: var(--color-primary);
+}
+.time-input__pick svg {
+  inline-size: 18px;
+  block-size: 18px;
+}
+.time-input__native {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  opacity: 0;
+  cursor: pointer;
+  border: 0;
+  font-size: 16px; /* no zoom-on-focus on iOS */
+}
+.time-input__pick:focus-within {
+  box-shadow: var(--sh-focus);
+}
+.inline-icon {
+  display: inline;
+  inline-size: 14px;
+  block-size: 14px;
+  vertical-align: -2px;
+}
+.tp-marker--home svg {
+  display: block;
+  inline-size: 16px;
+  block-size: 16px;
+}
+/* Designed fallback when a photo is missing or fails: brand navy with a faint TP. monogram (as in the brand guide). */
+.img-fallback {
+  overflow: hidden;
+  isolation: isolate;
+}
+.img-fallback::before {
+  content: "";
+  position: absolute;
+  inset-block: -10%;
+  inset-inline-end: -6%;
+  inline-size: 70%;
+  background: url("/brand/2026/triplan-monogram-white.svg") no-repeat center / contain;
+  opacity: 0.07;
+  z-index: -1;
+}
+.checkbox--card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--r-md);
+  background: var(--color-surface);
+}
+.checkbox--card input {
+  margin-block-start: 3px;
+}
+.adm {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 4px;
+}
+.adm--free {
+  color: var(--color-success);
+}
+.adm--unknown {
+  color: var(--color-text-muted);
+}
+.admission-editor {
+  margin-block-start: 6px;
+}
+.admission-editor summary {
+  cursor: pointer;
+}
+a.pick-chip {
+  text-decoration: none;
+}
+.pick-chip[aria-current="true"] {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-primary);
 }

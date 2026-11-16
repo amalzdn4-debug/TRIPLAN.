@@ -8,6 +8,7 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { rateLimit } from "@/lib/rate-limit";
 import { commentSchema, flattenErrors, formToObject, postSchema, reviewSchema, type ActionState } from "@/lib/validation";
 import { deleteStored } from "@/lib/storage";
+import { isAdminUser } from "@/lib/entitlements";
 
 const AUTO_HIDE_REPORTS = 3;
 
@@ -105,20 +106,30 @@ export async function updatePostAction(postId: string, _prev: ActionState, fd: F
   return { ok: true, message: status === "pending" ? "postPending" : "postUpdated", values: { postId } };
 }
 
-/** Deletes your own post, its comments, likes and photos (including the stored files). */
+/**
+ * Deletes a post with its comments, likes, saves, reports and photos (including the stored files).
+ * Authors can delete their own posts; admins can delete any post. The admin check reads the role
+ * from the database on the server — the button being visible is never enough.
+ */
 export async function deletePostAction(postId: string): Promise<{ ok: boolean }> {
   const user = await getCurrentUser();
   if (!user) return { ok: false };
   const db = await getDb();
-  const urls = (await db.select({ url: schema.mediaUploads.url }).from(schema.mediaUploads).where(and(eq(schema.mediaUploads.postId, postId), eq(schema.mediaUploads.userId, user.id)))).map((r) => r.url);
+  const asAdmin = user.role === "admin" && (await isAdminUser(user.id));
+  const [post] = await db.select({ userId: schema.communityPosts.userId }).from(schema.communityPosts).where(eq(schema.communityPosts.id, postId));
+  if (!post || (post.userId !== user.id && !asAdmin)) return { ok: false };
+  // Every photo attached to the post (the author's), not only the current user's.
+  const urls = (await db.select({ url: schema.mediaUploads.url }).from(schema.mediaUploads).where(eq(schema.mediaUploads.postId, postId))).map((r) => r.url);
   const deleted = await db.transaction(async (tx) => {
-    const rows = await tx.delete(schema.communityPosts).where(and(eq(schema.communityPosts.id, postId), eq(schema.communityPosts.userId, user.id))).returning({ id: schema.communityPosts.id });
+    // Comments, likes, saves and reports go with the post (ON DELETE CASCADE).
+    const rows = await tx.delete(schema.communityPosts).where(eq(schema.communityPosts.id, postId)).returning({ id: schema.communityPosts.id });
     if (rows.length && urls.length) await tx.delete(schema.mediaUploads).where(inArray(schema.mediaUploads.url, urls));
     return rows.length > 0;
   });
   if (!deleted) return { ok: false };
   await deleteStored(urls);
   revalidatePath("/[locale]/community", "page");
+  revalidatePath("/[locale]/admin/moderation", "page");
   return { ok: true };
 }
 

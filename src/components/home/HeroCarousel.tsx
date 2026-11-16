@@ -10,57 +10,109 @@ import { Icon } from "@/components/ui/Icon";
 import { countryName } from "@/lib/format";
 import type { HeroSlideData } from "@/data/hero";
 
-const INTERVAL_MS = 7000;
+/** About 13 s per photo, 700 ms crossfade (CSS --dur-hero-fade). */
+const INTERVAL_MS = 13_000;
 
 /**
  * Rotating international destination hero.
- * - crossfades every 7s; pauses on hover, focus within, or when the tab is hidden
- * - honours prefers-reduced-motion (no auto-rotation, no zoom)
+ * - a new photo every ~13 s with a 700 ms crossfade; it never pauses just because the pointer is over it
+ * - the next photo is preloaded while the current one shows; the switch happens only once it has
+ *   loaded (no blank frames), and a photo that fails to load is skipped
+ * - pauses while the tab is hidden and restarts cleanly when it's visible again
+ * - smaller images on phones; honours prefers-reduced-motion (no auto-rotation, no zoom)
  * - no visible dots/arrows (owner's choice); ←/→ still work when focus is inside (e.g. on the place link)
- * - only the current and next images are requested; the next one is preloaded before it shows
  */
 export function HeroCarousel({ slides, children }: { slides: HeroSlideData[]; children: React.ReactNode }) {
   const t = useTranslations("hero");
   const locale = useLocale();
   const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [reduced, setReduced] = useState(false);
-  const [loaded, setLoaded] = useState<Set<number>>(() => new Set([0, slides.length > 1 ? 1 : 0]));
+  const [narrow, setNarrow] = useState(false);
+  const [loaded, setLoaded] = useState<Set<number>>(() => new Set(slides.length > 1 ? [0, 1] : [0]));
+  const [ready, setReady] = useState<Set<number>>(() => new Set());
+  const [broken, setBroken] = useState<Set<number>>(() => new Set());
+  const [waiting, setWaiting] = useState<number | null>(null);
   const root = useRef<HTMLElement>(null);
   const count = slides.length;
 
-  const go = useCallback(
-    (i: number) => {
-      const next = (i + count) % count;
-      setLoaded((s) => new Set(s).add(next).add((next + 1) % count));
-      setIndex(next);
+  /** The next slide that hasn't failed to load. */
+  const nextUsable = useCallback(
+    (from: number, step = 1) => {
+      for (let k = 1; k <= count; k++) {
+        const i = (((from + step * k) % count) + count) % count;
+        if (!broken.has(i)) return i;
+      }
+      return from;
     },
-    [count],
+    [count, broken],
   );
+
+  const show = useCallback(
+    (i: number) => {
+      if (i === index) return;
+      if (ready.has(i)) {
+        setWaiting(null);
+        setIndex(i);
+      } else {
+        // Not loaded yet: request it and switch as soon as it arrives (the current photo stays meanwhile).
+        setLoaded((s) => new Set(s).add(i));
+        setWaiting(i);
+      }
+    },
+    [index, ready],
+  );
+  const go = useCallback((delta: number) => show(nextUsable(index, delta)), [show, nextUsable, index]);
+
+  // Always keep the following photo loading in the background.
+  useEffect(() => {
+    if (count < 2) return;
+    const n = nextUsable(index);
+    setLoaded((s) => (s.has(n) ? s : new Set(s).add(n)));
+  }, [index, count, nextUsable]);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setReduced(mq.matches);
+    const small = window.matchMedia("(max-width: 768px)");
+    const update = () => {
+      setReduced(mq.matches);
+      setNarrow(small.matches);
+    };
     update();
     mq.addEventListener("change", update);
-    const onVis = () => setPaused(document.hidden);
+    small.addEventListener("change", update);
+    const onVis = () => setHidden(document.hidden);
     document.addEventListener("visibilitychange", onVis);
     return () => {
       mq.removeEventListener("change", update);
+      small.removeEventListener("change", update);
       document.removeEventListener("visibilitychange", onVis);
     };
   }, []);
 
   useEffect(() => {
-    if (count < 2 || paused || reduced) return;
-    const id = window.setTimeout(() => go(index + 1), INTERVAL_MS);
+    if (count < 2 || hidden || reduced || waiting != null) return;
+    const id = window.setTimeout(() => go(1), INTERVAL_MS);
     return () => window.clearTimeout(id);
-  }, [index, paused, reduced, count, go]);
+  }, [index, hidden, reduced, count, go, waiting]);
+
+  const onLoaded = (i: number) => {
+    setReady((s) => (s.has(i) ? s : new Set(s).add(i)));
+    if (waiting === i) {
+      setWaiting(null);
+      setIndex(i);
+    }
+  };
+  const onFailed = (i: number) => {
+    setBroken((s) => new Set(s).add(i));
+    if (waiting === i) setWaiting(null);
+    if (i === index && count > 1) setIndex((cur) => (cur === i ? nextUsable(i) : cur));
+  };
 
   const onKey = (e: React.KeyboardEvent) => {
     const rtl = document.documentElement.dir === "rtl";
-    if (e.key === "ArrowRight") go(index + (rtl ? -1 : 1));
-    if (e.key === "ArrowLeft") go(index + (rtl ? 1 : -1));
+    if (e.key === "ArrowRight") go(rtl ? -1 : 1);
+    if (e.key === "ArrowLeft") go(rtl ? 1 : -1);
   };
 
   const current = slides[index];
@@ -73,17 +125,13 @@ export function HeroCarousel({ slides, children }: { slides: HeroSlideData[]; ch
       className="hero"
       aria-roledescription="carousel"
       aria-label={t("carouselLabel")}
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={(e) => !root.current?.contains(e.relatedTarget as Node) && setPaused(false)}
       onKeyDown={onKey}
     >
       <div className="hero__slides">
         {slides.map((s, i) => (
           <div key={s.id} className={`hero__slide ${i === index ? "is-active" : ""}`} aria-hidden={i !== index} role="group" aria-roledescription="slide" aria-label={t("slideOf", { n: i + 1, total: count })}>
             {loaded.has(i) ? (
-              <Image src={sizedUrl(s.imageUrl, "hero")} alt={i === index ? s.alt : ""} fill sizes="100vw" priority={i === 0} quality={72} unoptimized={isWikimedia(s.imageUrl)} style={{ objectFit: "cover" }} />
+              <Image src={sizedUrl(s.imageUrl, narrow ? "card" : "hero")} alt={i === index ? s.alt : ""} fill sizes="100vw" priority={i === 0} quality={70} unoptimized={isWikimedia(s.imageUrl)} style={{ objectFit: "cover" }} onLoad={() => onLoaded(i)} onError={() => onFailed(i)} />
             ) : null}
           </div>
         ))}
@@ -92,7 +140,7 @@ export function HeroCarousel({ slides, children }: { slides: HeroSlideData[]; ch
       <div className="container hero__content">
         {children}
         <div className="hero__bar">
-          <div className="hero__caption" aria-live={paused || reduced ? "polite" : "off"}>
+          <div className="hero__caption" aria-live={reduced ? "polite" : "off"}>
             <div>
               <div className="hero__caption-place">
                 <Icon name="pin" />

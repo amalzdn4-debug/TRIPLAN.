@@ -59,7 +59,7 @@ export default async function CommunityPage({ params, searchParams }: { params: 
             </form>
             <Notice>{t("opinionNotice")}</Notice>
             {posts.length ? (
-              posts.map((p) => <PostCard key={p.id} post={p} signedIn={!!user} />)
+              posts.map((p) => <PostCard key={p.id} post={p} signedIn={!!user} isAdmin={user?.role === "admin"} />)
             ) : (
               <div className="empty">
                 <div className="icon-tile"><Icon name="users" /></div>

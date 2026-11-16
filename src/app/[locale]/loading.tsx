@@ -6,7 +6,7 @@ export default async function Loading() {
   const t = await getTranslations("common");
   return (
     <div className="page-loading" role="status" aria-live="polite">
-      <Logo kind="monogram" variant="teal" height={64} alt="" className="page-loading__mark" />
+      <Logo kind="monogram" variant="light" height={72} alt="" className="page-loading__mark" />
       <span className="page-loading__bar" aria-hidden />
       <span className="visually-hidden">{t("loading")}</span>
     </div>

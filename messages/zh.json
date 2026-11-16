@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "TRIPLAN — 少一点规划，多一点探索。",
+    "title": "TriPlan — 少一点规划，多一点探索。",
     "description": "一站式整理整趟旅程：每日行程、互动地图、餐饮、交通、行李寄存，以及覆盖全球目的地的可信预订链接。"
   },
   "common": {
@@ -9,9 +9,11 @@
     "save": "保存",
     "saved": "已保存",
     "partner": "合作伙伴",
-    "partnerDisclosure": "标有“合作伙伴”的链接为联盟链接：若您通过它们预订，TRIPLAN 可能获得佣金，您无需额外付费。合作伙伴无法付费更改您的行程或我们的推荐。",
+    "partnerDisclosure": "标有“合作伙伴”的链接为联盟链接：若您通过它们预订，TriPlan 可能获得佣金，您无需额外付费。合作伙伴无法付费更改您的行程或我们的推荐。",
     "loading": "加载中…",
-    "contactUs": "联系我们"
+    "contactUs": "联系我们",
+    "pickTime": "选择时间",
+    "timeInvalid": "请输入时间，例如 09:30（24 小时制）。"
   },
   "nav": {
     "home": "首页",
@@ -38,12 +40,12 @@
     "skip": "跳至主要内容"
   },
   "footer": {
-    "about": "Triplan 将航班、住宿、餐饮、交通和每日计划整合在一个清晰、从容的地方——适用于全球任何目的地。",
+    "about": "TriPlan 将航班、住宿、餐饮、交通和每日计划整合在一个清晰、从容的地方——适用于全球任何目的地。",
     "product": "产品",
-    "company": "Triplan",
+    "company": "TriPlan",
     "legal": "法律信息",
     "pricing": "价格",
-    "aboutLink": "关于 Triplan",
+    "aboutLink": "关于 TriPlan",
     "reviews": "评价与反馈",
     "faq": "常见问题",
     "contact": "联系我们",
@@ -61,7 +63,7 @@
     "necessary": "必要 Cookie",
     "necessaryHint": "登录、语言以及本项选择。始终开启。",
     "analytics": "分析",
-    "analyticsHint": "匿名使用统计，帮助我们改进 Triplan。",
+    "analyticsHint": "匿名使用统计，帮助我们改进 TriPlan。",
     "acceptAll": "全部接受",
     "necessaryOnly": "仅必要",
     "customize": "自定义",
@@ -87,7 +89,7 @@
       "explore": "探索目的地"
     },
     "quick": {
-      "label": "Triplan 涵盖的内容",
+      "label": "TriPlan 涵盖的内容",
       "flights": "航班",
       "hotels": "酒店",
       "restaurants": "餐厅",
@@ -96,15 +98,15 @@
       "transport": "交通"
     },
     "how": {
-      "eyebrow": "Triplan 如何运作",
+      "eyebrow": "TriPlan 如何运作",
       "title": "三步，从想法到行程",
-      "lead": "告诉我们要点，Triplan 负责整理，而每个细节仍由您掌控。",
+      "lead": "告诉我们要点，TriPlan 负责整理，而每个细节仍由您掌控。",
       "tell": {
         "title": "介绍您的旅行",
         "body": "去哪里、什么时候、和谁一起、预算多少、喜欢什么——两分钟内即可完成。"
       },
       "organize": {
-        "title": "交给 Triplan 安排",
+        "title": "交给 TriPlan 安排",
         "body": "获得一份切实可行的每日计划，包含餐饮、休息以及相邻地点之间的交通时间。"
       },
       "explore": {
@@ -115,7 +117,7 @@
     "everything": {
       "eyebrow": "旅行所需，一应俱全",
       "title": "旅程的每个环节，都在一个地方",
-      "lead": "Triplan 把旅行者通常分散在十几个标签页里的信息整合到一起。",
+      "lead": "TriPlan 把旅行者通常分散在十几个标签页里的信息整合到一起。",
       "flights": {
         "title": "航班",
         "body": "添加航班时间，在可信平台上搜索机票，日期已为您填好。"
@@ -177,7 +179,7 @@
       }
     },
     "why": {
-      "eyebrow": "为什么选择 Triplan？",
+      "eyebrow": "为什么选择 TriPlan？",
       "title": "少花时间规划，多花时间体验。",
       "time": {
         "title": "节省数小时",
@@ -203,7 +205,7 @@
     "community": {
       "eyebrow": "社区推荐",
       "title": "来自其他旅行者的私藏好去处",
-      "lead": "Triplan 会员的真实经历——并明确标注为个人观点。",
+      "lead": "TriPlan 会员的真实经历——并明确标注为个人观点。",
       "all": "前往社区",
       "emptyTitle": "成为第一位分享者",
       "emptyBody": "社区刚刚起步。分享一个私藏好去处、一条实用建议或您最爱的地方吧。",
@@ -295,7 +297,7 @@
   "destinations": {
     "eyebrow": "目的地",
     "title": "全部目的地",
-    "lead": "Triplan 支持的所有目的地，按地区分类。我们会定期添加新的地方。",
+    "lead": "TriPlan 支持的所有目的地，按地区分类。我们会定期添加新的地方。",
     "jump": "跳转到地区"
   },
   "destination": {
@@ -332,7 +334,7 @@
     "duration": "建议时长",
     "budgetLevel": "预算水平",
     "climate": "气候",
-    "budgetNote": "预算水平仅为大致参考。Triplan 只在有可靠数据时显示价格，并始终标注估算。",
+    "budgetNote": "预算水平仅为大致参考。TriPlan 只在有可靠数据时显示价格，并始终标注估算。",
     "openMap": "在地图中打开",
     "noAttractions": "此目的地的精选景点即将上线。您仍可规划行程并添加自己的地点。",
     "noNeighborhoods": "街区指南即将上线。",
@@ -356,19 +358,19 @@
     },
     "website": "官网",
     "dietNote": "饮食标签仅在核实后显示。清真状态、过敏原和配料请务必直接向餐厅确认。",
-    "stayIntro": "在可信的预订网站上比较住宿。Triplan 不显示第三方的价格或余量。",
+    "stayIntro": "在可信的预订网站上比较住宿。TriPlan 不显示第三方的价格或余量。",
     "flights": "航班",
-    "externalNote": "外部链接将打开合作伙伴网站。价格和余量以对方网站为准，不在 Triplan 显示。",
+    "externalNote": "外部链接将打开合作伙伴网站。价格和余量以对方网站为准，不在 TriPlan 显示。",
     "transportIntro": "公共交通、接送服务和租车：",
     "moreInfo": "了解更多",
     "luggageIntro": "入住前或退房后，可在车站、机场和景点附近寄存行李。",
     "book": "预订",
-    "availabilityNote": "余量和价格由各服务商提供。Triplan 绝不显示无法核实的余量。",
+    "availabilityNote": "余量和价格由各服务商提供。TriPlan 绝不显示无法核实的余量。",
     "activitiesIntro": "来自可信合作伙伴和官方网站的导览、门票和体验。",
-    "communityNote": "Triplan 会员的个人观点，而非经核实的事实。",
+    "communityNote": "TriPlan 会员的个人观点，而非经核实的事实。",
     "noPosts": "还没有关于{city}的帖子。",
     "sharePost": "分享推荐",
-    "asideTitle": "用 Triplan 规划{city}之旅",
+    "asideTitle": "用 TriPlan 规划{city}之旅",
     "asideBody": "几分钟内获得包含餐饮、地图和交通时间的每日计划。",
     "fastCta": "快速旅行",
     "detailedCta": "详细旅行",
@@ -384,7 +386,11 @@
       "bus": "汽车站"
     },
     "ticketsOfficial": "门票和开放时间 · 官方网站",
-    "officialSite": "官方网站"
+    "officialSite": "官方网站",
+    "filterAll": "全部（{n}）",
+    "filterFree": "免费参观（{n}）",
+    "admissionFilter": "按门票筛选",
+    "hoursAdmissionOfficial": "开放时间与门票 · 官方网站"
   },
   "planIntro": {
     "eyebrow": "规划",
@@ -411,8 +417,8 @@
     "detailedPoint3": "生成前检查所有内容",
     "detailedCta": "开始详细旅行",
     "servicesEyebrow": "服务",
-    "servicesTitle": "Triplan 如何在每个环节提供帮助",
-    "servicesLead": "以下是 Triplan 直接处理的部分，以及何时将您引导至可信服务。",
+    "servicesTitle": "TriPlan 如何在每个环节提供帮助",
+    "servicesLead": "以下是 TriPlan 直接处理的部分，以及何时将您引导至可信服务。",
     "services": {
       "flights": {
         "title": "航班",
@@ -529,7 +535,7 @@
     },
     "dietaryNotes": "过敏或饮食限制",
     "dietaryHint": "只需填写规划时需要考虑的内容，可随时修改。",
-    "halalNote": "Triplan 仅在核实后显示清真及其他饮食标签。请务必向餐厅确认。",
+    "halalNote": "TriPlan 仅在核实后显示清真及其他饮食标签。请务必向餐厅确认。",
     "optional": "可选",
     "limitedData": "{city}的精选地点仍在完善中。您的计划会包含餐饮和自由时间——可以添加自己的地点。",
     "aiNote": "行程由 AI 基于我们数据库中的地点辅助生成。出行前请务必核实细节。",
@@ -583,7 +589,7 @@
       "budgetActivities": "活动",
       "budgetTransport": "交通"
     },
-    "budgetDisclaimer": "预算会影响推荐内容。Triplan 只在有可靠数据时显示费用，并标注为估算。",
+    "budgetDisclaimer": "预算会影响推荐内容。TriPlan 只在有可靠数据时显示费用，并标注为估算。",
     "accommodationQuestion": "您已经订好住宿了吗？",
     "accommodationOptions": {
       "booked": "是，已预订",
@@ -646,7 +652,28 @@
     "rhythm": "节奏",
     "coveredByMonthly": "此行程包含在您的包月套餐中（本计费月还剩 {left}/{total} 次）。",
     "periodUsedUp": "您本计费月已用完套餐的 {total} 次行程（{date} 起恢复）。可以单独购买一次行程——未经您确认不会扣费。",
-    "coveredByAdmin": "管理员账户：可无限创建测试行程，此行程不计入额度。"
+    "coveredByAdmin": "管理员账户：可无限创建测试行程，此行程不计入额度。",
+    "tripLength": "行程多久？",
+    "tripLengthOptions": {
+      "one": "1 天",
+      "multi": "多天"
+    },
+    "tripLengthHints": {
+      "one": "充实的一天：精选景点按区域安排，含用餐和休息",
+      "multi": "选择抵达和离开日期"
+    },
+    "tripDate": "日期",
+    "suggestNearby": "推荐附近的城市和目的地",
+    "suggestNearbyHint": "我们会推荐适合一日游或住几晚的地方（含火车、大巴或渡轮的时间和距离）。未经你同意不会添加。",
+    "admissionPreference": "付费还是免费？",
+    "admissionOptions": {
+      "any": "包含付费体验",
+      "prefer_free": "优先免费活动"
+    },
+    "admissionHints": {
+      "any": "按你的兴趣安排博物馆、导览和门票",
+      "prefer_free": "优先安排已知免费的地点；付费地点仅在特别值得时安排"
+    }
   },
   "trips": {
     "title": "我的旅行",
@@ -717,7 +744,7 @@
       "luggage": "行李寄存",
       "transport": "交通"
     },
-    "externalNote": "链接将打开合作伙伴网站。Triplan 不显示其价格或余量。",
+    "externalNote": "链接将打开合作伙伴网站。TriPlan 不显示其价格或余量。",
     "days": "天数",
     "dayN": "第 {n} 天",
     "regenerateDay": "重新生成当天",
@@ -808,7 +835,11 @@
       "note": "交通用时来自 Google Maps，刚刚获取，不会保存。此列表中的时间已更新；行程本身仍使用我们的估算。",
       "limit": "目前无法提供 Google Maps 用时（已达本月上限）。显示的是估算值；每段路程仍可在 Google Maps 中打开。",
       "unavailable": "暂时无法加载 Google Maps 用时，显示的是估算值。"
-    }
+    },
+    "openInMapsPart": "在 Google 地图中打开（{n}/{total}）",
+    "oneDay": "1 天",
+    "suggestNearbyOn": "推荐附近城市",
+    "hoursAdmissionOfficial": "开放时间与门票 · 官方网站"
   },
   "map": {
     "label": "行程地图",
@@ -818,10 +849,10 @@
   "community": {
     "eyebrow": "社区",
     "title": "旅行者推荐",
-    "lead": "来自 Triplan 会员的私藏好去处、实用建议和真实评价。",
+    "lead": "来自 TriPlan 会员的私藏好去处、实用建议和真实评价。",
     "opinionNotice": "社区帖子为个人观点和经历，而非经核实的事实。",
     "opinion": "观点",
-    "opinionHint": "由旅行者发布——未经 Triplan 核实",
+    "opinionHint": "由旅行者发布——未经 TriPlan 核实",
     "types": {
       "recommendation": "推荐",
       "hidden_gem": "私藏好去处",
@@ -877,7 +908,7 @@
     "guideline2": "保持尊重——禁止仇恨、骚扰或泄露个人信息。",
     "guideline3": "禁止广告和推广链接刷屏。",
     "guideline4": "只上传您有权分享的照片。",
-    "member": "Triplan 会员",
+    "member": "TriPlan 会员",
     "deleted": "帖子已删除。",
     "statusBanner": {
       "pending": "此帖子正在等待审核，目前只有您能看到。",
@@ -913,17 +944,19 @@
     "memberSince": "{date}加入",
     "postsN": "{n, plural, =0 {暂无帖子} other {# 篇帖子}}",
     "editProfile": "编辑个人资料",
-    "memberNoPosts": "该会员尚未发布任何帖子。"
+    "memberNoPosts": "该会员尚未发布任何帖子。",
+    "adminDelete": "删除（管理员）",
+    "confirmAdminDelete": "永久删除此帖子及其照片、评论和点赞？此操作无法撤销。"
   },
   "reviews": {
     "eyebrow": "评价与反馈",
-    "title": "旅行者如何评价 Triplan",
-    "lead": "来自已验证 Triplan 会员的评价。每条评价在发布前都经过版主审核——我们绝不发布虚假评价。",
+    "title": "旅行者如何评价 TriPlan",
+    "lead": "来自已验证 TriPlan 会员的评价。每条评价在发布前都经过版主审核——我们绝不发布虚假评价。",
     "average": "平均评分 {avg}/5（{count} 条评价）",
-    "anonymous": "Triplan 会员",
+    "anonymous": "TriPlan 会员",
     "ratingLabel": "评分 {n}/5",
     "emptyTitle": "暂无已发布的评价",
-    "emptyBody": "Triplan 是一项新服务。会员分享体验后，评价将显示在这里。",
+    "emptyBody": "TriPlan 是一项新服务。会员分享体验后，评价将显示在这里。",
     "formTitle": "撰写评价",
     "rating": "评分",
     "body": "您的评价",
@@ -934,7 +967,7 @@
     "signIn": "登录"
   },
   "auth": {
-    "visualEyebrow": "TRIPLAN",
+    "visualEyebrow": "TriPlan",
     "visualTitle": "少一点规划，多一点探索。",
     "loginTitle": "欢迎回来",
     "loginLead": "登录以查看和编辑您的旅行。",
@@ -952,7 +985,7 @@
     "forgot": "忘记密码？",
     "loginCta": "登录",
     "signupCta": "创建账户",
-    "noAccount": "初次使用 Triplan？",
+    "noAccount": "初次使用 TriPlan？",
     "signupLink": "创建账户",
     "haveAccount": "已有账户？",
     "loginLink": "登录",
@@ -999,7 +1032,7 @@
     "confirmPassword": "确认新密码",
     "updatePassword": "更新密码",
     "privacyTitle": "您的数据",
-    "privacyBody": "以机器可读格式下载 Triplan 保存的关于您的全部数据。",
+    "privacyBody": "以机器可读格式下载 TriPlan 保存的关于您的全部数据。",
     "export": "下载我的数据",
     "deleteTitle": "删除账户",
     "deleteBody": "将永久删除您的账户、旅行、帖子和收藏，并取消有效订阅。此操作无法撤销。",
@@ -1055,7 +1088,7 @@
       "refunded": "已退款"
     },
     "noPayments": "暂无付款记录。",
-    "cardNote": "付款由 Stripe 安全处理。Triplan 从不保存您的银行卡信息。",
+    "cardNote": "付款由 Stripe 安全处理。TriPlan 从不保存您的银行卡信息。",
     "planNames": {
       "annual": "包年",
       "monthly": "包月",
@@ -1138,9 +1171,9 @@
     "currentPlan": "您当前的套餐"
   },
   "about": {
-    "eyebrow": "关于 Triplan",
+    "eyebrow": "关于 TriPlan",
     "title": "更聪明、更从容的旅行方式",
-    "lead": "Triplan 把零散的旅行规划变成一份清晰、美观、可信的计划。",
+    "lead": "TriPlan 把零散的旅行规划变成一份清晰、美观、可信的计划。",
     "mission": {
       "title": "使命",
       "body": "帮助每一位旅行者在一个地方安排好整趟旅程——航班、住宿、餐饮、交通和每日计划。"
@@ -1174,7 +1207,7 @@
       "title": "开放",
       "body": "我们引导您前往最好的服务，而不是把它们藏起来，让您放心预订。"
     },
-    "nameTitle": "为什么叫“Triplan”？",
+    "nameTitle": "为什么叫“TriPlan”？",
     "nameBody": "Trip（旅行）+ Plan（计划）。一个词涵盖整个旅程——从最初的灵感到最后一晚。",
     "cta": "规划旅行",
     "contact": "联系我们"
@@ -1197,8 +1230,8 @@
     "planning": {
       "q1": "“快速旅行”和“详细旅行”有什么区别？",
       "a1": "快速旅行只问关键问题并立即生成行程。详细旅行通过七个简短步骤，让您设定预算、住宿、饮食需求、每日节奏和步行强度。两者之后都可以修改。",
-      "q2": "Triplan 如何生成行程？",
-      "a2": "Triplan 将相近的地点安排在同一天，按减少交通的顺序排列，并在附近安排早餐、午餐、咖啡小憩和晚餐。启用 AI 时，它只会使用我们数据库中的地点来编排计划。",
+      "q2": "TriPlan 如何生成行程？",
+      "a2": "TriPlan 将相近的地点安排在同一天，按减少交通的顺序排列，并在附近安排早餐、午餐、咖啡小憩和晚餐。启用 AI 时，它只会使用我们数据库中的地点来编排计划。",
       "q3": "我可以修改计划吗？",
       "a3": "可以。拖动调整顺序、移除或添加地点、替换景点、锁定想保留的地点，并可重新生成某一天或整趟旅行。已锁定的地点未经您同意绝不会更改。"
     },
@@ -1215,10 +1248,10 @@
       "a2": "可以，在旅行页面操作。复制便于尝试不同方案而不丢失原计划。"
     },
     "payments": {
-      "q1": "Triplan 免费吗？",
+      "q1": "TriPlan 免费吗？",
       "a1": "每个账户包含一次免费旅行。您可以购买额外旅行，或选择不限次数的年度方案。",
       "q2": "付款如何处理？",
-      "a2": "通过领先的支付服务商 Stripe 处理。Triplan 从不查看或保存您完整的银行卡信息。",
+      "a2": "通过领先的支付服务商 Stripe 处理。TriPlan 从不查看或保存您完整的银行卡信息。",
       "q3": "会自动扣款吗？",
       "a3": "只有年度方案会自动续订，且可随时取消。单次旅行为一次性付款。"
     },
@@ -1231,12 +1264,12 @@
     "maps": {
       "q1": "交通时间有多准确？",
       "a1": "标有“≈”的时间根据距离估算。连接路线服务后，会显示真实时长。",
-      "q2": "可以把 Triplan 当导航用吗？",
-      "a2": "Triplan 在互动地图上显示地点，逐向导航则交给 Google 地图。"
+      "q2": "可以把 TriPlan 当导航用吗？",
+      "a2": "TriPlan 在互动地图上显示地点，逐向导航则交给 Google 地图。"
     },
     "bookings": {
-      "q1": "可以在 Triplan 预订酒店或门票吗？",
-      "a1": "Triplan 会引导您前往 Booking.com、Airbnb、Google Flights、Skyscanner 等可信服务。预订和付款在对方网站完成。",
+      "q1": "可以在 TriPlan 预订酒店或门票吗？",
+      "a1": "TriPlan 会引导您前往 Booking.com、Airbnb、Google Flights、Skyscanner 等可信服务。预订和付款在对方网站完成。",
       "q2": "为什么不显示价格和余量？",
       "a2": "我们只显示可以核实的信息。实时价格和余量由各服务商提供。"
     },
@@ -1285,7 +1318,7 @@
       "cookies": "Cookie 政策",
       "subscriptions": "订阅与付款条款"
     },
-    "description": "Triplan 法律信息。",
+    "description": "TriPlan 法律信息。",
     "updated": "最后更新：{date}",
     "englishNotice": "此法律文本目前仅提供英文版本。译文将在法律审核后发布；以英文版本为准。"
   },
@@ -1341,15 +1374,15 @@
     "verifyManual": "本网站暂不支持邮件验证。请联系我们，我们会手动验证你的账户。"
   },
   "email": {
-    "footer": "您收到此邮件是因为您的 Triplan 账户有相关操作。",
+    "footer": "您收到此邮件是因为您的 TriPlan 账户有相关操作。",
     "verify": {
-      "subject": "验证您的 Triplan 邮箱",
+      "subject": "验证您的 TriPlan 邮箱",
       "heading": "验证您的邮箱",
-      "body": "欢迎来到 Triplan！请确认您的邮箱地址以完成账户设置。此链接 48 小时内有效。",
+      "body": "欢迎来到 TriPlan！请确认您的邮箱地址以完成账户设置。此链接 48 小时内有效。",
       "cta": "验证邮箱"
     },
     "reset": {
-      "subject": "重置您的 Triplan 密码",
+      "subject": "重置您的 TriPlan 密码",
       "heading": "重置密码",
       "body": "我们收到了重置您密码的请求。此链接一小时内有效。如果不是您本人操作，请忽略此邮件。",
       "cta": "设置新密码"
@@ -1630,7 +1663,10 @@
         "partial": "部分导入",
         "failed": "失败",
         "skipped": "已跳过"
-      }
+      },
+      "runAll": "导入全部剩余内容",
+      "stop": "本批完成后停止",
+      "runAllNote": "正在导入……已完成第 {batches} 批。请保持此页面打开；可随时停止。"
     },
     "commentsQueue": "待审核评论",
     "tripsPerMonth": "每个计费月的行程数",
@@ -1640,13 +1676,13 @@
     "testPaymentsExcluded": "已排除 {n} 笔 Stripe 测试付款。",
     "stripeTestMode": "Stripe 测试模式——无真实付款",
     "aff": {
-      "help": "请在加入合作计划后再在此添加。合作伙伴在您标记为“已批准”之前对访客不可见——只有在该计划确实接受 TRIPLAN 后才能这样标记。佣金在合作伙伴自己的后台统计；TRIPLAN 只统计点击。",
+      "help": "请在加入合作计划后再在此添加。合作伙伴在您标记为“已批准”之前对访客不可见——只有在该计划确实接受 TriPlan 后才能这样标记。佣金在合作伙伴自己的后台统计；TriPlan 只统计点击。",
       "name": "名称",
       "slug": "链接名称（/api/go/…）",
       "category": "类别",
       "status": "状态",
       "template": "跟踪链接",
-      "templateHint": "粘贴合作计划提供的 https 链接（含您的合作伙伴 ID）。可选占位符由 TRIPLAN 填写：{list}",
+      "templateHint": "粘贴合作计划提供的 https 链接（含您的合作伙伴 ID）。可选占位符由 TriPlan 填写：{list}",
       "website": "合作伙伴网站（可选）",
       "order": "排序",
       "notes": "内部备注（不公开）",
@@ -1656,7 +1692,7 @@
       "total": "全部点击",
       "none": "暂无合作伙伴。网站上不会显示任何联盟内容。",
       "approve": "标记为已批准",
-      "confirmApprove": "{name} 是否确实已接受 TRIPLAN 加入其计划？其链接将显示在网站上，并标注为合作伙伴链接。",
+      "confirmApprove": "{name} 是否确实已接受 TriPlan 加入其计划？其链接将显示在网站上，并标注为合作伙伴链接。",
       "pause": "暂停",
       "reject": "标记为已拒绝",
       "markPending": "标记为待定",
@@ -1721,7 +1757,31 @@
     "emailOffUsers": "尚未设置邮件发送（Resend），会员收不到验证邮件和重置密码邮件。在此期间，你可以在这里将账户标记为已验证。",
     "emailOffDashboard": "尚未设置邮件发送：验证邮件和重置密码邮件无法送达。请连接 Resend（见 docs/DEPLOYMENT.md）。在此期间，可在“用户”中将会员标记为已验证。",
     "routesUsage": "本月 Google Maps 用时请求：{used} / {limit}",
-    "routesLimitReached": "已达上限：显示估算值"
+    "routesLimitReached": "已达上限：显示估算值",
+    "admission": {
+      "label": "门票",
+      "type": "类型",
+      "price": "成人价格（可选）",
+      "currency": "货币",
+      "freeWhen": "何时免费（用于“特定日子免费”）",
+      "freeWhenHint": "例如每月第一个周日",
+      "note": "备注（可选）",
+      "booking": "需预约",
+      "source": "官方来源（https 链接）",
+      "help": "只填写官方页面上的信息并附上链接。没有来源时不会显示为免费或付费。",
+      "save": "保存门票信息",
+      "publicSpace": "公共空间",
+      "checked": "核实于 {month}",
+      "types": {
+        "unknown": "未知",
+        "free": "免费",
+        "paid": "付费",
+        "optional": "免费，另有付费项目",
+        "conditional": "特定日子免费"
+      }
+    },
+    "deletePermanently": "永久删除",
+    "confirmDeletePermanently": "永久删除此帖子及其照片、评论和点赞？此操作无法撤销。"
   },
   "geo": {
     "noResults": "未找到该地址。请加上城市名，或在地图上放置标记。",
@@ -1814,5 +1874,19 @@
     "cancel": "取消",
     "checkInHint": "以预订为准，通常 14:00–16:00。",
     "checkOutHint": "以预订为准，通常 10:00–11:00。"
+  },
+  "admission": {
+    "unknown": "门票：请查看官方网站",
+    "free": "免费入场",
+    "publicSpace": "免费 · 公共空间",
+    "paid": "需购票",
+    "paidPrice": "门票 {price}",
+    "optional": "免费入场 · 付费项目",
+    "optionalPrice": "免费入场 · 付费项目 {price} 起",
+    "conditional": "需购票 · {when}免费",
+    "conditionalPrice": "门票 {price} · {when}免费",
+    "booking": "需预约",
+    "officialPrices": "价格（官方）",
+    "checked": "核实于 {month}"
   }
 }

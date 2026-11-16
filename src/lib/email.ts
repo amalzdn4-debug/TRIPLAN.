@@ -53,7 +53,7 @@ function layout(locale: string, heading: string, body: string, cta?: { label: st
     : "";
   return `<!doctype html><html lang="${locale}" dir="${dir}"><body style="margin:0;background:#FFFFFF;font-family:Manrope,Segoe UI,Arial,sans-serif;color:#111">
   <div style="max-width:560px;margin:0 auto;padding:32px 24px">
-    <img src="${siteUrl()}/brand/triplan-lockup-teal.svg" alt="TRIPLAN" width="160" style="display:block;margin-bottom:28px"/>
+    <img src="${siteUrl()}/brand/2026/triplan-horizontal-light-640.png" alt="TriPlan" width="180" height="48" style="display:block;margin-bottom:28px"/>
     <div style="background:#fff;border-radius:16px;padding:28px">
       <h1 style="color:#173B67;font-size:22px;margin:0 0 12px">${escapeHtml(heading)}</h1>
       <p style="line-height:1.6;margin:0">${escapeHtml(body)}</p>

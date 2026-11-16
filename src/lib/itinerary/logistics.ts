@@ -197,7 +197,9 @@ export function applyDayLogistics(day: PlannedDay, i: number, days: PlannedDay[]
   const { prefs } = ctx;
   const n = days.length;
   const isFirst = i === 0;
-  const isLast = i === n - 1 && n > 1;
+  // A one-day trip has no overnight stay: arrival → sights → departure, no check-in/check-out or bags.
+  const oneDay = n === 1;
+  const isLast = i === n - 1 && (n > 1 || (oneDay && Boolean(prefs.returnTime)));
   const stops = stripLogistics(day.stops);
   const sleepId = (day.kind === "travel" ? day.destinationId : sleepDestination(i, days, ctx)) ?? ctx.baseDestinationId;
   const stay: StayPoint = (sleepId && ctx.stays[sleepId]) || { name: null, lat: null, lng: null, booked: false };
@@ -271,7 +273,9 @@ export function applyDayLogistics(day: PlannedDay, i: number, days: PlannedDay[]
       startTime = arrivalAt;
     }
     const sights = out.filter(isSight).length;
-    if (arrivalAt) {
+    if (oneDay) {
+      out = [...head, ...out];
+    } else if (arrivalAt) {
       // Bags: straight to check-in when it's (nearly) time; otherwise store them and sightsee first.
       const firstStops = [...head];
       const scheduledHead = scheduleDay([...head, stayStop("check_in", stay, 0)], startTime, prefs.transport);
@@ -326,8 +330,10 @@ export function applyDayLogistics(day: PlannedDay, i: number, days: PlannedDay[]
   if (isLast) {
     // ── Departure day: check out, maybe store bags and sightsee, then leave in time ──
     // Check out first (by the check-out time), then breakfast near the first sight.
-    out = [stayStop("check_out", stay, 15, { at: prefs.checkOutTime || DEFAULT_CHECK_OUT }), ...out];
-    startTime = checkOutStart(startTime, prefs);
+    if (!oneDay) {
+      out = [stayStop("check_out", stay, 15, { at: prefs.checkOutTime || DEFAULT_CHECK_OUT }), ...out];
+      startTime = checkOutStart(startTime, prefs);
+    }
     const r = resolveEnd(prefs.departure ?? prefs.arrival);
     const leaveAt = prefs.returnTime ?? null;
     const tail: PlannedStop[] = [];
@@ -357,6 +363,7 @@ export function applyDayLogistics(day: PlannedDay, i: number, days: PlannedDay[]
       return toMinutes(last.startTime!) <= toMinutes(d);
     };
     const withBags = (list: PlannedStop[]) => {
+      if (oneDay) return [...list, ...tail];
       const sightsLeft = list.slice(checkoutIdx + 1).some(isSight);
       if (!sightsLeft) return [...list, ...tail];
       // Sightseeing after check-out: leave bags with the accommodation (or nearby storage) and collect them before leaving.

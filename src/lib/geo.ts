@@ -80,3 +80,37 @@ export function googleMapsDirectionsUrl(points: LatLng[], mode: TravelMode = "wa
 export function googleMapsPlaceUrl(name: string, city?: string | null): string {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(city ? `${name}, ${city}` : name)}`;
 }
+
+export interface RoutePoint extends LatLng {
+  /** Generic "lunch near…" blocks share a sight's coordinates; they're not destinations. */
+  skip?: boolean;
+}
+
+/**
+ * The points of a day's route, in order: the accommodation (if known) first and last, every located
+ * stop once, generic meal/free-time blocks left out, and consecutive points closer than ~30 m merged
+ * (so a place never appears twice in a row). Start = end at the accommodation is intended.
+ */
+export function routePoints(stops: RoutePoint[], home: LatLng | null): LatLng[] {
+  const raw: LatLng[] = [];
+  if (home) raw.push(home);
+  for (const s of stops) if (!s.skip) raw.push({ lat: s.lat, lng: s.lng });
+  if (home) raw.push(home);
+  const out: LatLng[] = [];
+  for (const p of raw) if (!out.length || haversineMeters(out[out.length - 1], p) > 30) out.push(p);
+  return out.length >= 2 ? out : [];
+}
+
+/**
+ * Google Maps links for a route. Google Maps URLs accept at most 9 waypoints, and public-transport
+ * directions ignore waypoints altogether — so multi-stop routes use walking (or the traveller's
+ * driving/cycling preference), and long days are split into consecutive parts instead of dropping stops.
+ */
+export function googleMapsRouteLinks(points: LatLng[], mode: TravelMode): string[] {
+  if (points.length < 2) return [];
+  const m: TravelMode = mode === "transit" && points.length > 2 ? "walking" : mode;
+  const links: string[] = [];
+  const PER = 11; // origin + 9 waypoints + destination
+  for (let i = 0; i < points.length - 1; i += PER - 1) links.push(googleMapsDirectionsUrl(points.slice(i, i + PER), m)!);
+  return links;
+}

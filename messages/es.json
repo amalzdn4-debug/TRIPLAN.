@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "TRIPLAN — Planifica menos. Explora más.",
+    "title": "TriPlan — Planifica menos. Explora más.",
     "description": "Organiza todo tu viaje en un solo lugar: itinerarios día a día, mapas interactivos, comidas, transporte, consigna de equipaje y enlaces de reserva fiables en todo el mundo."
   },
   "common": {
@@ -9,9 +9,11 @@
     "save": "Guardar",
     "saved": "Guardado",
     "partner": "Socio",
-    "partnerDisclosure": "Los enlaces marcados como «Socio» son enlaces de afiliado: si reservas a través de ellos, TRIPLAN puede recibir una comisión sin coste extra para ti. Los socios no pueden pagar para cambiar tu itinerario ni nuestras recomendaciones.",
+    "partnerDisclosure": "Los enlaces marcados como «Socio» son enlaces de afiliado: si reservas a través de ellos, TriPlan puede recibir una comisión sin coste extra para ti. Los socios no pueden pagar para cambiar tu itinerario ni nuestras recomendaciones.",
     "loading": "Cargando…",
-    "contactUs": "Contáctanos"
+    "contactUs": "Contáctanos",
+    "pickTime": "Elegir una hora",
+    "timeInvalid": "Escribe una hora como 09:30 (formato 24 h)."
   },
   "nav": {
     "home": "Inicio",
@@ -38,12 +40,12 @@
     "skip": "Ir al contenido"
   },
   "footer": {
-    "about": "Triplan reúne vuelos, alojamiento, comida, transporte y planes diarios en un solo lugar, tranquilo y organizado, para cualquier destino del mundo.",
+    "about": "TriPlan reúne vuelos, alojamiento, comida, transporte y planes diarios en un solo lugar, tranquilo y organizado, para cualquier destino del mundo.",
     "product": "Producto",
-    "company": "Triplan",
+    "company": "TriPlan",
     "legal": "Legal",
     "pricing": "Precios",
-    "aboutLink": "Sobre Triplan",
+    "aboutLink": "Sobre TriPlan",
     "reviews": "Reseñas y opiniones",
     "faq": "Preguntas frecuentes",
     "contact": "Contacto",
@@ -61,7 +63,7 @@
     "necessary": "Estrictamente necesarias",
     "necessaryHint": "sesión, idioma y esta elección. Siempre activas.",
     "analytics": "Estadísticas",
-    "analyticsHint": "estadísticas de uso anónimas para mejorar Triplan.",
+    "analyticsHint": "estadísticas de uso anónimas para mejorar TriPlan.",
     "acceptAll": "Aceptar todas",
     "necessaryOnly": "Solo necesarias",
     "customize": "Personalizar",
@@ -87,7 +89,7 @@
       "explore": "Explorar destinos"
     },
     "quick": {
-      "label": "Lo que cubre Triplan",
+      "label": "Lo que cubre TriPlan",
       "flights": "Vuelos",
       "hotels": "Hoteles",
       "restaurants": "Restaurantes",
@@ -96,15 +98,15 @@
       "transport": "Transporte"
     },
     "how": {
-      "eyebrow": "Cómo funciona Triplan",
+      "eyebrow": "Cómo funciona TriPlan",
       "title": "Tres pasos de la idea al itinerario",
-      "lead": "Cuéntanos lo esencial. Triplan se encarga de organizar y tú mantienes el control de cada detalle.",
+      "lead": "Cuéntanos lo esencial. TriPlan se encarga de organizar y tú mantienes el control de cada detalle.",
       "tell": {
         "title": "Cuéntanos tu viaje",
         "body": "Dónde, cuándo, quién viene, tu presupuesto y lo que te gusta, en menos de dos minutos."
       },
       "organize": {
-        "title": "Deja que Triplan lo organice",
+        "title": "Deja que TriPlan lo organice",
         "body": "Recibe un plan realista día a día con comidas, pausas y tiempos de traslado entre paradas cercanas."
       },
       "explore": {
@@ -115,7 +117,7 @@
     "everything": {
       "eyebrow": "Todo para tu viaje",
       "title": "Un solo lugar para cada parte del viaje",
-      "lead": "Triplan conecta las piezas que los viajeros suelen repartir entre una docena de pestañas.",
+      "lead": "TriPlan conecta las piezas que los viajeros suelen repartir entre una docena de pestañas.",
       "flights": {
         "title": "Vuelos",
         "body": "Anota tus horarios y busca en buscadores fiables con tus fechas ya rellenadas."
@@ -177,7 +179,7 @@
       }
     },
     "why": {
-      "eyebrow": "¿Por qué Triplan?",
+      "eyebrow": "¿Por qué TriPlan?",
       "title": "Menos tiempo planificando. Más tiempo para disfrutar.",
       "time": {
         "title": "Ahorra horas",
@@ -203,7 +205,7 @@
     "community": {
       "eyebrow": "Recomendaciones de la comunidad",
       "title": "Joyas ocultas de otros viajeros",
-      "lead": "Experiencias reales compartidas por miembros de Triplan, claramente marcadas como opiniones personales.",
+      "lead": "Experiencias reales compartidas por miembros de TriPlan, claramente marcadas como opiniones personales.",
       "all": "Visitar la comunidad",
       "emptyTitle": "Sé el primero en compartir",
       "emptyBody": "La comunidad acaba de empezar. Comparte una joya oculta, un consejo o tu lugar favorito.",
@@ -295,7 +297,7 @@
   "destinations": {
     "eyebrow": "Destinos",
     "title": "Todos los destinos",
-    "lead": "Todos los destinos que admite Triplan, agrupados por región. Se añaden lugares nuevos con regularidad.",
+    "lead": "Todos los destinos que admite TriPlan, agrupados por región. Se añaden lugares nuevos con regularidad.",
     "jump": "Ir a la región"
   },
   "destination": {
@@ -332,7 +334,7 @@
     "duration": "Estancia recomendada",
     "budgetLevel": "Nivel de presupuesto",
     "climate": "Clima",
-    "budgetNote": "El nivel de presupuesto es orientativo. Triplan solo muestra precios cuando existen datos fiables y siempre indica las estimaciones.",
+    "budgetNote": "El nivel de presupuesto es orientativo. TriPlan solo muestra precios cuando existen datos fiables y siempre indica las estimaciones.",
     "openMap": "Ver en el mapa",
     "noAttractions": "Pronto añadiremos lugares seleccionados para este destino. Aun así puedes planificar un viaje y añadir tus propias paradas.",
     "noNeighborhoods": "Guía de barrios próximamente.",
@@ -356,19 +358,19 @@
     },
     "website": "Sitio web",
     "dietNote": "Las etiquetas alimentarias solo aparecen si están verificadas. Confirma siempre el estado halal, los alérgenos y los ingredientes directamente con el restaurante.",
-    "stayIntro": "Compara alojamientos en sitios de reserva fiables. Triplan no muestra precios ni disponibilidad de terceros.",
+    "stayIntro": "Compara alojamientos en sitios de reserva fiables. TriPlan no muestra precios ni disponibilidad de terceros.",
     "flights": "Vuelos",
-    "externalNote": "Los enlaces externos abren la web del socio. Allí se muestran precios y disponibilidad, no en Triplan.",
+    "externalNote": "Los enlaces externos abren la web del socio. Allí se muestran precios y disponibilidad, no en TriPlan.",
     "transportIntro": "Consulta transporte público, traslados y alquiler de coches:",
     "moreInfo": "Más información",
     "luggageIntro": "Guarda tus maletas cerca de estaciones, aeropuertos y monumentos antes del check-in o después del check-out.",
     "book": "Reservar",
-    "availabilityNote": "Cada proveedor muestra su disponibilidad y sus precios. Triplan nunca muestra disponibilidad que no pueda verificar.",
+    "availabilityNote": "Cada proveedor muestra su disponibilidad y sus precios. TriPlan nunca muestra disponibilidad que no pueda verificar.",
     "activitiesIntro": "Encuentra tours, entradas y experiencias de socios de confianza y sitios oficiales.",
-    "communityNote": "Opiniones personales de miembros de Triplan, no hechos verificados.",
+    "communityNote": "Opiniones personales de miembros de TriPlan, no hechos verificados.",
     "noPosts": "Aún no hay publicaciones sobre {city}.",
     "sharePost": "Compartir una recomendación",
-    "asideTitle": "Planifica {city} con Triplan",
+    "asideTitle": "Planifica {city} con TriPlan",
     "asideBody": "Consigue en minutos un plan día a día con comidas, mapa y tiempos de traslado.",
     "fastCta": "Viaje rápido",
     "detailedCta": "Viaje detallado",
@@ -384,7 +386,11 @@
       "bus": "Estación de autobuses"
     },
     "ticketsOfficial": "Entradas y horarios · sitio oficial",
-    "officialSite": "Sitio oficial"
+    "officialSite": "Sitio oficial",
+    "filterAll": "Todo ({n})",
+    "filterFree": "Gratis ({n})",
+    "admissionFilter": "Filtrar por entrada",
+    "hoursAdmissionOfficial": "Horario y entrada · web oficial"
   },
   "planIntro": {
     "eyebrow": "Planificar viaje",
@@ -411,8 +417,8 @@
     "detailedPoint3": "Revisa todo antes de generar",
     "detailedCta": "Empezar un viaje detallado",
     "servicesEyebrow": "Servicios",
-    "servicesTitle": "Cómo gestiona Triplan cada parte de tu viaje",
-    "servicesLead": "Esto es exactamente lo que hace Triplan y cuándo te deriva a proveedores de confianza.",
+    "servicesTitle": "Cómo gestiona TriPlan cada parte de tu viaje",
+    "servicesLead": "Esto es exactamente lo que hace TriPlan y cuándo te deriva a proveedores de confianza.",
     "services": {
       "flights": {
         "title": "Vuelos",
@@ -529,7 +535,7 @@
     },
     "dietaryNotes": "Alergias o restricciones alimentarias",
     "dietaryHint": "Añade solo lo que quieras que se tenga en cuenta. Puedes cambiarlo cuando quieras.",
-    "halalNote": "Triplan solo muestra etiquetas halal o alimentarias cuando están verificadas. Confírmalo siempre con el restaurante.",
+    "halalNote": "TriPlan solo muestra etiquetas halal o alimentarias cuando están verificadas. Confírmalo siempre con el restaurante.",
     "optional": "Opcional",
     "limitedData": "Aún estamos añadiendo lugares seleccionados para {city}. Tu plan incluirá comidas y tiempo libre, y podrás añadir tus propias paradas.",
     "aiNote": "Tu itinerario se redacta con IA a partir de lugares de nuestra base de datos. Revisa siempre los detalles antes de ir.",
@@ -583,7 +589,7 @@
       "budgetActivities": "Actividades",
       "budgetTransport": "Transporte"
     },
-    "budgetDisclaimer": "Tu presupuesto orienta las sugerencias. Triplan solo muestra costes cuando hay datos fiables y los indica como estimaciones.",
+    "budgetDisclaimer": "Tu presupuesto orienta las sugerencias. TriPlan solo muestra costes cuando hay datos fiables y los indica como estimaciones.",
     "accommodationQuestion": "¿Ya tienes alojamiento?",
     "accommodationOptions": {
       "booked": "Sí, está reservado",
@@ -646,7 +652,28 @@
     "rhythm": "Ritmo diario",
     "coveredByMonthly": "Este viaje está incluido en tu plan Mensual (te quedan {left} de {total} viajes este mes de facturación).",
     "periodUsedUp": "Has usado los {total} viajes de tu plan este mes de facturación (más el {date}). Puedes comprar un viaje adicional; no se cobra nada sin tu confirmación.",
-    "coveredByAdmin": "Cuenta de administrador: viajes ilimitados para pruebas. Este viaje no se descuenta."
+    "coveredByAdmin": "Cuenta de administrador: viajes ilimitados para pruebas. Este viaje no se descuenta.",
+    "tripLength": "¿Cuánto dura?",
+    "tripLengthOptions": {
+      "one": "1 día",
+      "multi": "Varios días"
+    },
+    "tripLengthHints": {
+      "one": "Un día completo: lo mejor, agrupado por zonas, con comidas y descansos",
+      "multi": "Elige las fechas de llegada y salida"
+    },
+    "tripDate": "Fecha",
+    "suggestNearby": "Sugerir ciudades y destinos cercanos",
+    "suggestNearbyHint": "Te mostraremos lugares para una excursión de un día o unas noches (tiempos y distancias en tren, autobús o ferry). No se añade nada sin tu permiso.",
+    "admissionPreference": "¿De pago o gratis?",
+    "admissionOptions": {
+      "any": "Incluir experiencias de pago",
+      "prefer_free": "Preferir actividades gratuitas"
+    },
+    "admissionHints": {
+      "any": "Museos, visitas y entradas según tus intereses",
+      "prefer_free": "Primero los lugares gratuitos cuando sabemos que lo son; los de pago solo si destacan"
+    }
   },
   "trips": {
     "title": "Mis viajes",
@@ -717,7 +744,7 @@
       "luggage": "Consigna de equipaje",
       "transport": "Transporte"
     },
-    "externalNote": "Estos enlaces abren webs de socios. Triplan no muestra sus precios ni su disponibilidad.",
+    "externalNote": "Estos enlaces abren webs de socios. TriPlan no muestra sus precios ni su disponibilidad.",
     "days": "Días",
     "dayN": "Día {n}",
     "regenerateDay": "Regenerar día",
@@ -808,7 +835,11 @@
       "note": "Tiempos de viaje de Google Maps, consultados ahora mismo y no guardados. Las horas de esta lista se actualizan; el plan mantiene nuestras estimaciones.",
       "limit": "Los tiempos de Google Maps no están disponibles ahora (límite mensual alcanzado). Se muestran estimaciones; cada tramo se puede abrir igualmente en Google Maps.",
       "unavailable": "No se han podido cargar los tiempos de Google Maps ahora. Se muestran estimaciones."
-    }
+    },
+    "openInMapsPart": "Abrir en Google Maps ({n}/{total})",
+    "oneDay": "1 día",
+    "suggestNearbyOn": "Sugerir ciudades cercanas",
+    "hoursAdmissionOfficial": "Horario y entrada · web oficial"
   },
   "map": {
     "label": "Mapa del itinerario",
@@ -818,10 +849,10 @@
   "community": {
     "eyebrow": "Comunidad",
     "title": "Recomendaciones de viajeros",
-    "lead": "Joyas ocultas, consejos y reseñas sinceras compartidas por miembros de Triplan.",
+    "lead": "Joyas ocultas, consejos y reseñas sinceras compartidas por miembros de TriPlan.",
     "opinionNotice": "Las publicaciones de la comunidad son opiniones y experiencias personales, no hechos verificados.",
     "opinion": "Opinión",
-    "opinionHint": "Compartido por un viajero, no verificado por Triplan",
+    "opinionHint": "Compartido por un viajero, no verificado por TriPlan",
     "types": {
       "recommendation": "Recomendación",
       "hidden_gem": "Joya oculta",
@@ -877,7 +908,7 @@
     "guideline2": "Sé respetuoso: nada de odio, acoso ni datos personales.",
     "guideline3": "Nada de publicidad ni spam de afiliados.",
     "guideline4": "Sube solo fotos que tengas derecho a compartir.",
-    "member": "Miembro de Triplan",
+    "member": "Miembro de TriPlan",
     "deleted": "Publicación eliminada.",
     "statusBanner": {
       "pending": "Solo tú ves esta publicación mientras espera revisión.",
@@ -913,17 +944,19 @@
     "memberSince": "Miembro desde {date}",
     "postsN": "{n, plural, =0 {Sin publicaciones} one {# publicación} other {# publicaciones}}",
     "editProfile": "Editar perfil",
-    "memberNoPosts": "Este miembro aún no ha publicado nada."
+    "memberNoPosts": "Este miembro aún no ha publicado nada.",
+    "adminDelete": "Eliminar (admin)",
+    "confirmAdminDelete": "¿Eliminar definitivamente esta publicación, con sus fotos, comentarios y me gusta? No se puede deshacer."
   },
   "reviews": {
     "eyebrow": "Reseñas y opiniones",
-    "title": "Lo que dicen los viajeros de Triplan",
-    "lead": "Reseñas de miembros verificados de Triplan. Un moderador revisa cada reseña antes de publicarla: nunca publicamos reseñas falsas.",
+    "title": "Lo que dicen los viajeros de TriPlan",
+    "lead": "Reseñas de miembros verificados de TriPlan. Un moderador revisa cada reseña antes de publicarla: nunca publicamos reseñas falsas.",
     "average": "Valoración media {avg}/5 de {count, plural, one {# reseña} other {# reseñas}}",
-    "anonymous": "Miembro de Triplan",
+    "anonymous": "Miembro de TriPlan",
     "ratingLabel": "Valorado con {n} de 5",
     "emptyTitle": "Aún no hay reseñas publicadas",
-    "emptyBody": "Triplan es nuevo. Las reseñas aparecerán aquí a medida que los miembros compartan su experiencia.",
+    "emptyBody": "TriPlan es nuevo. Las reseñas aparecerán aquí a medida que los miembros compartan su experiencia.",
     "formTitle": "Escribe una reseña",
     "rating": "Valoración",
     "body": "Tu reseña",
@@ -934,7 +967,7 @@
     "signIn": "Iniciar sesión"
   },
   "auth": {
-    "visualEyebrow": "TRIPLAN",
+    "visualEyebrow": "TriPlan",
     "visualTitle": "Planifica menos. Explora más.",
     "loginTitle": "Hola de nuevo",
     "loginLead": "Inicia sesión para ver y editar tus viajes.",
@@ -952,7 +985,7 @@
     "forgot": "¿Has olvidado tu contraseña?",
     "loginCta": "Iniciar sesión",
     "signupCta": "Crear cuenta",
-    "noAccount": "¿Eres nuevo en Triplan?",
+    "noAccount": "¿Eres nuevo en TriPlan?",
     "signupLink": "Crea una cuenta",
     "haveAccount": "¿Ya tienes cuenta?",
     "loginLink": "Inicia sesión",
@@ -999,7 +1032,7 @@
     "confirmPassword": "Confirmar nueva contraseña",
     "updatePassword": "Actualizar contraseña",
     "privacyTitle": "Tus datos",
-    "privacyBody": "Descarga una copia de todo lo que Triplan guarda sobre ti en un formato legible por máquina.",
+    "privacyBody": "Descarga una copia de todo lo que TriPlan guarda sobre ti en un formato legible por máquina.",
     "export": "Descargar mis datos",
     "deleteTitle": "Eliminar cuenta",
     "deleteBody": "Esto elimina para siempre tu cuenta, tus viajes, publicaciones y guardados, y cancela cualquier suscripción activa. No se puede deshacer.",
@@ -1055,7 +1088,7 @@
       "refunded": "Reembolsado"
     },
     "noPayments": "Aún no hay pagos.",
-    "cardNote": "Stripe procesa los pagos de forma segura. Triplan nunca guarda los datos de tu tarjeta.",
+    "cardNote": "Stripe procesa los pagos de forma segura. TriPlan nunca guarda los datos de tu tarjeta.",
     "planNames": {
       "annual": "Anual",
       "monthly": "Mensual",
@@ -1138,9 +1171,9 @@
     "currentPlan": "Tu plan actual"
   },
   "about": {
-    "eyebrow": "Sobre Triplan",
+    "eyebrow": "Sobre TriPlan",
     "title": "Una forma más inteligente y tranquila de viajar",
-    "lead": "Triplan convierte el trabajo disperso de planificar un viaje en un plan claro, atractivo y fiable.",
+    "lead": "TriPlan convierte el trabajo disperso de planificar un viaje en un plan claro, atractivo y fiable.",
     "mission": {
       "title": "Misión",
       "body": "Ayudar a cada viajero a organizar todo su viaje —vuelos, alojamiento, comida, transporte y planes diarios— en un solo lugar."
@@ -1174,7 +1207,7 @@
       "title": "Transparencia",
       "body": "Te enlazamos con los mejores proveedores en lugar de ocultarlos, para que reserves con confianza."
     },
-    "nameTitle": "¿Por qué «Triplan»?",
+    "nameTitle": "¿Por qué «TriPlan»?",
     "nameBody": "Trip + Plan: viaje + plan. Una sola palabra para todo el viaje, desde la primera idea hasta la última noche.",
     "cta": "Planificar un viaje",
     "contact": "Contáctanos"
@@ -1197,8 +1230,8 @@
     "planning": {
       "q1": "¿Qué diferencia hay entre Viaje rápido y Viaje detallado?",
       "a1": "El Viaje rápido solo pide lo esencial y crea un primer itinerario en un momento. El Viaje detallado te permite definir presupuestos, alojamiento, necesidades alimentarias, ritmo diario y preferencias de caminata en siete pasos breves. Ambos se pueden editar después.",
-      "q2": "¿Cómo crea Triplan un itinerario?",
-      "a2": "Triplan agrupa en el mismo día los lugares cercanos, los ordena para reducir traslados y añade desayuno, almuerzo, pausa para café y cena cerca de tus paradas. Si la IA está activada, redacta el plan usando solo lugares de nuestra base de datos.",
+      "q2": "¿Cómo crea TriPlan un itinerario?",
+      "a2": "TriPlan agrupa en el mismo día los lugares cercanos, los ordena para reducir traslados y añade desayuno, almuerzo, pausa para café y cena cerca de tus paradas. Si la IA está activada, redacta el plan usando solo lugares de nuestra base de datos.",
       "q3": "¿Puedo cambiar el plan?",
       "a3": "Sí. Arrastra las paradas, quita o añade paradas, cambia una visita, bloquea lo que quieras conservar y regenera un día o todo el viaje. Las paradas bloqueadas nunca se cambian sin tu permiso."
     },
@@ -1215,10 +1248,10 @@
       "a2": "Sí, desde la página del viaje. Duplicar es útil para probar una variante sin perder el original."
     },
     "payments": {
-      "q1": "¿Triplan es gratis?",
+      "q1": "¿TriPlan es gratis?",
       "a1": "Cada cuenta incluye un viaje gratuito. Puedes comprar un viaje adicional o elegir el plan anual para viajes ilimitados.",
       "q2": "¿Cómo se procesan los pagos?",
-      "a2": "Con Stripe, un proveedor de pagos líder. Triplan nunca ve ni guarda los datos completos de tu tarjeta.",
+      "a2": "Con Stripe, un proveedor de pagos líder. TriPlan nunca ve ni guarda los datos completos de tu tarjeta.",
       "q3": "¿Se me cobrará automáticamente?",
       "a3": "Solo el plan anual se renueva automáticamente y puedes cancelarlo cuando quieras. Los viajes sueltos son pagos únicos."
     },
@@ -1231,12 +1264,12 @@
     "maps": {
       "q1": "¿Son precisos los tiempos de traslado?",
       "a1": "Los tiempos se marcan como «aprox.» cuando se estiman por distancia. Si hay un servicio de rutas configurado, se muestran duraciones reales.",
-      "q2": "¿Puedo navegar con Triplan?",
-      "a2": "Triplan muestra tus paradas en un mapa interactivo y deriva a Google Maps para la navegación paso a paso."
+      "q2": "¿Puedo navegar con TriPlan?",
+      "a2": "TriPlan muestra tus paradas en un mapa interactivo y deriva a Google Maps para la navegación paso a paso."
     },
     "bookings": {
-      "q1": "¿Puedo reservar hoteles y vuelos en Triplan?",
-      "a1": "Triplan te enlaza con proveedores fiables como Booking.com, Airbnb, Google Flights y Skyscanner. Las reservas y pagos se hacen en sus webs.",
+      "q1": "¿Puedo reservar hoteles y vuelos en TriPlan?",
+      "a1": "TriPlan te enlaza con proveedores fiables como Booking.com, Airbnb, Google Flights y Skyscanner. Las reservas y pagos se hacen en sus webs.",
       "q2": "¿Por qué no mostráis precios ni disponibilidad?",
       "a2": "Solo mostramos información que podemos verificar. Cada proveedor muestra precios y disponibilidad en tiempo real."
     },
@@ -1285,7 +1318,7 @@
       "cookies": "Política de cookies",
       "subscriptions": "Política de suscripción y pagos"
     },
-    "description": "Información legal de Triplan.",
+    "description": "Información legal de TriPlan.",
     "updated": "Última actualización: {date}",
     "englishNotice": "Este texto legal se ofrece por ahora en inglés. Las versiones traducidas se publicarán tras su revisión jurídica; prevalece la versión en inglés."
   },
@@ -1341,15 +1374,15 @@
     "verifyManual": "La verificación por correo aún no está disponible en este sitio. Escríbenos y verificaremos tu cuenta manualmente."
   },
   "email": {
-    "footer": "Recibes este correo por la actividad en tu cuenta de Triplan.",
+    "footer": "Recibes este correo por la actividad en tu cuenta de TriPlan.",
     "verify": {
-      "subject": "Confirma tu correo en Triplan",
+      "subject": "Confirma tu correo en TriPlan",
       "heading": "Confirma tu correo",
-      "body": "¡Te damos la bienvenida a Triplan! Confirma tu dirección de correo para terminar de configurar tu cuenta. Este enlace es válido durante 48 horas.",
+      "body": "¡Te damos la bienvenida a TriPlan! Confirma tu dirección de correo para terminar de configurar tu cuenta. Este enlace es válido durante 48 horas.",
       "cta": "Confirmar correo"
     },
     "reset": {
-      "subject": "Restablece tu contraseña de Triplan",
+      "subject": "Restablece tu contraseña de TriPlan",
       "heading": "Restablece tu contraseña",
       "body": "Hemos recibido una solicitud para restablecer tu contraseña. Este enlace es válido durante una hora. Si no la has solicitado, ignora este correo.",
       "cta": "Elegir nueva contraseña"
@@ -1630,7 +1663,10 @@
         "partial": "Importado en parte",
         "failed": "Error",
         "skipped": "Omitido"
-      }
+      },
+      "runAll": "Importar todo lo pendiente",
+      "stop": "Detener tras este lote",
+      "runAllNote": "Importando… lote {batches} terminado. Mantén esta página abierta; puedes detenerlo cuando quieras."
     },
     "commentsQueue": "Comentarios para revisar",
     "tripsPerMonth": "Viajes por mes de facturación",
@@ -1640,13 +1676,13 @@
     "testPaymentsExcluded": "Se excluyen {n} pagos en modo de prueba de Stripe.",
     "stripeTestMode": "Stripe en modo de prueba: sin pagos reales",
     "aff": {
-      "help": "Añade aquí un programa de socios solo después de unirte a él. Los socios permanecen ocultos para los visitantes hasta que los marques como Aprobados; hazlo solo cuando el programa haya aceptado de verdad a TRIPLAN. Las comisiones se siguen en el panel del socio; TRIPLAN solo cuenta clics.",
+      "help": "Añade aquí un programa de socios solo después de unirte a él. Los socios permanecen ocultos para los visitantes hasta que los marques como Aprobados; hazlo solo cuando el programa haya aceptado de verdad a TriPlan. Las comisiones se siguen en el panel del socio; TriPlan solo cuenta clics.",
       "name": "Nombre",
       "slug": "Nombre del enlace (en /api/go/…)",
       "category": "Categoría",
       "status": "Estado",
       "template": "Enlace de seguimiento",
-      "templateHint": "Pega el enlace https que te dio el programa (con tu ID de socio). Campos opcionales que rellena TRIPLAN: {list}",
+      "templateHint": "Pega el enlace https que te dio el programa (con tu ID de socio). Campos opcionales que rellena TriPlan: {list}",
       "website": "Sitio del socio (opcional)",
       "order": "Orden",
       "notes": "Notas internas (nunca se muestran)",
@@ -1656,7 +1692,7 @@
       "total": "Todos los clics",
       "none": "Aún no hay socios. No se muestra nada de afiliación en el sitio.",
       "approve": "Marcar como aprobado",
-      "confirmApprove": "¿Ha aceptado de verdad {name} a TRIPLAN en su programa? Sus enlaces aparecerán en el sitio, marcados como enlaces de socio.",
+      "confirmApprove": "¿Ha aceptado de verdad {name} a TriPlan en su programa? Sus enlaces aparecerán en el sitio, marcados como enlaces de socio.",
       "pause": "Pausar",
       "reject": "Marcar como rechazado",
       "markPending": "Marcar como pendiente",
@@ -1721,7 +1757,31 @@
     "emailOffUsers": "El envío de correos aún no está configurado (Resend), así que los miembros no reciben correos de verificación ni de restablecimiento. Mientras tanto, puedes marcar cuentas como verificadas aquí.",
     "emailOffDashboard": "El envío de correos aún no está configurado: no se envían los correos de verificación ni de restablecimiento. Conecta Resend (ver docs/DEPLOYMENT.md). Mientras tanto, marca a los miembros como verificados en Usuarios.",
     "routesUsage": "Tiempos de Google Maps este mes: {used} de {limit} solicitudes",
-    "routesLimitReached": "Límite alcanzado: se muestran estimaciones"
+    "routesLimitReached": "Límite alcanzado: se muestran estimaciones",
+    "admission": {
+      "label": "Entrada",
+      "type": "Tipo",
+      "price": "Precio adulto (opcional)",
+      "currency": "Moneda",
+      "freeWhen": "Gratis cuándo (para «gratis algunos días»)",
+      "freeWhenHint": "p. ej. primer domingo del mes",
+      "note": "Nota (opcional)",
+      "booking": "Reserva obligatoria",
+      "source": "Fuente oficial (enlace https)",
+      "help": "Introduce solo lo que dice la página oficial y enlázala. Nada se muestra como gratis o de pago sin fuente.",
+      "save": "Guardar entrada",
+      "publicSpace": "espacio público",
+      "checked": "comprobado {month}",
+      "types": {
+        "unknown": "Desconocido",
+        "free": "Gratis",
+        "paid": "De pago",
+        "optional": "Gratis, extras de pago",
+        "conditional": "Gratis algunos días"
+      }
+    },
+    "deletePermanently": "Eliminar definitivamente",
+    "confirmDeletePermanently": "¿Eliminar definitivamente esta publicación, con sus fotos, comentarios y me gusta? No se puede deshacer."
   },
   "geo": {
     "noResults": "No se ha encontrado la dirección. Añade la ciudad o coloca el marcador en el mapa.",
@@ -1814,5 +1874,19 @@
     "cancel": "Cancelar",
     "checkInHint": "Según tu reserva. Suele ser 14:00–16:00.",
     "checkOutHint": "Según tu reserva. Suele ser 10:00–11:00."
+  },
+  "admission": {
+    "unknown": "Entrada: consulta la web oficial",
+    "free": "Entrada gratuita",
+    "publicSpace": "Gratis · espacio público",
+    "paid": "Entrada de pago",
+    "paidPrice": "Entrada {price}",
+    "optional": "Entrada gratuita · extras de pago",
+    "optionalPrice": "Entrada gratuita · extras desde {price}",
+    "conditional": "De pago · gratis {when}",
+    "conditionalPrice": "Entrada {price} · gratis {when}",
+    "booking": "Reserva obligatoria",
+    "officialPrices": "precios (oficial)",
+    "checked": "comprobado {month}"
   }
 }

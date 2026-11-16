@@ -67,6 +67,9 @@ const base = {
   interests: checkboxList(INTERESTS),
   foodPrefs: checkboxList(FOOD_PREFS),
   transport: z.enum(TRANSPORT_PREFS).default("public"),
+  admissionPreference: z.enum(["any", "prefer_free"]).default("any"),
+  /** "Suggest nearby cities and destinations" — off unless the traveller ticks it. */
+  suggestNearby: z.preprocess((v) => v === "on" || v === "true" || v === true, z.boolean()).default(false),
 };
 
 /** "HH:MM" (24 h) or empty. */

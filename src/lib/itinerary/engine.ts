@@ -7,6 +7,7 @@
 import { chooseMode, estimateLeg, googleMapsDirectionsUrl, haversineMeters, type LatLng } from "@/lib/geo";
 import type { CandidatePlace, IntercityDetails, PlannedDay, PlannedStop, TripPreferences } from "./types";
 import { PER_DAY, type DaySlot, type TripSegment } from "./split";
+import { admissionScore } from "@/lib/admission";
 
 /** Getting to/from a station, port or airport around an intercity journey (estimate). */
 export const STATION_TRANSFER_MIN = { train: 25, bus: 25, ferry: 30, flight: 90, car: 10 } as const;
@@ -27,9 +28,9 @@ export function dayStartTime(prefs: Pick<TripPreferences, "morning">): string {
   return prefs.morning === "early" ? "08:00" : "09:30";
 }
 
-export function scorePlace(p: CandidatePlace, prefs: Pick<TripPreferences, "interests" | "children">, seedRank = 0): number {
+export function scorePlace(p: CandidatePlace, prefs: Pick<TripPreferences, "interests" | "children"> & Partial<Pick<TripPreferences, "admissionPreference">>, seedRank = 0): number {
   const interests = new Set<string>(prefs.interests);
-  let s = 1 + seedRank;
+  let s = 1 + seedRank + admissionScore(prefs.admissionPreference, p.admission);
   for (const tag of p.tags) if (interests.has(tag)) s += 2;
   if (p.tags.includes("landmark")) s += 0.75;
   if (prefs.children > 0 && p.tags.includes("family")) s += 1;
@@ -291,6 +292,8 @@ export interface BuildDayInput {
   targetDelta?: number;
   /** Destination name for the day title when no sights are planned. */
   placeName?: string;
+  /** Keep the day's sights within this distance (one-day trips use a tighter area). */
+  radiusM?: number;
 }
 
 export function buildDay(input: BuildDayInput): { day: PlannedDay; used: string[] } {
@@ -309,7 +312,7 @@ export function buildDay(input: BuildDayInput): { day: PlannedDay; used: string[
     .filter((s) => s.lat != null && s.lng != null)
     .map((s) => ({ id: s.placeId ?? `locked-${s.title}`, name: s.title, kind: s.kind, tags: [], durationMin: s.durationMin, neighborhood: null, lat: s.lat!, lng: s.lng! }));
   const freePool = pool.filter((p) => !lockedPlaceIds.has(p.id));
-  const picked = pickDayCluster(freePool, scores, Math.max(target, seedPlaces.length), RADIUS_M[prefs.walking], seedPlaces);
+  const picked = pickDayCluster(freePool, scores, Math.max(target, seedPlaces.length), input.radiusM ?? RADIUS_M[prefs.walking], seedPlaces);
   const newPlaces = picked.filter((p) => !seedPlaces.some((s) => s.id === p.id));
 
   const attractionStops: PlannedStop[] = [
@@ -429,7 +432,9 @@ export function buildItinerary(prefs: TripPreferences, places: CandidatePlace[],
       date,
       prefs,
       // The day's own geographic group first; fall back to anything unused if the group is short.
-      pool: group.length ? group : remaining,
+      // A one-day trip picks its own compact cluster around the best sight (no walking across town).
+      pool: dates.length === 1 ? remaining : group.length ? group : remaining,
+      ...(dates.length === 1 ? { radiusM: Math.min(2500, RADIUS_M[prefs.walking]) } : {}),
       scores,
       start,
       isArrivalDay: arrival && i === 0,

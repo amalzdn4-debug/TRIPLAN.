@@ -4,6 +4,11 @@ import "leaflet/dist/leaflet.css";
 import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { loadLeaflet, TILE_ATTRIBUTION, TILE_URL } from "./leaflet";
+import { renderToStaticMarkup } from "react-dom/server";
+import { Icon } from "@/components/ui/Icon";
+
+/** The accommodation marker uses the same icon set as the rest of the site. */
+const HOME_SVG = renderToStaticMarkup(<Icon name="home" width={16} height={16} />);
 
 /** Click/tap on the map to set a point (e.g. the accommodation). Keyboard users can type coordinates instead. */
 export function LocationPicker({ center, value, onChange }: { center: { lat: number; lng: number }; value: { lat: number; lng: number } | null; onChange: (p: { lat: number; lng: number }) => void }) {
@@ -20,7 +25,7 @@ export function LocationPicker({ center, value, onChange }: { center: { lat: num
       if (disposed || !el.current || map.current) return;
       const m = L.map(el.current, { scrollWheelZoom: false }).setView([value?.lat ?? center.lat, value?.lng ?? center.lng], 13);
       L.tileLayer(TILE_URL, { attribution: TILE_ATTRIBUTION, maxZoom: 19 }).addTo(m);
-      const icon = L.divIcon({ className: "", html: '<div class="tp-marker tp-marker--home"><span>★</span></div>', iconSize: [30, 30], iconAnchor: [15, 30] });
+      const icon = L.divIcon({ className: "", html: `<div class="tp-marker tp-marker--home"><span>${HOME_SVG}</span></div>`, iconSize: [30, 30], iconAnchor: [15, 30] });
       if (value) marker.current = L.marker([value.lat, value.lng], { icon }).addTo(m);
       m.on("click", (e: import("leaflet").LeafletMouseEvent) => {
         const p = { lat: +e.latlng.lat.toFixed(6), lng: +e.latlng.lng.toFixed(6) };
@@ -45,7 +50,7 @@ export function LocationPicker({ center, value, onChange }: { center: { lat: num
     if (!m || !value) return;
     loadLeaflet().then((L) => {
       if (!map.current) return;
-      const icon = L.divIcon({ className: "", html: '<div class="tp-marker tp-marker--home"><span>★</span></div>', iconSize: [30, 30], iconAnchor: [15, 30] });
+      const icon = L.divIcon({ className: "", html: `<div class="tp-marker tp-marker--home"><span>${HOME_SVG}</span></div>`, iconSize: [30, 30], iconAnchor: [15, 30] });
       if (marker.current) marker.current.setLatLng([value.lat, value.lng]);
       else marker.current = L.marker([value.lat, value.lng], { icon }).addTo(m);
       if (!m.getBounds().pad(-0.2).contains([value.lat, value.lng])) m.setView([value.lat, value.lng], Math.max(m.getZoom(), 15));
