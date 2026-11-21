@@ -537,7 +537,7 @@
     "dietaryHint": "Aggiungi solo ciò che vuoi venga considerato. Puoi modificarlo in qualsiasi momento.",
     "halalNote": "TriPlan mostra indicazioni halal o alimentari solo se verificate. Conferma sempre con il ristorante.",
     "optional": "Facoltativo",
-    "limitedData": "Stiamo ancora aggiungendo luoghi selezionati per {city}. Il programma includerà pasti e tempo libero e potrai aggiungere le tue tappe.",
+    "limitedData": "I luoghi di {city} non sono ancora stati importati. Li recupereremo quando crei il piano (può richiedere fino a 30 secondi).",
     "aiNote": "L'itinerario viene redatto con l'IA a partire dai luoghi del nostro database. Controlla sempre i dettagli prima di partire.",
     "rulesNote": "L'itinerario è costruito con i luoghi della nostra guida, raggruppati per zona per ridurre gli spostamenti.",
     "editLater": "Potrai modificare tutto in seguito.",
@@ -1781,7 +1781,20 @@
       }
     },
     "deletePermanently": "Elimina definitivamente",
-    "confirmDeletePermanently": "Eliminare definitivamente questo post, con foto, commenti e mi piace? L'operazione non si può annullare."
+    "confirmDeletePermanently": "Eliminare definitivamente questo post, con foto, commenti e mi piace? L'operazione non si può annullare.",
+    "photos": {
+      "title": "Foto",
+      "cover": "Copertina",
+      "makeCover": "Usa come copertina",
+      "none": "Ancora nessuna foto. Usa “Importa foto e luoghi” per importare foto con licenza da Wikimedia Commons.",
+      "fetch": "Importa foto e luoghi",
+      "filter": "Filtra per foto",
+      "all": "Tutte ({n})",
+      "missing": "Senza foto ({n})",
+      "missingHelp": "Queste destinazioni mostrano l'immagine segnaposto. Premi “Reimporta” su una riga (circa 20 s ciascuna) oppure “Importa tutte le rimanenti” qui sopra.",
+      "column": "Foto",
+      "fromPlaces": "{n} dai luoghi"
+    }
   },
   "geo": {
     "noResults": "Nessun indirizzo trovato. Prova ad aggiungere la città o posiziona il segnaposto sulla mappa.",

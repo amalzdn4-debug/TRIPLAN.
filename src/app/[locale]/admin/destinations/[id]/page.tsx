@@ -7,6 +7,7 @@ import { AdminForm, CommandButton } from "@/components/admin/AdminForms";
 import { admissionOf, type Admission } from "@/lib/admission";
 import { DestinationFields } from "../fields";
 import { Link } from "@/i18n/navigation";
+import { sizedUrl } from "@/lib/images";
 
 export default async function AdminDestination({ params }: { params: Promise<{ locale: string; id: string }> }) {
   const { locale, id } = await params;
@@ -22,6 +23,7 @@ export default async function AdminDestination({ params }: { params: Promise<{ l
     .where(eq(schema.destinations.id, id));
   if (!row) notFound();
   const places = await db.select().from(schema.places).where(eq(schema.places.destinationId, id)).orderBy(asc(schema.places.kind), asc(schema.places.name));
+  const photos = await db.select().from(schema.destinationImages).where(eq(schema.destinationImages.destinationId, id)).orderBy(asc(schema.destinationImages.sortOrder));
   const d = row.d;
   return (
     <AdminShell current="/admin/destinations" title={`${row.c.name}`}>
@@ -29,6 +31,24 @@ export default async function AdminDestination({ params }: { params: Promise<{ l
       <AdminForm kind="destination" submitLabel={t("save")}>
         <DestinationFields v={{ id: d.id, slug: d.slug, city: row.c.name, countryCode: row.c.countryCode, continent: row.continent, lat: row.c.lat, lng: row.c.lng, summary: d.summary, description: d.description, bestTime: d.bestTime, daysMin: d.suggestedDaysMin, daysMax: d.suggestedDaysMax, budgetLevel: d.budgetLevel, contentStatus: d.contentStatus, featured: d.featured, published: d.published, kind: d.kind, wikiTitle: d.wikiTitle }} />
       </AdminForm>
+      <h2 style={{ fontSize: "var(--fs-lg)" }}>{t("photos.title")} ({photos.length})</h2>
+      {photos.length ? (
+        <div className="admin-photos">
+          {photos.map((ph, i) => (
+            <figure key={ph.id} className="admin-photo">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={sizedUrl(ph.url, "thumb")} alt={ph.alt} loading="lazy" />
+              <figcaption className="small">
+                {i === 0 ? <span className="badge badge--blue">{t("photos.cover")}</span> : <CommandButton cmd={{ type: "photo", id: ph.id, command: "cover" }} label={t("photos.makeCover")} />}
+                <span className="muted"> {ph.creditName ?? ""}{ph.license ? ` · ${ph.license}` : ""}</span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      ) : (
+        <p className="muted">{t("photos.none")}</p>
+      )}
+      <div className="cluster"><CommandButton cmd={{ type: "enrich", id: d.slug, command: "reimport" }} label={t("photos.fetch")} /></div>
       <h2 style={{ fontSize: "var(--fs-lg)" }}>{t("places.title")} ({places.length})</h2>
       <div className="table-wrap"><table className="table"><thead><tr><th>{t("places.name")}</th><th>{t("places.kind")}</th><th>{t("places.coords")}</th><th>{t("status")}</th><th /></tr></thead><tbody>
         {places.map((p) => (

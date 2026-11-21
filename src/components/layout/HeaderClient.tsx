@@ -62,10 +62,11 @@ export function HeaderClient({ labels, user }: { labels: Labels; user: { name: s
         <div className="container site-header__inner">
           <Link href="/" className="site-header__brand" aria-label="TriPlan — Home">
             {/* Full wordmark on wider screens, the TP. monogram where space is tight (brand guide). */}
-            <Logo kind="wordmark" variant="white" height={42} className="logo-light logo-full" alt="" />
-            <Logo kind="wordmark" variant="light" height={42} className="logo-dark logo-full" alt="" />
-            <Logo kind="monogram" variant="white" height={40} className="logo-light logo-mark" alt="" />
-            <Logo kind="monogram" variant="light" height={40} className="logo-dark logo-mark" alt="" />
+            {/* Over photos: the brand kit's "dark" version (gold T and P, ivory letters). On white: the "light" version. */}
+            <Logo kind="wordmark" variant="dark" height={34} className="logo-light logo-full" alt="" />
+            <Logo kind="wordmark" variant="light" height={34} className="logo-dark logo-full" alt="" />
+            <Logo kind="monogram" variant="dark" height={34} className="logo-light logo-mark" alt="" />
+            <Logo kind="monogram" variant="light" height={34} className="logo-dark logo-mark" alt="" />
           </Link>
           <nav className="main-nav" aria-label={labels.mainNav}>
             {NAV.map((n) => (

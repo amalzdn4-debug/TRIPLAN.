@@ -537,7 +537,7 @@
     "dietaryHint": "Adicione apenas o que quer que seja tido em conta. Pode alterar a qualquer momento.",
     "halalNote": "A TriPlan só mostra indicações halal ou alimentares quando verificadas. Confirme sempre com o restaurante.",
     "optional": "Opcional",
-    "limitedData": "Ainda estamos a adicionar locais selecionados para {city}. O plano incluirá refeições e tempo livre — pode adicionar as suas próprias paragens.",
+    "limitedData": "Os locais de {city} ainda não foram importados. Vamos obtê-los quando criar o plano (pode demorar até 30 segundos).",
     "aiNote": "O roteiro é redigido com IA a partir de locais da nossa base de dados. Confirme sempre os detalhes antes de ir.",
     "rulesNote": "O roteiro é criado com locais do nosso guia, agrupados por zona para reduzir deslocações.",
     "editLater": "Pode editar tudo depois.",
@@ -1781,7 +1781,20 @@
       }
     },
     "deletePermanently": "Eliminar definitivamente",
-    "confirmDeletePermanently": "Eliminar definitivamente esta publicação, com fotos, comentários e gostos? Não é possível anular."
+    "confirmDeletePermanently": "Eliminar definitivamente esta publicação, com fotos, comentários e gostos? Não é possível anular.",
+    "photos": {
+      "title": "Fotos",
+      "cover": "Capa",
+      "makeCover": "Usar como capa",
+      "none": "Ainda sem fotos. Use «Importar fotos e locais» para importar fotos licenciadas do Wikimedia Commons.",
+      "fetch": "Importar fotos e locais",
+      "filter": "Filtrar por fotos",
+      "all": "Todas ({n})",
+      "missing": "Sem foto ({n})",
+      "missingHelp": "Estes destinos mostram a imagem de substituição. Prima «Reimportar» numa linha (cerca de 20 s cada) ou «Importar tudo o que falta» acima.",
+      "column": "Fotos",
+      "fromPlaces": "{n} dos locais"
+    }
   },
   "geo": {
     "noResults": "Não foi encontrado nenhum endereço. Acrescente a cidade ou coloque o marcador no mapa.",

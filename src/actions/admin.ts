@@ -254,6 +254,19 @@ export interface EnrichResult {
 }
 
 /** Imports content for the next pending destinations (or the given one), within ~40 s. */
+/** Makes a gallery photo the destination's cover (first photo): used on cards and the destination page. */
+export async function destinationPhotoCoverAction(imageId: string) {
+  await admin();
+  if (!/^[0-9a-f-]{36}$/i.test(imageId)) return;
+  const db = await getDb();
+  const [img] = await db.select({ destinationId: schema.destinationImages.destinationId }).from(schema.destinationImages).where(eq(schema.destinationImages.id, imageId));
+  if (!img) return;
+  // Only the order changes; no photo is added or removed.
+  await db.update(schema.destinationImages).set({ sortOrder: sql`(select coalesce(min(sort_order), 0) - 1 from destination_images where destination_id = ${img.destinationId})` }).where(eq(schema.destinationImages.id, imageId));
+  revalidateTag("destinations");
+  revalidatePath("/[locale]/admin/destinations/[id]", "page");
+}
+
 export async function enrichContentAction(slug?: string): Promise<EnrichResult> {
   await admin();
   const { connectRaw } = await import("@/db/raw");

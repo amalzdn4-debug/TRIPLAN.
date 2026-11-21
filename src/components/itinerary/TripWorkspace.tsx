@@ -303,6 +303,7 @@ export function TripWorkspace({
           <Link href="/trips" className="back-link">
             <Icon name="arrowLeft" className="flip-rtl" style={{ inlineSize: 14, blockSize: 14 }} /> {t("backToTrips")}
           </Link>
+          <h1 className="visually-hidden">{trip.title}</h1>
           <div className="title-edit">
             <label htmlFor="trip-title" className="visually-hidden">{t("tripTitle")}</label>
             <input

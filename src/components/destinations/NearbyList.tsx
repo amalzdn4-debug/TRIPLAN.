@@ -21,7 +21,7 @@ export async function NearbyList({ from, items }: { from: string; items: (Nearby
           return (
             <li key={n.slug} className="nearby-item">
               <div className="nearby-item__img">
-                <SafeImage src={n.image?.url} alt={n.image?.alt ?? n.city} slot="thumb" title={n.city} subtitle={country} />
+                <SafeImage src={n.image?.url} alt={n.image?.alt ?? n.city} slot="thumb" title={n.city} subtitle={country} fallbacks={n.image?.fallbacks} />
               </div>
               <div className="nearby-item__body">
                 <h3>

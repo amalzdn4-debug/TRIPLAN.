@@ -10,6 +10,7 @@ import { rateLimit } from "@/lib/rate-limit";
 import { detailedTripSchema, fastTripSchema, flattenErrors, formToObject, logisticsSchema, type ActionState } from "@/lib/validation";
 import * as trips from "@/lib/trips";
 import type { TravelEnd, TripPreferences } from "@/lib/itinerary/types";
+import { ensureDestinationContent } from "@/lib/enrich/on-demand";
 
 const ARRAY_KEYS = ["interests", "foodPrefs", "accommodationTypes"];
 
@@ -96,6 +97,9 @@ export async function createTripAction(mode: "fast" | "detailed", _prev: ActionS
     },
     ...(mode === "detailed" ? travelEnds(v) : {}),
   };
+
+  // Sights not imported yet for this destination: fetch them now (up to ~30 s) so the plan isn't empty.
+  await ensureDestinationContent(dest.id, v.destination);
 
   const tp = await getTranslations({ locale, namespace: "planner" });
   let tripId: string;

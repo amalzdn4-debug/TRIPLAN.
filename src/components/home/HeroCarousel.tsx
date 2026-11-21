@@ -10,12 +10,12 @@ import { Icon } from "@/components/ui/Icon";
 import { countryName } from "@/lib/format";
 import type { HeroSlideData } from "@/data/hero";
 
-/** About 13 s per photo, 700 ms crossfade (CSS --dur-hero-fade). */
-const INTERVAL_MS = 13_000;
+/** About 6 s per photo (owner's choice), 700 ms crossfade (CSS --dur-hero-fade). */
+const INTERVAL_MS = 6_000;
 
 /**
  * Rotating international destination hero.
- * - a new photo every ~13 s with a 700 ms crossfade; it never pauses just because the pointer is over it
+ * - a new photo every ~6 s with a 700 ms crossfade; it never pauses just because the pointer is over it
  * - the next photo is preloaded while the current one shows; the switch happens only once it has
  *   loaded (no blank frames), and a photo that fails to load is skipped
  * - pauses while the tab is hidden and restarts cleanly when it's visible again
@@ -131,7 +131,7 @@ export function HeroCarousel({ slides, children }: { slides: HeroSlideData[]; ch
         {slides.map((s, i) => (
           <div key={s.id} className={`hero__slide ${i === index ? "is-active" : ""}`} aria-hidden={i !== index} role="group" aria-roledescription="slide" aria-label={t("slideOf", { n: i + 1, total: count })}>
             {loaded.has(i) ? (
-              <Image src={sizedUrl(s.imageUrl, narrow ? "card" : "hero")} alt={i === index ? s.alt : ""} fill sizes="100vw" priority={i === 0} quality={70} unoptimized={isWikimedia(s.imageUrl)} style={{ objectFit: "cover" }} onLoad={() => onLoaded(i)} onError={() => onFailed(i)} />
+              <Image src={sizedUrl(s.imageUrl, narrow ? "card" : "hero")} alt={i === index ? s.alt : ""} fill sizes="100vw" priority={i === 0} quality={65} unoptimized={isWikimedia(s.imageUrl)} style={{ objectFit: "cover" }} onLoad={() => onLoaded(i)} onError={() => onFailed(i)} />
             ) : null}
           </div>
         ))}

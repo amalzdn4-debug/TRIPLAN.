@@ -537,7 +537,7 @@
     "dietaryHint": "N'ajoutez que ce que vous souhaitez voir pris en compte. Modifiable à tout moment.",
     "halalNote": "TriPlan n'affiche les mentions halal ou alimentaires que si elles ont été vérifiées. Confirmez toujours auprès du restaurant.",
     "optional": "Facultatif",
-    "limitedData": "Les lieux sélectionnés pour {city} sont encore en cours d'ajout. Votre programme comprendra repas et temps libre — vous pourrez ajouter vos propres étapes.",
+    "limitedData": "Les lieux de {city} n'ont pas encore été importés. Nous les récupérerons à la création du plan (jusqu'à 30 secondes).",
     "aiNote": "Votre itinéraire est rédigé avec l'IA à partir des lieux de notre base. Vérifiez toujours les détails avant de partir.",
     "rulesNote": "Votre itinéraire est construit à partir des lieux de notre guide, regroupés par quartier pour limiter les trajets.",
     "editLater": "Tout reste modifiable ensuite.",
@@ -1781,7 +1781,20 @@
       }
     },
     "deletePermanently": "Supprimer définitivement",
-    "confirmDeletePermanently": "Supprimer définitivement cette publication, avec ses photos, commentaires et mentions J'aime ? Action irréversible."
+    "confirmDeletePermanently": "Supprimer définitivement cette publication, avec ses photos, commentaires et mentions J'aime ? Action irréversible.",
+    "photos": {
+      "title": "Photos",
+      "cover": "Couverture",
+      "makeCover": "Utiliser en couverture",
+      "none": "Aucune photo pour l'instant. Utilisez « Importer photos et lieux » pour importer des photos sous licence depuis Wikimedia Commons.",
+      "fetch": "Importer photos et lieux",
+      "filter": "Filtrer par photos",
+      "all": "Toutes ({n})",
+      "missing": "Sans photo ({n})",
+      "missingHelp": "Ces destinations affichent l'image de remplacement. Cliquez sur « Réimporter » sur une ligne (environ 20 s chacune) ou sur « Tout importer » ci-dessus.",
+      "column": "Photos",
+      "fromPlaces": "{n} des lieux"
+    }
   },
   "geo": {
     "noResults": "Aucune adresse trouvée. Ajoutez la ville ou placez le repère sur la carte.",

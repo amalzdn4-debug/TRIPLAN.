@@ -7,6 +7,9 @@ import { FastTripForm } from "@/components/planner/FastTripForm";
 import { EntitlementBanner } from "@/components/planner/EntitlementBanner";
 import { pageMetadata } from "@/lib/seo";
 
+// Creating a trip may first import the destination's sights (up to ~30 s).
+export const maxDuration = 60;
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "planner" });

@@ -12,7 +12,7 @@ export function DestinationCard({ d, priority = false }: { d: DestinationCardDat
   return (
     <article className="dest-card">
       <div className="dest-card__media">
-        <SafeImage src={d.image?.url} alt={d.image?.alt ?? ""} slot="card" title={d.city} subtitle={country} priority={priority} />
+        <SafeImage src={d.image?.url} alt={d.image?.alt ?? ""} slot="card" title={d.city} subtitle={country} priority={priority} fallbacks={d.image?.fallbacks} />
       </div>
       <div className="dest-card__body">
         <h3 className="dest-card__title">

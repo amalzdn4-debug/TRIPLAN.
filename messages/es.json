@@ -537,7 +537,7 @@
     "dietaryHint": "Añade solo lo que quieras que se tenga en cuenta. Puedes cambiarlo cuando quieras.",
     "halalNote": "TriPlan solo muestra etiquetas halal o alimentarias cuando están verificadas. Confírmalo siempre con el restaurante.",
     "optional": "Opcional",
-    "limitedData": "Aún estamos añadiendo lugares seleccionados para {city}. Tu plan incluirá comidas y tiempo libre, y podrás añadir tus propias paradas.",
+    "limitedData": "Los lugares de {city} aún no se han importado. Los obtendremos al crear el plan (puede tardar hasta 30 segundos).",
     "aiNote": "Tu itinerario se redacta con IA a partir de lugares de nuestra base de datos. Revisa siempre los detalles antes de ir.",
     "rulesNote": "Tu itinerario se crea con lugares de nuestra guía, agrupados por zona para reducir los traslados.",
     "editLater": "Podrás editarlo todo después.",
@@ -1781,7 +1781,20 @@
       }
     },
     "deletePermanently": "Eliminar definitivamente",
-    "confirmDeletePermanently": "¿Eliminar definitivamente esta publicación, con sus fotos, comentarios y me gusta? No se puede deshacer."
+    "confirmDeletePermanently": "¿Eliminar definitivamente esta publicación, con sus fotos, comentarios y me gusta? No se puede deshacer.",
+    "photos": {
+      "title": "Fotos",
+      "cover": "Portada",
+      "makeCover": "Usar como portada",
+      "none": "Aún no hay fotos. Usa «Importar fotos y lugares» para importar fotos con licencia de Wikimedia Commons.",
+      "fetch": "Importar fotos y lugares",
+      "filter": "Filtrar por fotos",
+      "all": "Todas ({n})",
+      "missing": "Sin foto ({n})",
+      "missingHelp": "Estos destinos muestran la imagen de reserva. Pulsa «Reimportar» en una fila (unos 20 s cada una) o «Importar todo lo pendiente» arriba.",
+      "column": "Fotos",
+      "fromPlaces": "{n} de lugares"
+    }
   },
   "geo": {
     "noResults": "No se ha encontrado la dirección. Añade la ciudad o coloca el marcador en el mapa.",

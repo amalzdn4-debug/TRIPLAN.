@@ -240,3 +240,19 @@ No PostgreSQL installation is needed locally. To use the real Neon database loca
   *Admin → Moderation*). Photos are removed from Blob storage; comments, likes, saves and reports go
   with the post. The admin check runs on the server against the user's role in the database.
 - **Logo:** files from the approved TriPlan brand kit, unmodified, in `public/brand/2026/`.
+
+## Round 7 notes (November 2026)
+
+- **No database migration, no new keys or services.**
+- **Next.js** is now limited to `~15.5.29` (15.5.29 = the November 2026 security release; later 15.5.x
+  security/bug-fix patches still install automatically, new feature versions don't).
+- **Photos:** Wikimedia only serves its standard thumbnail widths (250, 330, 500, 960, 1280, 1920) to
+  other websites; every photo link now uses one of them. If a photo still fails, the next photo of the
+  same destination (gallery, then its sights) is tried before the branded placeholder.
+  Admin → Destinations → "Without a photo" lists the destinations that would show the placeholder;
+  "Re-import" fetches their photos and sights; on a destination's page you can choose the cover photo.
+- **On-demand import:** creating a trip to a destination whose sights haven't been imported runs the
+  importer for it first (up to ~30 s). If that fails, the trip is still created and the daily import
+  finishes the destination later.
+- **Nearby suggestions** only include destinations that already have sights. Run "Import all remaining"
+  so every destination can be suggested.

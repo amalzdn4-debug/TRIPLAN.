@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { FormMessage, SubmitButton } from "@/components/ui/Form";
 import type { ActionState } from "@/lib/validation";
 import { deletePostAction } from "@/actions/community";
-import { saveDestinationAction, saveHeroSlideAction, savePlaceAction, savePlanAction, saveTranslationAction, heroSlideCommandAction, placeCommandAction, moderatePostAction, moderateCommentAction, affiliateCommandAction, saveAffiliateAction, moderateReviewAction, userCommandAction, markContactHandledAction, enrichContentAction, saveAdmissionAction, type EnrichResult } from "@/actions/admin";
+import { saveDestinationAction, saveHeroSlideAction, savePlaceAction, savePlanAction, saveTranslationAction, heroSlideCommandAction, placeCommandAction, moderatePostAction, moderateCommentAction, affiliateCommandAction, saveAffiliateAction, moderateReviewAction, userCommandAction, markContactHandledAction, enrichContentAction, saveAdmissionAction, destinationPhotoCoverAction, type EnrichResult } from "@/actions/admin";
 
 const ACTIONS = {
   hero: saveHeroSlideAction,
@@ -44,6 +44,7 @@ type Cmd =
   | { type: "contact"; id: string; command: "handled" }
   | { type: "enrich"; id: string; command: "reimport" }
   | { type: "comment"; id: string; command: "published" | "hidden" | "removed" }
+  | { type: "photo"; id: string; command: "cover" }
   | { type: "affiliate"; id: string; command: "approved" | "paused" | "rejected" | "pending" | "delete" };
 
 export function CommandButton({ cmd, label, danger = false, confirmText }: { cmd: Cmd; label: string; danger?: boolean; confirmText?: string }) {
@@ -68,6 +69,7 @@ export function CommandButton({ cmd, label, danger = false, confirmText }: { cmd
           if (cmd.type === "user") await userCommandAction(cmd.id, cmd.command);
           if (cmd.type === "contact") await markContactHandledAction(cmd.id);
           if (cmd.type === "enrich") await enrichContentAction(cmd.id);
+          if (cmd.type === "photo") await destinationPhotoCoverAction(cmd.id);
         });
       }}
     >

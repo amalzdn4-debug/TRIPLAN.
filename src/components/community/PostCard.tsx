@@ -66,7 +66,7 @@ export function PostCard({ post, signedIn, compact = false, full = false, isAdmi
           <span className="badge badge--outline" title={t("opinionHint")}>{t("opinion")}</span>
         </span>
       </div>
-      <h3 dir="auto">{full ? post.title : <Link href={href} className="post__title-link">{post.title}</Link>}</h3>
+      {full ? <h1 dir="auto" className="post__title">{post.title}</h1> : <h3 dir="auto"><Link href={href} className="post__title-link">{post.title}</Link></h3>}
       {post.placeName || (post.lat != null && post.lng != null) ? (
         <p className="post__place small">
           <Icon name="pin" />

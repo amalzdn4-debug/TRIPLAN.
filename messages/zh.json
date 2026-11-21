@@ -537,7 +537,7 @@
     "dietaryHint": "只需填写规划时需要考虑的内容，可随时修改。",
     "halalNote": "TriPlan 仅在核实后显示清真及其他饮食标签。请务必向餐厅确认。",
     "optional": "可选",
-    "limitedData": "{city}的精选地点仍在完善中。您的计划会包含餐饮和自由时间——可以添加自己的地点。",
+    "limitedData": "{city} 的景点尚未导入。创建行程时我们会先获取（最多约 30 秒）。",
     "aiNote": "行程由 AI 基于我们数据库中的地点辅助生成。出行前请务必核实细节。",
     "rulesNote": "行程基于我们指南中的地点生成，并按区域分组以减少交通时间。",
     "editLater": "之后可随时修改。",
@@ -1781,7 +1781,20 @@
       }
     },
     "deletePermanently": "永久删除",
-    "confirmDeletePermanently": "永久删除此帖子及其照片、评论和点赞？此操作无法撤销。"
+    "confirmDeletePermanently": "永久删除此帖子及其照片、评论和点赞？此操作无法撤销。",
+    "photos": {
+      "title": "照片",
+      "cover": "封面",
+      "makeCover": "设为封面",
+      "none": "暂无照片。点击“获取照片和景点”从 Wikimedia Commons 导入有授权的照片。",
+      "fetch": "获取照片和景点",
+      "filter": "按照片筛选",
+      "all": "全部（{n}）",
+      "missing": "无照片（{n}）",
+      "missingHelp": "这些目的地目前显示占位图。点击某一行的“重新导入”（每个约 20 秒），或点击上方的“导入全部剩余内容”。",
+      "column": "照片",
+      "fromPlaces": "{n} 张来自景点"
+    }
   },
   "geo": {
     "noResults": "未找到该地址。请加上城市名，或在地图上放置标记。",

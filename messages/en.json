@@ -537,7 +537,7 @@
     "dietaryHint": "Only add what you'd like used for planning. You can change it any time.",
     "halalNote": "TriPlan shows halal or dietary labels only when they've been verified. Always confirm with the restaurant.",
     "optional": "Optional",
-    "limitedData": "Curated places for {city} are still being added. Your plan will include meals and free time — you can add your own stops.",
+    "limitedData": "Sights for {city} haven't been imported yet. We'll fetch them when you create the plan (this can take up to 30 seconds).",
     "aiNote": "Your itinerary is drafted with AI from places in our database. Always double-check details before you go.",
     "rulesNote": "Your itinerary is built from places in our destination guide, grouped by area to keep travel short.",
     "editLater": "You can edit everything afterwards.",
@@ -1664,7 +1664,20 @@
       }
     },
     "deletePermanently": "Delete permanently",
-    "confirmDeletePermanently": "Delete this post permanently, with its photos, comments and likes? This cannot be undone."
+    "confirmDeletePermanently": "Delete this post permanently, with its photos, comments and likes? This cannot be undone.",
+    "photos": {
+      "title": "Photos",
+      "cover": "Cover",
+      "makeCover": "Use as cover",
+      "none": "No photos yet. Use “Fetch photos and sights” to import licensed photos from Wikimedia Commons.",
+      "fetch": "Fetch photos and sights",
+      "filter": "Filter by photos",
+      "all": "All ({n})",
+      "missing": "Without a photo ({n})",
+      "missingHelp": "These destinations show the branded placeholder. Press “Re-import” on a row (about 20 s each), or “Import all remaining” above.",
+      "column": "Photos",
+      "fromPlaces": "{n} from sights"
+    }
   },
   "media": {
     "photoBy": "Photo:",

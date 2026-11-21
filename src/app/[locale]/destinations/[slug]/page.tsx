@@ -24,7 +24,7 @@ import { SafeImage } from "@/components/media/SafeImage";
 import { PhotoCredit } from "@/components/media/PhotoCredit";
 import { NearbyList } from "@/components/destinations/NearbyList";
 import { formatDuration } from "@/lib/format";
-import type { CreditedImage } from "@/lib/images";
+import { sizedUrl, type CreditedImage } from "@/lib/images";
 import { admissionOf } from "@/lib/admission";
 import { AdmissionInfo } from "@/components/ui/AdmissionInfo";
 
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     path: `/destinations/${slug}`,
     title: t("metaTitle", { city: d.displayName, country: countryName(d.city.countryCode, locale) }),
     description: d.summary,
-    image: d.images[0]?.url,
+    image: d.images[0]?.url ? sizedUrl(d.images[0].url, "hero") : undefined,
   });
 }
 
@@ -92,7 +92,7 @@ export default async function DestinationPage({ params, searchParams }: { params
     url: `${siteUrl()}/${locale}/destinations/${slug}`,
     geo: { "@type": "GeoCoordinates", latitude: d.city.lat, longitude: d.city.lng },
     containedInPlace: { "@type": "Country", name: country },
-    ...(image ? { image: image.url } : {}),
+    ...(image ? { image: sizedUrl(image.url, "hero") } : {}),
     includesAttraction: attractions.slice(0, 10).map((a) => ({ "@type": "TouristAttraction", name: a.name, geo: { "@type": "GeoCoordinates", latitude: a.lat, longitude: a.lng } })),
   };
 
@@ -102,7 +102,7 @@ export default async function DestinationPage({ params, searchParams }: { params
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       <section className="dest-hero">
-        <SafeImage src={image?.url} alt={image?.alt ?? city} slot="hero" title="" priority />
+        <SafeImage src={image?.url ?? allAttractions.find((p) => p.imageUrl)?.imageUrl} alt={image?.alt ?? city} slot="hero" title="" priority fallbacks={[...images.slice(1, 3).map((i) => i.url), ...allAttractions.filter((p) => p.imageUrl).slice(0, 3).map((p) => p.imageUrl!)]} />
         <div className="container dest-hero__content">
           <ol className="breadcrumbs">
             <li><Link href="/">{t("home")}</Link></li>

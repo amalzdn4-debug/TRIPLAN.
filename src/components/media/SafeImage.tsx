@@ -17,8 +17,11 @@ export function SafeImage({
   subtitle,
   priority = false,
   sizes,
+  fallbacks = [],
 }: {
   src: string | null | undefined;
+  /** Other photos to try, in order, before showing the branded placeholder. */
+  fallbacks?: string[];
   alt: string;
   slot: "thumb" | "card" | "hero";
   title: string;
@@ -26,8 +29,10 @@ export function SafeImage({
   priority?: boolean;
   sizes?: string;
 }) {
-  const [failed, setFailed] = useState(false);
-  if (!src || failed) {
+  const candidates = [src, ...fallbacks].filter((u): u is string => Boolean(u));
+  const [attempt, setAttempt] = useState(0);
+  const current = candidates[attempt];
+  if (!current) {
     return (
       <div className="img-fallback" role="img" aria-label={alt || title}>
         <div>
@@ -37,7 +42,7 @@ export function SafeImage({
       </div>
     );
   }
-  const url = sizedUrl(src, slot);
+  const url = sizedUrl(current, slot);
   return (
     <Image
       src={url}
@@ -46,7 +51,8 @@ export function SafeImage({
       priority={priority}
       sizes={sizes ?? (slot === "hero" ? "100vw" : slot === "card" ? "(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 25vw" : "200px")}
       unoptimized={isWikimedia(url)}
-      onError={() => setFailed(true)}
+      key={url}
+      onError={() => setAttempt((a) => a + 1)}
       style={{ objectFit: "cover" }}
     />
   );

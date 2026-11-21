@@ -75,16 +75,34 @@ async function loadCards(): Promise<(Omit<DestinationCardData, "cityEn"> & { tra
   const images = ids.length
     ? await db.select().from(schema.destinationImages).where(inArray(schema.destinationImages.destinationId, ids)).orderBy(asc(schema.destinationImages.sortOrder))
     : [];
-  const firstImage = new Map<string, (typeof images)[number]>();
-  for (const i of images) if (!firstImage.has(i.destinationId)) firstImage.set(i.destinationId, i);
+  const byDest = new Map<string, (typeof images)[number][]>();
+  for (const i of images) byDest.set(i.destinationId, [...(byDest.get(i.destinationId) ?? []), i]);
+  // Backup photos: the destination's own best-known attractions (licensed photos from the same import).
+  const placePhotos = ids.length
+    ? await db
+        .select({ destinationId: schema.places.destinationId, url: schema.places.imageUrl, name: schema.places.name, credit: schema.places.imageCredit, license: schema.places.imageLicense })
+        .from(schema.places)
+        .where(and(inArray(schema.places.destinationId, ids), sql`${schema.places.imageUrl} is not null`, inArray(schema.places.kind, ["attraction", "activity"])))
+        .orderBy(desc(schema.places.popularity))
+    : [];
+  const byDestPlace = new Map<string, typeof placePhotos>();
+  for (const p of placePhotos) if ((byDestPlace.get(p.destinationId)?.length ?? 0) < 3) byDestPlace.set(p.destinationId, [...(byDestPlace.get(p.destinationId) ?? []), p]);
   return rows.map((r) => {
-    const img = firstImage.get(r.id);
+    const gallery = byDest.get(r.id) ?? [];
+    const places = byDestPlace.get(r.id) ?? [];
+    const img = gallery[0];
+    const backups = [...gallery.slice(1, 3).map((g) => g.url), ...places.map((p) => p.url!)];
+    const image: CreditedImage | null = img
+      ? { url: img.url, alt: img.alt, creditName: img.creditName, creditUrl: img.creditUrl, license: img.license, licenseUrl: img.licenseUrl, source: img.source, fallbacks: backups }
+      : places[0]
+        ? { url: places[0].url!, alt: `${places[0].name}, ${r.city}`, creditName: places[0].credit, creditUrl: null, license: places[0].license, source: "wikimedia", fallbacks: backups.slice(1) }
+        : null;
     return {
       ...r,
       lat: Number(r.lat),
       lng: Number(r.lng),
       placeCount: Number(r.placeCount),
-      image: img ? { url: img.url, alt: img.alt, creditName: img.creditName, creditUrl: img.creditUrl, license: img.license, licenseUrl: img.licenseUrl, source: img.source } : null,
+      image,
     };
   });
 }
@@ -265,7 +283,8 @@ export async function getNearby(slug: string, locale: string, limit = 8): Promis
   const origin = cards.find((c) => c.slug === slug);
   if (!origin) return [];
   const bySlug = new Map(cards.map((c) => [c.slug, c]));
-  const candidates = cards.map((c) => ({
+  // Only suggest places that have content (imported sights): an empty destination makes an empty plan.
+  const candidates = cards.filter((c) => c.slug === slug || c.placeCount > 0).map((c) => ({
     slug: c.slug, city: c.city, countryCode: c.countryCode, lat: c.lat, lng: c.lng, kind: c.kind,
     daysMin: c.daysMin ?? 1, daysMax: c.daysMax ?? c.daysMin ?? 2, popularity: c.popularity, styles: c.travelStyles, experiences: c.experiences,
   }));

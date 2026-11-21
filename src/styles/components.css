@@ -405,6 +405,9 @@ fieldset > legend {
   color: var(--color-text-subtle);
   font-size: var(--fs-xs);
 }
+.choice-card input:checked + span small {
+  color: var(--color-text); /* readable on the selected light-blue background */
+}
 .choice-card input:checked + span {
   border-color: var(--tp-navy);
   box-shadow: inset 0 0 0 1px var(--tp-navy);
@@ -564,11 +567,11 @@ fieldset > legend {
   flex: none;
 }
 .site-header__brand img {
-  block-size: 42px; /* the brand files include clear space: ~24 px tall letters, the brand minimum */
+  block-size: 34px; /* the files include clear space: ~24 px tall letters, the brand guide's minimum */
   inline-size: auto;
 }
 .site-header__brand img.logo-mark {
-  block-size: 40px;
+  block-size: 34px;
 }
 .logo-light,
 .logo-dark {
@@ -975,10 +978,10 @@ fieldset > legend {
 .hero__slide img {
   object-fit: cover;
   transform: scale(1.02);
-  transition: transform 14s linear;
+  transition: transform 7s linear;
 }
 .hero__slide.is-active img {
-  transform: scale(1.07);
+  transform: scale(1.05);
 }
 .hero::after {
   content: "";
@@ -2323,7 +2326,7 @@ html[lang="zh"] .hero__tagline {
   block-size: 14px;
 }
 .lock-on {
-  color: var(--tp-gold-600) !important;
+  color: var(--tp-gold-700) !important;
 }
 .workspace__mobile-toggle {
   display: none;
@@ -2387,6 +2390,9 @@ html[lang="zh"] .hero__tagline {
 }
 .tp-marker--break {
   background: var(--tp-blue-300);
+}
+.tp-marker--break span {
+  color: var(--tp-navy-900);
 }
 .tp-marker--home {
   background: var(--tp-gold);
@@ -2530,9 +2536,13 @@ html[lang="zh"] .hero__tagline {
   font-size: var(--fs-sm);
   flex: none;
 }
-.post h3 {
+.post h3,
+.post h1.post__title {
   margin: 0;
   font-size: var(--fs-md);
+}
+.post--full h1.post__title {
+  font-size: var(--fs-xl);
 }
 .post p {
   margin: 0;
@@ -2708,13 +2718,15 @@ html[lang="zh"] .hero__tagline {
 }
 
 /* Cookie consent */
+/* Compact, in the bottom corner opposite the hero buttons, so it never hides "Start Planning". */
 .cookie-banner {
   position: fixed;
   z-index: var(--z-toast);
-  inset-inline: var(--sp-4);
+  inset-inline-start: auto;
+  inset-inline-end: var(--sp-4);
   inset-block-end: calc(var(--sp-4) + env(safe-area-inset-bottom));
-  max-inline-size: 560px;
-  padding: var(--sp-5);
+  max-inline-size: min(400px, calc(100vw - 2 * var(--sp-4)));
+  padding: var(--sp-4);
   border-radius: var(--r-lg);
   background: var(--color-surface);
   box-shadow: var(--sh-lg);
@@ -2723,16 +2735,27 @@ html[lang="zh"] .hero__tagline {
 }
 @media (max-width: 760px) {
   .cookie-banner {
-    inset-block-end: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom) + var(--sp-3));
+    inset-inline: var(--sp-3);
+    max-inline-size: none;
+    padding: var(--sp-3) var(--sp-4);
+    inset-block-end: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom) + var(--sp-2));
+  }
+  .cookie-banner h2 {
+    display: none; /* the text says it all; keeps the banner short on phones */
   }
 }
 .cookie-banner h2 {
-  font-size: var(--fs-base);
-  margin-block-end: var(--sp-2);
+  font-size: var(--fs-sm);
+  margin-block-end: var(--sp-1);
 }
 .cookie-banner p {
   font-size: var(--fs-sm);
+  line-height: 1.45;
   color: var(--color-text-muted);
+  margin-block-end: var(--sp-3);
+}
+.cookie-banner .cluster {
+  gap: 6px;
 }
 @keyframes rise-in {
   from {
@@ -3688,4 +3711,26 @@ a.pick-chip {
   background: var(--color-primary);
   border-color: var(--color-primary);
   color: var(--color-on-primary);
+}
+.admin-photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+.admin-photo {
+  margin: 0;
+  display: grid;
+  gap: 6px;
+}
+.admin-photo img {
+  inline-size: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--r-md);
+}
+.auth-visual .eyebrow {
+  color: var(--tp-gold);
+}
+.leaflet-control-attribution a {
+  color: var(--tp-navy); /* readable map credits (OpenStreetMap, Leaflet) */
 }
